@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+import aws_gate.cli
+
+
+def main():
+    aws_gate.cli.main()
+
+
+if __name__ == '__main__':
+    main()
