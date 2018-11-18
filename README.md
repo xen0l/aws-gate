@@ -1,5 +1,5 @@
 # aws-gate
-[![Build Status](https://travis-ci.org/xen0l/aws-gate.svg?branch=master)](https://travis-ci.org/xen0l/aws-gate)[![codecov](https://codecov.io/gh/xen0l/aws-gate/branch/master/graph/badge.svg)](https://codecov.io/gh/xen0l/aws-gate)
+[![Build Status](https://travis-ci.org/xen0l/aws-gate.svg?branch=master)](https://travis-ci.org/xen0l/aws-gate)[![codecov](https://codecov.io/gh/xen0l/aws-gate/branch/master/graph/badge.svg)](https://codecov.io/gh/xen0l/aws-gate)[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5f4385e925e34788a20e40b4a3319b2d)](https://app.codacy.com/app/xen0l/aws-gate?utm_source=github.com&utm_medium=referral&utm_content=xen0l/aws-gate&utm_campaign=Badge_Grade_Settings)
 
 AWS SSM Session manager client
 
