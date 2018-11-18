@@ -1,0 +1,16 @@
+language: python
+dist: xenial
+python:
+  - 3.5
+  - 3.6
+  - 3.7
+install:
+  - pip install -r requirements/requirements.txt
+  - pip install -r requirements/requirements_dev.txt
+  - pip install codecov
+before_script:
+  - pytest --version
+script:
+  - ./test/run.py
+after_success:
+  - codecov

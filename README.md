@@ -1,4 +1,5 @@
 # aws-gate
+[![Build Status](https://travis-ci.org/xen0l/aws-gate.svg?branch=master)](https://travis-ci.org/xen0l/aws-gate)[![codecov](https://codecov.io/gh/xen0l/aws-gate/branch/master/graph/badge.svg)](https://codecov.io/gh/xen0l/aws-gate)
 
 AWS SSM Session manager client
 
