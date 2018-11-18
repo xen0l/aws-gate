@@ -14,3 +14,14 @@ script:
   - ./test/run.py
 after_success:
   - codecov
+deploy:
+  provider: pypi
+  user: xenol
+  password:
+    secure: TO/e7xuqCgfxN+6uMKLsL4xGjNiyag9YXdSIu0icDCcBygJr2ngTlJMrJ4CuHyENLbbz851TaaEEEoqSBYz3txlkgYqbgdxepwjcWccuKUIcXL0Jl0hwXHmSJ7cYcw5PcgIZPX02LpgNEUhMDBYIVzEXuh7sP+VyH0SRCekZPn4cbB/5hmMcY4pYQLD1OhMmTEBpjl3wM0gQ3UqOi3FcFzRUVnrlTGi5gjrcWC/W4bJSoU03T8UjPvCU+hjsZ5/0twxIaV/1Tn4MmrvJz9mwZguC/Ba57CnZsyJjfwZo1Akf7a8NW0tRBsdvXnhC7SLM+vRY6X9sb4H1zh0Iu7irj2izOVbq6ccYutsnXSy+o2nJCEa9HOybjMmhJyBt1sHfZWMukIr0HgFRL3v7CvvqqtgVtpk4W7LT2KPX9D34/GcHAk4olX9strTPawuI4DHH1ARk4ym6eKZ0LcIOP6UzxkhIhgbebklxCzyfhyvqR2TmFWszuphLiFwOazbqAmPDqU2RQ/b6LLGw/mF45QLCMb76GGf8RIbHnRZsuhGb8x5kas7BxZ2byEvMKMFDbqKn+mKaUD5VwYjsKXphfo2DeJ1SWPuaczER0+FhX0o6wuYnL6ysxEAsoR7vIqsz6EeFJg/oFL6B4Uhfza+hh3oSgsER0i2KRrEuq1gu5RC2Sb4=
+  distributions: sdist bdist_wheel
+  skip_existing: true
+  on:
+    tags: true
+    branch: master
+    python: 3.7
