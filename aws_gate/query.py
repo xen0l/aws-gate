@@ -64,6 +64,14 @@ def getinstanceidbyipaddress(name, ec2=None):
     }]
     return _query_aws_api(filters=filters, ec2=ec2)
 
+def getinstanceidbytag(name, ec2=None):
+    instance_id = None
+    for instance in ec2.instances.all():
+        for tags in instance.tags:
+            if tags["Value"].lower() == name.lower():
+                instance_id = instance.instance_id
+    return instance_id
+
 
 def query_instance(name, ec2=None):
 
@@ -78,6 +86,7 @@ def query_instance(name, ec2=None):
         'private-dns-name': getinstanceidbyprivatednsname,
         'ip-address': getinstanceidbyipaddress,
         'private-ip-address': getinstanceidbyprivateipaddress,
+        'tag': getinstanceidbytag,
     }
 
     # If we are provided with instance ID directly, we don't need to contact EC2
@@ -95,6 +104,8 @@ def query_instance(name, ec2=None):
             identifier_type = 'dns-name'
         elif name.endswith('compute.internal'):
             identifier_type = 'private-dns-name'
+        else:
+            identifier_type = 'tag'
 
     if identifier_type is None:
         raise ValueError('Unknown instance identifier: {}'.format(name))
