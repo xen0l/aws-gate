@@ -64,6 +64,7 @@ def getinstanceidbyipaddress(name, ec2=None):
     }]
     return _query_aws_api(filters=filters, ec2=ec2)
 
+
 def getinstanceidbytag(name, ec2=None):
     instance_id = None
     for instance in ec2.instances.all():
@@ -106,8 +107,5 @@ def query_instance(name, ec2=None):
             identifier_type = 'private-dns-name'
         else:
             identifier_type = 'tag'
-
-    if identifier_type is None:
-        raise ValueError('Unknown instance identifier: {}'.format(name))
 
     return func_dispatcher[identifier_type](name=name, ec2=ec2)

@@ -1,13 +1,11 @@
-import errno
-import json
 import logging
-import subprocess
 
-from aws_gate.utils import get_aws_client, get_aws_resource, deferred_signals
+from aws_gate.utils import get_aws_client, get_aws_resource
 
 logger = logging.getLogger(__name__)
 
-def list(profile_name=None, region_name='eu-west-1'):
+
+def list_instances(profile_name=None, region_name='eu-west-1'):
     ssm = get_aws_client('ssm', region_name=region_name, profile_name=profile_name)
     ec2 = get_aws_resource('ec2', region_name=region_name, profile_name=profile_name)
 
@@ -25,4 +23,3 @@ def list(profile_name=None, region_name='eu-west-1'):
             if tags["Key"] == 'Name':
                 instance_name = tags["Value"]
         print("{} - {}".format(instance.instance_id, instance_name))
-

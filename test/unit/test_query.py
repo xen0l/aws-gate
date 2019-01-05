@@ -34,6 +34,5 @@ class TestQuery(unittest.TestCase):
         with self.assertRaises(ValueError):
             query_instance('18.205.215.108')
 
-    def test_query_instance_unknown_identifier_type(self):
-        with self.assertRaises(ValueError):
-            query_instance('foobar', ec2=self.ec2)
+    def test_query_instance_by_tag(self):
+        self.assertEqual(self.instance_id, query_instance('dummy-instance', ec2=self.ec2))

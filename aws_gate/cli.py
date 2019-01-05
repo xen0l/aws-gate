@@ -5,7 +5,7 @@ import argparse
 
 from aws_gate import __version__, __description__
 from aws_gate.session import session
-from aws_gate.list import list
+from aws_gate.list import list_instances
 from aws_gate.utils import is_existing_profile
 
 DEBUG = 'GATE_DEBUG' in os.environ
@@ -74,7 +74,7 @@ def main():
     if args.subcommand == 'session':
         session(instance_name=args.instance_name, region_name=args.region, profile_name=args.profile)
     if args.subcommand == 'ls':
-        list(region_name=args.region, profile_name=args.profile)
+        list_instances(region_name=args.region, profile_name=args.profile)
 
 
 if __name__ == '__main__':
