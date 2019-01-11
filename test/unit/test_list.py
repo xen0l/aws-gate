@@ -20,4 +20,4 @@ class TestList(unittest.TestCase):
         mock_client.return_value = self.ssm
         mock_resource.return_value = self.ec2
         list_instances()
-        self.assertEqual(mock_stdout.getvalue(), "i-0c32153096cd68a6d,dummy-instance\n")
+        self.assertEqual(mock_stdout.getvalue(), "i-0c32153096cd68a6d - dummy-instance\n")

@@ -30,7 +30,7 @@ def main():
     parser.add_argument('-v', '--verbose', help='increase output verbosity',
                         action='store_true')
     parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
-    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{session, ls}')
+    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{session, list}')
 
     # 'session' subcommand
     session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
