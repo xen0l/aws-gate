@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock, call
 
-from aws_gate.utils import is_existing_profile, _create_aws_session, get_aws_client, get_aws_resource
+from aws_gate.utils import is_existing_profile, _create_aws_session, get_aws_client, get_aws_resource, \
+    AWS_REGIONS, is_existing_region
 
 
 # pylint: disable=too-few-public-methods
@@ -46,3 +47,7 @@ class TestUtils(unittest.TestCase):
             get_aws_resource(service_name='ec2', region_name='eu-west-1')
 
             self.assertTrue(mock.called)
+
+    def test_region_validation(self):
+        self.assertTrue(is_existing_region(region_name=AWS_REGIONS[0]))
+        self.assertFalse(is_existing_region(region_name='unknown-region-1'))
