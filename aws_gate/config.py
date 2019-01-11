@@ -43,6 +43,7 @@ class DefaultsSchema(Schema):
     profile = fields.String(required=True, validate=validate_profile)
     region = fields.String(required=True, validate=validate_region)
 
+    # pylint: disable=unused-argument
     @validates_schema(pass_original=True)
     def check_unknown_fields(self, data, original_data):
         _validate_unknown_fields(self.fields, original_data)
@@ -53,6 +54,7 @@ class HostSchema(Schema):
     profile = fields.String(required=True, validate=validate_profile)
     region = fields.String(required=True, validate=validate_region)
 
+    # pylint: disable=unused-argument
     @validates_schema(pass_original=True)
     def check_unknown_fields(self, data, original_data):
         _validate_unknown_fields(self.fields, original_data)
@@ -62,16 +64,18 @@ class GateConfigSchema(Schema):
     defaults = fields.Dict(DefaultsSchema, required=False, missing=dict(), validate=validate_defaults)
     hosts = fields.List(fields.Nested(HostSchema), required=False, missing=list())
 
+    # pylint: disable=unused-argument
     @validates_schema(pass_original=True)
     def check_unknown_fields(self, data, original_data):
         _validate_unknown_fields(self.fields, original_data)
 
+    # pylint: disable=no-self-use
     @post_load
     def create_config(self, data):
         return GateConfig(**data)
 
 
-class GateConfig(object):
+class GateConfig:
     def __init__(self, defaults, hosts):
         self._defaults = defaults
         self._hosts = hosts
