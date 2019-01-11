@@ -5,6 +5,7 @@ import argparse
 
 from aws_gate import __version__, __description__
 from aws_gate.session import session
+from aws_gate.list import list_instances
 from aws_gate.utils import is_existing_profile
 
 DEBUG = 'GATE_DEBUG' in os.environ
@@ -29,13 +30,17 @@ def main():
     parser.add_argument('-v', '--verbose', help='increase output verbosity',
                         action='store_true')
     parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
-    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{session}')
+    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{session, list}')
 
     # 'session' subcommand
     session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
     session_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
     session_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
     session_parser.add_argument('instance_name', help='Instance we wish to open session to')
+
+    ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
+    ls_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
+    ls_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
 
     args = parser.parse_args()
 
@@ -68,6 +73,8 @@ def main():
 
     if args.subcommand == 'session':
         session(instance_name=args.instance_name, region_name=args.region, profile_name=args.profile)
+    if args.subcommand in ['ls', 'list']:
+        list_instances(region_name=args.region, profile_name=args.profile)
 
 
 if __name__ == '__main__':
