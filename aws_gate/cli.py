@@ -38,7 +38,7 @@ def main():
     session_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
     session_parser.add_argument('instance_name', help='Instance we wish to open session to')
 
-    ls_parser = subparsers.add_parser('ls', help='List available instances and connect to it')
+    ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
     ls_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
     ls_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
 
@@ -73,7 +73,7 @@ def main():
 
     if args.subcommand == 'session':
         session(instance_name=args.instance_name, region_name=args.region, profile_name=args.profile)
-    if args.subcommand == 'ls':
+    if args.subcommand in ['ls', 'list']:
         list_instances(region_name=args.region, profile_name=args.profile)
 
 

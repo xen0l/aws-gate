@@ -22,4 +22,4 @@ def list_instances(profile_name=None, region_name='eu-west-1'):
         for tags in instance.tags:
             if tags["Key"] == 'Name':
                 instance_name = tags["Value"]
-        print("{} - {}".format(instance.instance_id, instance_name))
+        print("{},{}".format(instance.instance_id, instance_name))
