@@ -3,7 +3,11 @@ import sys
 import logging
 import argparse
 
+from marshmallow import ValidationError
+from yaml.scanner import ScannerError
+
 from aws_gate import __version__, __description__
+from aws_gate.config import load_config_from_files
 from aws_gate.session import session
 from aws_gate.list import list_instances
 from aws_gate.utils import is_existing_profile, get_default_region
@@ -72,9 +76,13 @@ def main():
     if args.profile is not None:
         if not is_existing_profile(args.profile):
             raise ValueError('Invalid profile provided: {}'.format(args.profile))
+    try:
+        config = load_config_from_files()
+    except (ValidationError, ScannerError) as e:
+        raise ValueError('Invalid configuration provided: {}'.format(e.message))
 
     if args.subcommand == 'session':
-        session(instance_name=args.instance_name, region_name=args.region, profile_name=args.profile)
+        session(config=config, instance_name=args.instance_name, region_name=args.region, profile_name=args.profile)
     if args.subcommand in ['ls', 'list']:
         list_instances(region_name=args.region, profile_name=args.profile)
 
