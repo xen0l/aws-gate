@@ -40,7 +40,7 @@ class TestUtils(unittest.TestCase):
             get_aws_client(service_name='ec2', region_name='eu-west-1')
 
             self.assertTrue(mock.called)
-            self.assertEqual(mock.mock_calls, [])
+            self.assertEqual(mock.mock_calls, [call(profile_name=None, region_name='eu-west-1')])
 
     def test_get_aws_resource(self):
         with patch('aws_gate.utils._create_aws_session', return_value=MagicMock()) as mock:

@@ -61,12 +61,26 @@ class TestSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=self.instance_id), \
                 patch('aws_gate.session.Session', return_value=MagicMock()) as session_mock:
-            session(instance_name=self.instance_id)
+            session(config=None, instance_name=self.instance_id)
             self.assertTrue(session_mock.called)
 
-    def test_session_exception(self):
+    def test_session_exception_invalid_profile(self):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None):
             with self.assertRaises(ValueError):
-                session(instance_name=self.instance_id)
+                session(config=None, profile_name='invalid-profile', instance_name=self.instance_id)
+
+    def test_session_exception_invalid_region(self):
+        with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
+                patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
+                patch('aws_gate.session.query_instance', return_value=None):
+            with self.assertRaises(ValueError):
+                session(config=None, region_name='invalid-region', instance_name=self.instance_id)
+
+    def test_session_exception_unknown_instance_id(self):
+        with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
+                patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
+                patch('aws_gate.session.query_instance', return_value=None):
+            with self.assertRaises(ValueError):
+                session(config=None, instance_name=self.instance_id)
