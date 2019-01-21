@@ -1,0 +1,3 @@
+defaults:
+  profile: default-profile
+  region: eu-west-1

@@ -1,0 +1,4 @@
+hosts:
+  - name: foobar
+    profile: test-profile
+    region: eu-west-1

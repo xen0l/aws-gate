@@ -54,15 +54,12 @@ class Session:
                     raise ValueError('session-manager-plugin cannot be found')
 
 
-def session(config, instance_name, profile_name=None, region_name='eu-west-1'):
+def session(config, instance_name, profile_name='default', region_name='eu-west-1'):
     if not is_existing_profile(profile_name):
         raise ValueError('Invalid profile provided: {}'.format(profile_name))
 
     if not is_existing_region(region_name):
         raise ValueError('Invalid region provided: {}'.format(profile_name))
-
-    import sys
-    sys.exit(1)
 
     ssm = get_aws_client('ssm', region_name=region_name, profile_name=profile_name)
     ec2 = get_aws_resource('ec2', region_name=region_name, profile_name=profile_name)

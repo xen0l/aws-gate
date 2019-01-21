@@ -3,6 +3,7 @@ import os
 
 import yaml
 from yaml.constructor import ConstructorError
+from yaml.parser import ParserError
 from marshmallow import Schema, fields, post_load, ValidationError, validates_schema
 
 from aws_gate.utils import is_existing_profile, is_existing_region
@@ -40,8 +41,8 @@ def validate_defaults(data):
 
 
 class DefaultsSchema(Schema):
-    profile = fields.String(required=True, validate=validate_profile)
-    region = fields.String(required=True, validate=validate_region)
+    profile = fields.String(required=False, validate=validate_profile)
+    region = fields.String(required=False, validate=validate_region)
 
     # pylint: disable=unused-argument
     @validates_schema(pass_original=True)
@@ -105,21 +106,44 @@ def _locate_config_files():
     return config_files
 
 
+def _merge_data(src, dst):
+    if isinstance(dst, dict):
+        if isinstance(src, dict):
+            for key in src:
+                if key in dst:
+                    dst[key] = _merge_data(src[key], dst[key])
+                else:
+                    dst[key] = src[key]
+        else:
+            raise TypeError('Cannot merge {} with dict, src={} dst={}'.format(type(src).__name__, src, dst))
+
+    elif isinstance(dst, list):
+        if isinstance(src, list):
+            dst.extend(src)
+        else:
+            dst.append(src)
+    else:
+        dst = src
+
+    return dst
+
+
 def load_config_from_files(config_files=None):
     if config_files is None:
         config_files = _locate_config_files()
 
-    data = {}
+    config_data, data = {}, {}
     if config_files:
         for path in config_files:
             try:
-                with open(path) as config_file:
+                with open(path, 'r') as config_file:
                     data = yaml.safe_load(config_file) or {}
-            except ConstructorError:
+            except (ConstructorError, ParserError):
                 data = {}
+            _merge_data(data, config_data)
 
-#    if not config_data:
-#        raise EmptyConfigurationeError('empty configuration data')
+    if not config_data:
+        raise EmptyConfigurationeError('Empty configuration data')
 
-    config = GateConfigSchema(strict=True).load(data).data
+    config = GateConfigSchema(strict=True).load(config_data).data
     return config
