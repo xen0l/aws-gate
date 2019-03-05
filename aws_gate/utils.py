@@ -7,12 +7,14 @@ import boto3
 logger = logging.getLogger(__name__)
 
 
-def _create_aws_session(region_name, profile_name=None):
+def _create_aws_session(region_name=None, profile_name=None):
     logger.debug('Obtaining boto3 session object')
-    if profile_name:
-        session = boto3.session.Session(region_name=region_name, profile_name=profile_name)
-    else:
-        session = boto3.session.Session(region_name=region_name)
+    kwargs = {}
+    if region_name is not None:
+        kwargs['region_name'] = region_name
+    if profile_name is not None:
+        kwargs['profile_name'] = profile_name
+    session = boto3.session.Session(**kwargs)
 
     return session
 
