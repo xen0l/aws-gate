@@ -16,16 +16,6 @@ logger = logging.getLogger(__name__)
 
 def main():
 
-    if 'AWS_PROFILE' in os.environ:
-        default_profile = os.environ['AWS_PROFILE']
-    else:
-        default_profile = 'default'
-
-    if 'AWS_DEFAULT_REGION' in os.environ:
-        default_region = os.environ['AWS_DEFAULT_REGION']
-    else:
-        default_region = 'eu-west-1'
-
     parser = argparse.ArgumentParser(description=__description__)
     parser.add_argument('-v', '--verbose', help='increase output verbosity',
                         action='store_true')
@@ -34,13 +24,13 @@ def main():
 
     # 'session' subcommand
     session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
-    session_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
-    session_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
+    session_parser.add_argument('-p', '--profile', help='AWS profile to use', default=None)
+    session_parser.add_argument('-r', '--region', help='AWS region to use', default=None)
     session_parser.add_argument('instance_name', help='Instance we wish to open session to')
 
     ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
-    ls_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
-    ls_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
+    ls_parser.add_argument('-p', '--profile', help='AWS profile to use', default=None)
+    ls_parser.add_argument('-r', '--region', help='AWS region to use', default=None)
 
     args = parser.parse_args()
 
@@ -68,8 +58,9 @@ def main():
 
     logging.basicConfig(level=log_level, stream=sys.stderr, format=log_format)
 
-    if not is_existing_profile(args.profile):
-        raise ValueError('Invalid profile provided: {}'.format(args.profile))
+    if args.profile is not None:
+        if not is_existing_profile(args.profile):
+            raise ValueError('Invalid profile provided: {}'.format(args.profile))
 
     if args.subcommand == 'session':
         session(instance_name=args.instance_name, region_name=args.region, profile_name=args.profile)
