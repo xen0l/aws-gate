@@ -66,12 +66,18 @@ def getinstanceidbyipaddress(name, ec2=None):
 
 
 def getinstanceidbytag(name, ec2=None):
-    instance_id = None
-    for instance in ec2.instances.all():
-        for tags in instance.tags:
-            if tags["Value"].lower() == name.lower():
-                instance_id = instance.instance_id
-    return instance_id
+    key, value = name.split(':')
+
+    filters = [{
+        'Name': 'tag:{}'.format(key),
+        'Values': [value]
+    }]
+
+    return _query_aws_api(filters=filters, ec2=ec2)
+
+
+def getinstanceidbyinstancename(name, ec2=None):
+    return getinstanceidbytag('Name:{}'.format(name), ec2=ec2)
 
 
 def query_instance(name, ec2=None):
@@ -88,6 +94,7 @@ def query_instance(name, ec2=None):
         'ip-address': getinstanceidbyipaddress,
         'private-ip-address': getinstanceidbyprivateipaddress,
         'tag': getinstanceidbytag,
+        'name': getinstanceidbyinstancename,
     }
 
     # If we are provided with instance ID directly, we don't need to contact EC2
@@ -105,7 +112,9 @@ def query_instance(name, ec2=None):
             identifier_type = 'dns-name'
         elif name.endswith('compute.internal'):
             identifier_type = 'private-dns-name'
-        else:
+        elif name.count(':') == 1:
             identifier_type = 'tag'
+        else:
+            identifier_type = 'name'
 
     return func_dispatcher[identifier_type](name=name, ec2=ec2)

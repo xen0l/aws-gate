@@ -35,4 +35,7 @@ class TestQuery(unittest.TestCase):
             query_instance('18.205.215.108')
 
     def test_query_instance_by_tag(self):
+        self.assertEqual(self.instance_id, query_instance('Name:dummy-instance', ec2=self.ec2))
+
+    def test_query_instance_by_name(self):
         self.assertEqual(self.instance_id, query_instance('dummy-instance', ec2=self.ec2))
