@@ -1,3 +1,4 @@
+import os
 import contextlib
 import logging
 import signal
@@ -14,6 +15,15 @@ def _create_aws_session(region_name=None, profile_name=None):
         kwargs['region_name'] = region_name
     if profile_name is not None:
         kwargs['profile_name'] = profile_name
+
+    # https://github.com/boto/boto3/issues/598
+    if 'AWS_ACCESS_KEY_ID' in os.environ:
+        kwargs['aws_access_key_id'] = os.environ['AWS_ACCESS_KEY_ID']
+    if 'AWS_SECRET_ACCESS_KEY' in os.environ:
+        kwargs['aws_secret_access_key'] = os.environ['AWS_SECRET_ACCESS_KEY']
+    if 'AWS_SESSION_TOKEN' in os.environ:
+        kwargs['aws_session_token'] = os.environ['AWS_SESSION_TOKEN']
+
     session = boto3.session.Session(**kwargs)
 
     return session
@@ -34,10 +44,16 @@ def get_aws_resource(service_name, region_name, profile_name=None):
 
 
 def is_existing_profile(profile_name):
-    session = _create_aws_session(region_name='eu-west-1')
+    session = _create_aws_session()
 
     logger.debug('Obtained configured AWS profiles: %s', ' '.join(session.available_profiles))
     return profile_name in session.available_profiles
+
+
+def get_default_region():
+    session = _create_aws_session()
+
+    return session.region_name
 
 
 @contextlib.contextmanager
