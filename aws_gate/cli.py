@@ -6,15 +6,26 @@ import argparse
 from aws_gate import __version__, __description__
 from aws_gate.session import session
 from aws_gate.list import list_instances
-from aws_gate.utils import is_existing_profile
+from aws_gate.utils import is_existing_profile, get_default_region
 
 DEBUG = 'GATE_DEBUG' in os.environ
 
+AWS_DEFAULT_REGION = 'eu-west-1'
 
 logger = logging.getLogger(__name__)
 
 
 def main():
+
+    # We want to provide default values in cases they are not configured in ~/.aws/config or availabe as
+    # environment variables
+    default_region = get_default_region()
+    if default_region is None:
+        default_region = AWS_DEFAULT_REGION
+
+    # We try to obtain default profile from the environment or use 'default' to save call to boto3.
+    # boto3 will also return 'default': https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
+    default_profile = os.environ.get('AWS_PROFILE') or 'default'
 
     parser = argparse.ArgumentParser(description=__description__)
     parser.add_argument('-v', '--verbose', help='increase output verbosity',
@@ -24,13 +35,13 @@ def main():
 
     # 'session' subcommand
     session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
-    session_parser.add_argument('-p', '--profile', help='AWS profile to use', default=None)
-    session_parser.add_argument('-r', '--region', help='AWS region to use', default=None)
+    session_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
+    session_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
     session_parser.add_argument('instance_name', help='Instance we wish to open session to')
 
     ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
-    ls_parser.add_argument('-p', '--profile', help='AWS profile to use', default=None)
-    ls_parser.add_argument('-r', '--region', help='AWS region to use', default=None)
+    ls_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
+    ls_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
 
     args = parser.parse_args()
 
