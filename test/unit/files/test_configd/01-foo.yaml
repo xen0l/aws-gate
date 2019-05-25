@@ -1,0 +1,8 @@
+hosts:
+  - alias: foo
+    name: foo
+    profile: test-profile
+    region: eu-west-1
+defaults:
+  profile: default-profile
+  region: eu-west-1
