@@ -1,3 +1,12 @@
+0.3.0 (2019-05-26)
+
+
+* Add support for aws-vault (portions contributed by [@danmx](https://github.com/danmx))
+* Option to query by name
+* Improve performance of queries by tag
+* Add configuration file support
+
+
 0.2.0 (2019-01-12)
 ------------------
 
