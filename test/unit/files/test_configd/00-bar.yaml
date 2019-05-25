@@ -1,4 +1,5 @@
 hosts:
-  - name: bar
+  - alias: bar
+    name: bar
     profile: test-profile
     region: eu-west-1

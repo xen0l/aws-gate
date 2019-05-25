@@ -96,6 +96,8 @@ def main():
     profile = _get_profile(args=args, config=config, default=default_profile)
     region = _get_region(args=args, config=config, default=default_region)
 
+#    breakpoint()
+
     if args.subcommand == 'session':
         session(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
     if args.subcommand in ['ls', 'list']:

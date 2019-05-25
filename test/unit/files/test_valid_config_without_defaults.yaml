@@ -1,4 +1,5 @@
 hosts:
-  - name: foobar
+  - alias: foobar
+    name: foobar
     profile: test-profile
     region: eu-west-1

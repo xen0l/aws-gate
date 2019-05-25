@@ -9,6 +9,13 @@ from aws_gate.session import Session, session
 class TestSession(unittest.TestCase):
 
     def setUp(self):
+        mock_attrs = {
+            'get_host.return_value': {}
+        }
+
+        self.config = MagicMock()
+        self.empty_config = MagicMock()
+        self.empty_config.configure_mock(**mock_attrs)
         self.ssm = MagicMock()
         self.instance_id = 'i-0c32153096cd68a6d'
 
@@ -61,7 +68,7 @@ class TestSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=self.instance_id), \
                 patch('aws_gate.session.Session', return_value=MagicMock()) as session_mock:
-            session(config=None, instance_name=self.instance_id)
+            session(config=self.config, instance_name=self.instance_id)
             self.assertTrue(session_mock.called)
 
     def test_session_exception_invalid_profile(self):
@@ -69,18 +76,25 @@ class TestSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None):
             with self.assertRaises(ValueError):
-                session(config=None, profile_name='invalid-profile', instance_name=self.instance_id)
+                session(config=self.config, profile_name='invalid-profile', instance_name=self.instance_id)
 
     def test_session_exception_invalid_region(self):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None):
             with self.assertRaises(ValueError):
-                session(config=None, region_name='invalid-region', instance_name=self.instance_id)
+                session(config=self.config, region_name='invalid-region', instance_name=self.instance_id)
 
     def test_session_exception_unknown_instance_id(self):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None):
             with self.assertRaises(ValueError):
-                session(config=None, instance_name=self.instance_id)
+                session(config=self.config, instance_name=self.instance_id)
+
+    def test_session_without_config(self):
+        with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
+                patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
+                patch('aws_gate.session.query_instance', return_value=None):
+            with self.assertRaises(ValueError):
+                session(config=self.empty_config, instance_name=self.instance_id)

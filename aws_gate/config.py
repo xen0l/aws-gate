@@ -15,7 +15,7 @@ DEFAULT_GATE_CONFIGD_PATH = os.path.join(DEFAULT_GATE_DIR, 'config.d')
 logger = logging.getLogger(__name__)
 
 
-class EmptyConfigurationeError(Exception):
+class EmptyConfigurationError(Exception):
     pass
 
 
@@ -51,6 +51,7 @@ class DefaultsSchema(Schema):
 
 
 class HostSchema(Schema):
+    alias = fields.String(required=True)
     name = fields.String(required=True)
     profile = fields.String(required=True, validate=validate_profile)
     region = fields.String(required=True, validate=validate_region)
@@ -101,6 +102,12 @@ class GateConfig:
             return self._defaults['profile']
         return None
 
+    def get_host(self, name):
+        host = [host for host in self._hosts if host['alias'] == name]
+        if host:
+            return host[0]
+        return {}
+
 
 def _locate_config_files():
     config_files = []
@@ -110,9 +117,11 @@ def _locate_config_files():
         for f in configd_files:
             file_path = os.path.join(DEFAULT_GATE_CONFIGD_PATH, f)
             if os.path.isfile(file_path):
+                logger.debug('Located config file: %s', file_path)
                 config_files.append(file_path)
 
     if os.path.isfile(DEFAULT_GATE_CONFIG_PATH):
+        logger.debug('Located config file: %s', DEFAULT_GATE_CONFIG_PATH)
         config_files.append(DEFAULT_GATE_CONFIG_PATH)
 
     return config_files
@@ -154,8 +163,8 @@ def load_config_from_files(config_files=None):
                 data = {}
             _merge_data(data, config_data)
 
-    if not config_data:
-        raise EmptyConfigurationeError('Empty configuration data')
+        if not config_data:
+            raise EmptyConfigurationError('Empty configuration data')
 
     config = GateConfigSchema(strict=True).load(config_data).data
     return config
