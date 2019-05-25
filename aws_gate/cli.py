@@ -10,13 +10,48 @@ from aws_gate import __version__, __description__
 from aws_gate.config import load_config_from_files
 from aws_gate.session import session
 from aws_gate.list import list_instances
-from aws_gate.utils import is_existing_profile, get_default_region
+from aws_gate.utils import get_default_region
 
 DEBUG = 'GATE_DEBUG' in os.environ
 
 AWS_DEFAULT_REGION = 'eu-west-1'
 
 logger = logging.getLogger(__name__)
+
+
+def _get_profile(args, config, default):
+    return args.profile or config.default_profile or default
+
+
+def _get_region(args, config, default):
+    return args.region or config.default_region or default
+
+
+def parse_arguments():
+
+    parser = argparse.ArgumentParser(description=__description__)
+    parser.add_argument('-v', '--verbose', help='increase output verbosity',
+                        action='store_true')
+    parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
+    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{session, list}')
+
+    # 'session' subcommand
+    session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
+    session_parser.add_argument('-p', '--profile', help='AWS profile to use')
+    session_parser.add_argument('-r', '--region', help='AWS region to use')
+    session_parser.add_argument('instance_name', help='Instance we wish to open session to')
+
+    ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
+    ls_parser.add_argument('-p', '--profile', help='AWS profile to use')
+    ls_parser.add_argument('-r', '--region', help='AWS region to use')
+
+    args = parser.parse_args()
+
+    if not args.subcommand:
+        parser.print_help()
+        sys.exit(0)
+
+    return args
 
 
 def main():
@@ -31,27 +66,7 @@ def main():
     # boto3 will also return 'default': https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
     default_profile = os.environ.get('AWS_PROFILE') or 'default'
 
-    parser = argparse.ArgumentParser(description=__description__)
-    parser.add_argument('-v', '--verbose', help='increase output verbosity',
-                        action='store_true')
-    parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
-    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{session, list}')
-
-    # 'session' subcommand
-    session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
-    session_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
-    session_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
-    session_parser.add_argument('instance_name', help='Instance we wish to open session to')
-
-    ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
-    ls_parser.add_argument('-p', '--profile', help='AWS profile to use', default=default_profile)
-    ls_parser.add_argument('-r', '--region', help='AWS region to use', default=default_region)
-
-    args = parser.parse_args()
-
-    if not args.subcommand:
-        parser.print_help()
-        sys.exit(0)
+    args = parse_arguments()
 
     if not DEBUG:
         sys.excepthook = lambda exc_type, exc_value, traceback: logger.error(exc_value)
@@ -73,16 +88,16 @@ def main():
 
     logging.basicConfig(level=log_level, stream=sys.stderr, format=log_format)
 
-    if args.profile is not None:
-        if not is_existing_profile(args.profile):
-            raise ValueError('Invalid profile provided: {}'.format(args.profile))
     try:
         config = load_config_from_files()
     except (ValidationError, ScannerError) as e:
         raise ValueError('Invalid configuration provided: {}'.format(e.message))
 
+    profile = _get_profile(args=args, config=config, default=default_profile)
+    region = _get_region(args=args, config=config, default=default_region)
+
     if args.subcommand == 'session':
-        session(config=config, instance_name=args.instance_name, region_name=args.region, profile_name=args.profile)
+        session(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
     if args.subcommand in ['ls', 'list']:
         list_instances(region_name=args.region, profile_name=args.profile)
 

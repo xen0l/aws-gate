@@ -89,6 +89,18 @@ class GateConfig:
     def defaults(self):
         return self._defaults
 
+    @property
+    def default_region(self):
+        if 'region' in self._defaults:
+            return self._defaults['region']
+        return None
+
+    @property
+    def default_profile(self):
+        if 'profile' in self._defaults:
+            return self._defaults['profile']
+        return None
+
 
 def _locate_config_files():
     config_files = []

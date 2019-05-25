@@ -56,6 +56,8 @@ class TestConfig(unittest.TestCase):
 
             self.assertEqual(config.defaults, expected_config['defaults'])
             self.assertEqual(config.hosts, expected_config['hosts'])
+            self.assertEqual(config.default_profile, expected_config['defaults']['profile'])
+            self.assertEqual(config.default_region, expected_config['defaults']['region'])
 
     def test_valid_config_without_hosts(self):
         expected_config = {
@@ -70,10 +72,18 @@ class TestConfig(unittest.TestCase):
 
             self.assertEqual(config.defaults, expected_config['defaults'])
             self.assertEqual(config.hosts, [])
+            self.assertEqual(config.default_profile, expected_config['defaults']['profile'])
+            self.assertEqual(config.default_region, expected_config['defaults']['region'])
 
     def test_valid_config_without_defaults(self):
         with self.assertRaises(ValidationError):
             self._load_config_files(config_files=self._locate_test_file())
+
+        with patch('aws_gate.config.is_existing_profile', return_value=True):
+            config = self._load_config_files(config_files=self._locate_test_file())
+
+            self.assertEqual(config.default_profile, None)
+            self.assertEqual(config.default_region, None)
 
     def test_configd(self):
         expected_config = {
