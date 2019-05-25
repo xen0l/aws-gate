@@ -67,7 +67,8 @@ class TestSession(unittest.TestCase):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=self.instance_id), \
-                patch('aws_gate.session.Session', return_value=MagicMock()) as session_mock:
+                patch('aws_gate.session.Session', return_value=MagicMock()) as session_mock, \
+                patch('aws_gate.session.is_existing_profile', return_value=True):
             session(config=self.config, instance_name=self.instance_id)
             self.assertTrue(session_mock.called)
 
