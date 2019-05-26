@@ -62,7 +62,6 @@ def session(config, instance_name, profile_name='default', region_name='eu-west-
         raise ValueError('Invalid region provided: {}'.format(profile_name))
 
     config_data = config.get_host(instance_name)
-#    breakpoint()
     if config_data and config_data['name'] and config_data['profile'] and config_data['region']:
         region = config_data['region']
         profile = config_data['profile']
