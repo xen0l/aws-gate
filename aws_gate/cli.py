@@ -43,7 +43,8 @@ def parse_arguments():
     subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{bootstrap, session, list}')
 
     # 'bootstrap' subcommand
-    subparsers.add_parser('bootstrap', help='Download and install session-manager-plugin')
+    bootstrap_parser = subparsers.add_parser('bootstrap', help='Download and install session-manager-plugin')
+    bootstrap_parser.add_argument('-f', '--force', action='store_true', help='Forces bootstrap operation')
 
     # 'session' subcommand
     session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
@@ -108,7 +109,7 @@ def main():
     region = _get_region(args=args, config=config, default=default_region)
 
     if args.subcommand == 'bootstrap':
-        bootstrap()
+        bootstrap(force=args.force)
     if args.subcommand == 'session':
         session(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
     if args.subcommand in ['ls', 'list']:
