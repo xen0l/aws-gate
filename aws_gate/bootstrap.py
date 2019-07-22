@@ -21,13 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 def _execute(path, args):
-
     ret = None
     try:
-        logger.debug('Executing "{}"'.format(' '.join([path] + args)))
+        logger.debug('Executing "%s"', ' '.join([path] + args))
         result = subprocess.run([path] + args, stdout=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
-        logger.error('Command "{}" exited with {}'.format(' '.join([path] + args), e.returncode))
+        logger.error('Command "%s" exited with %s', ' '.join([path] + args), e.returncode)
 
     if result.stdout:
         ret = result.stdout.decode()
@@ -36,13 +35,17 @@ def _execute(path, args):
     return ret
 
 
+def _check_plugin_version(path=PLUGIN_INSTALL_PATH):
+    return _execute(path, ['--version'])
+
+
 class Plugin():
     url = None
     download_path = None
 
     @property
     def is_installed(self):
-        logger.debug('Checking if {} exists and is executable'.format(PLUGIN_INSTALL_PATH))
+        logger.debug('Checking if %s exists and is executable', PLUGIN_INSTALL_PATH)
         return shutil.which(PLUGIN_INSTALL_PATH) is None
 
     def download(self):
@@ -60,15 +63,24 @@ class Plugin():
         except requests.exceptions.HTTPError as e:
             logger.error('HTTP error while downloading %s: %s', self.url, e)
 
-    def install(self):
+    def extract(self):
         raise NotImplementedError
 
-    def extract(self):
+    def install(self):
         raise NotImplementedError
 
 
 class MacPlugin(Plugin):
     url = MAC_PLUGIN_URL
+
+    def extract(self):
+        if not zipfile.is_zipfile(self.download_path):
+            raise ValueError('Invalid macOS session-manager-plugin ZIP file found {}'.format(self.download_path))
+
+        with zipfile.ZipFile(self.download_path, 'r') as zip_file:
+            download_dir = os.path.split(self.download_path)[0]
+            logger.debug('Extracting session-manager-plugin archive at %s', download_dir)
+            zip_file.extractall(download_dir)
 
     def install(self):
         download_dir = os.path.split(self.download_path)[0]
@@ -86,20 +98,11 @@ class MacPlugin(Plugin):
         logger.debug('Setting execution permissions on %s', plugin_dst_path)
         os.chmod(plugin_dst_path, 0o755)
 
-        version = _execute(PLUGIN_INSTALL_PATH, ['--version'])
+        version = _check_plugin_version(PLUGIN_INSTALL_PATH)
         print('{} (version {}) installed successfully!'.format(PLUGIN_NAME, version))
 
-    def extract(self):
-        if not zipfile.is_zipfile(self.download_path):
-            raise ValueError('Invalid macOS session-manager-plugin ZIP file found {}'.format(self.download_path))
 
-        with zipfile.ZipFile(self.download_path, 'r') as zip_file:
-            download_dir = os.path.split(self.download_path)[0]
-            zip_file.extractall(download_dir)
-            logger.debug('Extracted session-manager-plugin archive at %s', download_dir)
-
-
-def bootstrap(force):
+def bootstrap(force=False):
     system = platform.system()
     if system == 'Darwin':
         plugin = MacPlugin()
