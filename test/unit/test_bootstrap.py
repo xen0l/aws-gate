@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock, call, mock_open
 
 from aws_gate.exceptions import UnsupportedPlatormError
 from aws_gate.bootstrap import DEFAULT_GATE_BIN_DIR, PLUGIN_INSTALL_PATH, Plugin, MacPlugin, bootstrap
@@ -48,6 +48,7 @@ class TestBootstrap(unittest.TestCase):
     def test_mac_plugin_install_non_existent_bin_dir(self):
         plugin = MacPlugin()
         with patch('aws_gate.bootstrap.os') as os_mock, \
+                patch('builtins.open', mock_open(read_data='data')), \
                 patch('aws_gate.bootstrap.os.path.exists', return_value=False), \
                 patch('aws_gate.bootstrap.shutil') as shutil_mock, \
                 patch('aws_gate.bootstrap._check_plugin_version', return_value='1.1.23.0'):
