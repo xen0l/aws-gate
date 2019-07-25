@@ -39,7 +39,7 @@ def _check_plugin_version(path=PLUGIN_INSTALL_PATH):
     return _execute(path, ['--version'])
 
 
-class Plugin():
+class Plugin:
     url = None
     download_path = None
 
