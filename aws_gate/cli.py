@@ -8,6 +8,7 @@ from yaml.scanner import ScannerError
 
 from aws_gate import __version__, __description__
 from aws_gate.config import load_config_from_files
+from aws_gate.bootstrap import bootstrap
 from aws_gate.session import session
 from aws_gate.list import list_instances
 from aws_gate.utils import get_default_region
@@ -20,11 +21,17 @@ logger = logging.getLogger(__name__)
 
 
 def _get_profile(args, config, default):
-    return args.profile or config.default_profile or default
+    profile = None
+    if 'profile' in args:
+        profile = args.profile
+    return profile or config.default_profile or default
 
 
 def _get_region(args, config, default):
-    return args.region or config.default_region or default
+    region = None
+    if 'region' in args:
+        region = args.region
+    return region or config.default_region or default
 
 
 def parse_arguments():
@@ -33,7 +40,11 @@ def parse_arguments():
     parser.add_argument('-v', '--verbose', help='increase output verbosity',
                         action='store_true')
     parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
-    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{session, list}')
+    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand', metavar='{bootstrap, session, list}')
+
+    # 'bootstrap' subcommand
+    bootstrap_parser = subparsers.add_parser('bootstrap', help='Download and install session-manager-plugin')
+    bootstrap_parser.add_argument('-f', '--force', action='store_true', help='Forces bootstrap operation')
 
     # 'session' subcommand
     session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
@@ -41,6 +52,7 @@ def parse_arguments():
     session_parser.add_argument('-r', '--region', help='AWS region to use')
     session_parser.add_argument('instance_name', help='Instance we wish to open session to')
 
+    # 'list' subcommand
     ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
     ls_parser.add_argument('-p', '--profile', help='AWS profile to use')
     ls_parser.add_argument('-r', '--region', help='AWS region to use')
@@ -96,8 +108,8 @@ def main():
     profile = _get_profile(args=args, config=config, default=default_profile)
     region = _get_region(args=args, config=config, default=default_region)
 
-#    breakpoint()
-
+    if args.subcommand == 'bootstrap':
+        bootstrap(force=args.force)
     if args.subcommand == 'session':
         session(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
     if args.subcommand in ['ls', 'list']:

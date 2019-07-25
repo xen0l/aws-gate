@@ -8,3 +8,7 @@ class InstanceNotFound(Error):
 
 class AWSConnectionError(Error):
     pass
+
+
+class UnsupportedPlatormError(Error):
+    pass
