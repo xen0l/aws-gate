@@ -20,6 +20,13 @@ def _is_valid_ip(ip):
 def _query_aws_api(filters, ec2=None):
     ret = None
 
+    # We are always interested only in running EC2 instances as we cannot
+    # open a session to terminated EC2 instance.
+    filters = filters + [{
+        'Name': 'instance-state-name',
+        'Values': ['running']
+    }]
+
     try:
         ec2_instances = list(ec2.instances.filter(Filters=filters))
         logger.debug('Found %s maching instances', len(ec2_instances))
