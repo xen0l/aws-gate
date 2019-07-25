@@ -3,7 +3,7 @@
 
 
 * Add **bootstrap**, which downloads session-manager-plugin on macOS
-
+* aws-gate now queries only for running instances
 
 0.3.0 (2019-05-26)
 ------------------
