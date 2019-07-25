@@ -1,5 +1,12 @@
-0.3.0 (2019-05-26)
+0.4.0 (unreleased)
+------------------
 
+
+* Add **bootstrap**, which downloads session-manager-plugin on macOS
+
+
+0.3.0 (2019-05-26)
+------------------
 
 * Add support for aws-vault (portions contributed by [@danmx](https://github.com/danmx))
 * Option to query by name
