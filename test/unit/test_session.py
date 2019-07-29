@@ -5,6 +5,17 @@ from unittest.mock import patch, MagicMock
 
 from aws_gate.session import Session, session
 
+from functools import wraps
+
+
+def mock_decorator(*args, **kwargs):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 
 class TestSession(unittest.TestCase):
 
@@ -23,6 +34,7 @@ class TestSession(unittest.TestCase):
             'SessionId': 'session-020bf6cd31f912b53',
             'TokenValue': 'randomtokenvalue'
         }
+        patch('aws_gate.session.plugin_required', mock_decorator).start()
 
     def test_create_session(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response):
@@ -68,8 +80,7 @@ class TestSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=self.instance_id), \
                 patch('aws_gate.session.Session', return_value=MagicMock()) as session_mock, \
-                patch('aws_gate.session.is_existing_profile', return_value=True), \
-                patch('aws_gate.session.plugin_required', return_value=lambda x: x):
+                patch('aws_gate.session.is_existing_profile', return_value=True):
             session(config=self.config, instance_name=self.instance_id)
             self.assertTrue(session_mock.called)
 
