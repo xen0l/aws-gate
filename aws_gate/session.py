@@ -4,6 +4,7 @@ import logging
 import subprocess
 
 from aws_gate.query import query_instance
+from aws_gate.decorators import plugin_version, plugin_required
 from aws_gate.utils import get_aws_client, get_aws_resource, deferred_signals, is_existing_profile, is_existing_region
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,8 @@ class Session:
                     raise ValueError('session-manager-plugin cannot be found')
 
 
+@plugin_required
+@plugin_version('1.1.23.0')
 def session(config, instance_name, profile_name='default', region_name='eu-west-1'):
     if not is_existing_profile(profile_name):
         raise ValueError('Invalid profile provided: {}'.format(profile_name))

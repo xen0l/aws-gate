@@ -2,7 +2,8 @@ import unittest
 from unittest.mock import patch, MagicMock, call, mock_open
 
 from aws_gate.exceptions import UnsupportedPlatormError
-from aws_gate.bootstrap import DEFAULT_GATE_BIN_DIR, PLUGIN_INSTALL_PATH, Plugin, MacPlugin, bootstrap
+from aws_gate.config import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH
+from aws_gate.bootstrap import Plugin, MacPlugin, bootstrap
 
 
 class TestBootstrap(unittest.TestCase):
@@ -55,7 +56,7 @@ class TestBootstrap(unittest.TestCase):
             plugin.install()
 
             self.assertTrue(os_mock.mkdir.called)
-            self.assertEqual(os_mock.mkdir.call_args, call(DEFAULT_GATE_BIN_DIR))
+            self.assertEqual(os_mock.mkdir.call_args, call(DEFAULT_GATE_BIN_PATH))
             self.assertTrue(shutil_mock.copyfileobj.called)
             self.assertTrue(os_mock.chmod.called)
 

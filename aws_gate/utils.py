@@ -2,8 +2,10 @@ import os
 import contextlib
 import logging
 import signal
+import subprocess
 
 import boto3
+
 
 logger = logging.getLogger(__name__)
 
@@ -83,3 +85,18 @@ def deferred_signals(signal_list=None):
             signal_name = signal.Signals(deferred_signal).name
             logger.debug('Restoring signal: %s', signal_name)
             signal.signal(deferred_signal, signal.SIG_DFL)
+
+
+def execute(path, args, capture_output=True):
+    ret = None
+    try:
+        logger.debug('Executing "%s"', ' '.join([path] + args))
+        result = subprocess.run([path] + args, capture_output=capture_output)
+    except subprocess.CalledProcessError as e:
+        logger.error('Command "%s" exited with %s', ' '.join([path] + args), e.returncode)
+
+    if result.stdout:
+        ret = result.stdout.decode()
+        ret = ret.rstrip()
+
+    return ret
