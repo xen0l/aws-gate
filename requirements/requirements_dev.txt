@@ -5,4 +5,4 @@ pytest-cov==2.6.0
 pytest-flake8==1.0.2
 pytest-pylint==0.12.3
 pytest==3.10.1
-zest.releaser==6.15.2
+zest.releaser==6.19.0
