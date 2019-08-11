@@ -1,9 +1,9 @@
 0.4.0 (unreleased)
 ------------------
 
-
 * Add **bootstrap**, which downloads session-manager-plugin on macOS
 * aws-gate now queries only for running instances
+* aws-gate functions using session-manager-plugin are now safeguarded by plugin_required and plugin_version decorators
 
 0.3.0 (2019-05-26)
 ------------------
