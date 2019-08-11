@@ -7,7 +7,7 @@ from aws_gate.decorators import plugin_required, plugin_version
 
 class TestDecorators(unittest.TestCase):
     def test_plugin_required(self):
-        with patch('aws_gate.decorators.os.path.exists', return_value=True):
+        with patch('aws_gate.decorators._plugin_exists', return_value=True):
             @plugin_required
             def test_function():
                 return 'executed'
@@ -15,12 +15,12 @@ class TestDecorators(unittest.TestCase):
             self.assertEqual(test_function(), 'executed')
 
     def test_plugin_required_plugin_not_installed(self):
-        with patch('aws_gate.decorators.os.path.exists', return_value=False):
+        with patch('aws_gate.decorators._plugin_exists', return_value=False):
             @plugin_required
             def test_function():
                 return 'executed'
 
-            with self.assertRaises(ValueError):
+            with self.assertRaises(OSError):
                 test_function()
 
     def test_plugin_version(self):

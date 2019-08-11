@@ -5,11 +5,15 @@ from aws_gate.utils import execute
 from aws_gate.config import PLUGIN_INSTALL_PATH
 
 
+def _plugin_exists(plugin_path):
+    return os.path.exists(plugin_path)
+
+
 def plugin_required(wrapped_function):
     @functools.wraps(wrapped_function)
     def _wrapper(*args, **kwargs):
-        if not os.path.exists(PLUGIN_INSTALL_PATH):
-            raise ValueError('session-manager-plugin not found')
+        if not _plugin_exists(PLUGIN_INSTALL_PATH):
+            raise OSError('session-manager-plugin not found')
 
         result = wrapped_function(*args, **kwargs)
         return result
