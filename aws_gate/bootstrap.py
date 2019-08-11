@@ -4,15 +4,12 @@ import tempfile
 import shutil
 import zipfile
 import platform
-import subprocess
 import requests
 
+from aws_gate.config import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH, PLUGIN_NAME
 from aws_gate.exceptions import UnsupportedPlatormError
-from aws_gate.config import DEFAULT_GATE_DIR
+from aws_gate.utils import execute
 
-DEFAULT_GATE_BIN_DIR = os.path.join(DEFAULT_GATE_DIR, 'bin')
-PLUGIN_NAME = 'session-manager-plugin'
-PLUGIN_INSTALL_PATH = os.path.join(DEFAULT_GATE_BIN_DIR, PLUGIN_NAME)
 
 MAC_PLUGIN_URL = 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip'
 
@@ -20,23 +17,8 @@ MAC_PLUGIN_URL = 'https://s3.amazonaws.com/session-manager-downloads/plugin/late
 logger = logging.getLogger(__name__)
 
 
-def _execute(path, args):
-    ret = None
-    try:
-        logger.debug('Executing "%s"', ' '.join([path] + args))
-        result = subprocess.run([path] + args, stdout=subprocess.PIPE)
-    except subprocess.CalledProcessError as e:
-        logger.error('Command "%s" exited with %s', ' '.join([path] + args), e.returncode)
-
-    if result.stdout:
-        ret = result.stdout.decode()
-        ret = ret.rstrip()
-
-    return ret
-
-
 def _check_plugin_version(path=PLUGIN_INSTALL_PATH):
-    return _execute(path, ['--version'])
+    return execute(path, ['--version'])
 
 
 class Plugin:
@@ -87,9 +69,9 @@ class MacPlugin(Plugin):
         plugin_src_path = os.path.join(download_dir, 'sessionmanager-bundle', 'bin', PLUGIN_NAME)
         plugin_dst_path = PLUGIN_INSTALL_PATH
 
-        if not os.path.exists(DEFAULT_GATE_BIN_DIR):
-            logger.debug('Creating %s', DEFAULT_GATE_BIN_DIR)
-            os.mkdir(DEFAULT_GATE_BIN_DIR)
+        if not os.path.exists(DEFAULT_GATE_BIN_PATH):
+            logger.debug('Creating %s', DEFAULT_GATE_BIN_PATH)
+            os.mkdir(DEFAULT_GATE_BIN_PATH)
 
         with open(plugin_src_path, 'rb') as f_src, open(plugin_dst_path, 'wb') as f_dst:
             logger.debug('Copying %s to %s', plugin_src_path, plugin_dst_path)

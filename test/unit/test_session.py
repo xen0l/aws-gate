@@ -3,7 +3,9 @@ import os
 import unittest
 from unittest.mock import patch, MagicMock
 
-from aws_gate.session import Session, session
+
+# pylint: disable=wrong-import-position
+from aws_gate.session import Session, session # noqa
 
 
 class TestSession(unittest.TestCase):
@@ -23,6 +25,9 @@ class TestSession(unittest.TestCase):
             'SessionId': 'session-020bf6cd31f912b53',
             'TokenValue': 'randomtokenvalue'
         }
+
+#        patch('aws_gate.decorators._plugin_exists', return_value=True).start()
+#        patch('aws_gate.decorators.execute', return_value='1.1.23.0').start()
 
     def test_create_session(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response):
@@ -68,34 +73,44 @@ class TestSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=self.instance_id), \
                 patch('aws_gate.session.Session', return_value=MagicMock()) as session_mock, \
-                patch('aws_gate.session.is_existing_profile', return_value=True):
+                patch('aws_gate.session.is_existing_profile', return_value=True), \
+                patch('aws_gate.decorators._plugin_exists', return_value=True), \
+                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
             session(config=self.config, instance_name=self.instance_id)
             self.assertTrue(session_mock.called)
 
     def test_session_exception_invalid_profile(self):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.session.query_instance', return_value=None):
+                patch('aws_gate.session.query_instance', return_value=None), \
+                patch('aws_gate.decorators._plugin_exists', return_value=True), \
+                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.config, profile_name='invalid-profile', instance_name=self.instance_id)
 
     def test_session_exception_invalid_region(self):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.session.query_instance', return_value=None):
+                patch('aws_gate.session.query_instance', return_value=None), \
+                patch('aws_gate.decorators._plugin_exists', return_value=True), \
+                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.config, region_name='invalid-region', instance_name=self.instance_id)
 
     def test_session_exception_unknown_instance_id(self):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.session.query_instance', return_value=None):
+                patch('aws_gate.session.query_instance', return_value=None), \
+                patch('aws_gate.decorators._plugin_exists', return_value=True), \
+                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.config, instance_name=self.instance_id)
 
     def test_session_without_config(self):
         with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.session.query_instance', return_value=None):
+                patch('aws_gate.session.query_instance', return_value=None), \
+                patch('aws_gate.decorators._plugin_exists', return_value=True), \
+                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.empty_config, instance_name=self.instance_id)
