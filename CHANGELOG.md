@@ -1,4 +1,10 @@
-0.4.0 (unreleased)
+0.4.1 (2019-08-12)
+------------------
+
+
+* Homebrew package is now available
+
+0.4.0 (2019-08-11)
 ------------------
 
 * Add **bootstrap**, which downloads session-manager-plugin on macOS

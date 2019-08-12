@@ -29,6 +29,13 @@ These instructions will get you a copy of the project up and running on your loc
 pip install aws-gate
 ```
 
+or via Homebrew
+
+```
+brew tap xen0l/homebrew-taps
+brew install aws-gate
+```
+
 ### Features
 
 #### config and config.d support
