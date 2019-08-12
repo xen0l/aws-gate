@@ -1,4 +1,5 @@
 recursive-include main_directory *
 recursive-include docs *
+recursive-include requirements *
 include *
 global-exclude *.pyc
