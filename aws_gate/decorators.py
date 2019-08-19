@@ -1,8 +1,8 @@
 import os
 import functools
 
+from aws_gate.constants import PLUGIN_INSTALL_PATH
 from aws_gate.utils import execute
-from aws_gate.config import PLUGIN_INSTALL_PATH
 
 
 def _plugin_exists(plugin_path):

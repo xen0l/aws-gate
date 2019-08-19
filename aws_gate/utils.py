@@ -6,6 +6,8 @@ import subprocess
 
 import boto3
 
+from aws_gate.constants import DEFAULT_GATE_BIN_PATH
+
 logger = logging.getLogger(__name__)
 
 # This list is maintained by hand as new regions are not added that often. This should be removed once, we find a
@@ -89,7 +91,7 @@ def deferred_signals(signal_list=None):
 def execute(cmd, args, **kwargs):
     ret, result = None, None
 
-    env = os.path.join(os.path.expanduser('~/.aws-gate'), 'bin') + os.pathsep + os.environ['PATH']
+    env = DEFAULT_GATE_BIN_PATH + os.pathsep + os.environ['PATH']
 
     try:
         logger.debug('Executing "%s"', ' '.join([cmd] + args))

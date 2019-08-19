@@ -4,8 +4,8 @@ import unittest
 from unittest.mock import patch
 from marshmallow import ValidationError
 
-from aws_gate.config import GateConfig, EmptyConfigurationError, load_config_from_files, _locate_config_files, \
-    DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
+from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
+from aws_gate.config import GateConfig, EmptyConfigurationError, load_config_from_files, _locate_config_files
 
 
 class TestConfig(unittest.TestCase):

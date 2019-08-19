@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock, call, mock_open
 
+from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH
 from aws_gate.exceptions import UnsupportedPlatormError
-from aws_gate.config import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH
 from aws_gate.bootstrap import Plugin, MacPlugin, bootstrap
 
 

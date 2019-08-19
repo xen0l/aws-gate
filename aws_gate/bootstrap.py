@@ -6,12 +6,9 @@ import zipfile
 import platform
 import requests
 
-from aws_gate.config import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH, PLUGIN_NAME
+from aws_gate.constants import MAC_PLUGIN_URL, DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH, PLUGIN_NAME
 from aws_gate.exceptions import UnsupportedPlatormError
 from aws_gate.utils import execute
-
-
-MAC_PLUGIN_URL = 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip'
 
 
 logger = logging.getLogger(__name__)
