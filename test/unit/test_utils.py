@@ -57,11 +57,11 @@ class TestUtils(unittest.TestCase):
         self.assertFalse(is_existing_region(region_name='unknown-region-1'))
 
     @given(text(), lists(text()))
-    def test_execute(self, path, args):
+    def test_execute(self, cmd, args):
         mock_output = MagicMock(stdout=b'output')
 
         with patch('aws_gate.utils.subprocess.run', return_value=mock_output):
-            self.assertEqual(execute(path, args), 'output')
+            self.assertEqual(execute(cmd, args), 'output')
 
     def test_execute_exception(self):
         with patch('aws_gate.utils.subprocess.run',

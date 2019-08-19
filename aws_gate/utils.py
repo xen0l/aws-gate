@@ -6,7 +6,6 @@ import subprocess
 
 import boto3
 
-
 logger = logging.getLogger(__name__)
 
 # This list is maintained by hand as new regions are not added that often. This should be removed once, we find a
@@ -87,13 +86,16 @@ def deferred_signals(signal_list=None):
             signal.signal(deferred_signal, signal.SIG_DFL)
 
 
-def execute(path, args, **kwargs):
+def execute(cmd, args, **kwargs):
     ret, result = None, None
+
+    env = os.path.join(os.path.expanduser('~/.aws-gate'), 'bin') + os.pathsep + os.environ['PATH']
+
     try:
-        logger.debug('Executing "%s"', ' '.join([path] + args))
-        result = subprocess.run([path] + args, check=True, **kwargs)
+        logger.debug('Executing "%s"', ' '.join([cmd] + args))
+        result = subprocess.run([cmd] + args, env={'PATH': env}, check=True, **kwargs)
     except subprocess.CalledProcessError as e:
-        logger.error('Command "%s" exited with %s', ' '.join([path] + args), e.returncode)
+        logger.error('Command "%s" exited with %s', ' '.join([cmd] + args), e.returncode)
 
     if result and result.stdout:
         ret = result.stdout.decode()

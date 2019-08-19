@@ -26,9 +26,6 @@ class TestSession(unittest.TestCase):
             'TokenValue': 'randomtokenvalue'
         }
 
-#        patch('aws_gate.decorators._plugin_exists', return_value=True).start()
-#        patch('aws_gate.decorators.execute', return_value='1.1.23.0').start()
-
     def test_create_session(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response):
             sess = Session(instance_id=self.instance_id, ssm=self.ssm)
@@ -46,14 +43,16 @@ class TestSession(unittest.TestCase):
             self.assertTrue(self.ssm.terminate_session.called)
 
     def test_open_session(self):
-        with patch('aws_gate.session.subprocess.check_call', return_value=True) as m:
+        mock_output = MagicMock(stdout=b'output')
+
+        with patch('aws_gate.session.execute', return_value=mock_output) as m:
             sess = Session(instance_id=self.instance_id, ssm=self.ssm)
             sess.open()
 
             self.assertTrue(m.called)
 
     def test_open_session_exception(self):
-        with patch('aws_gate.session.subprocess.check_call',
+        with patch('aws_gate.session.execute',
                    side_effect=OSError(errno.ENOENT, os.strerror(errno.ENOENT))):
             with self.assertRaises(ValueError):
                 sess = Session(instance_id=self.instance_id, ssm=self.ssm)
