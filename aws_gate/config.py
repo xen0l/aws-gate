@@ -10,6 +10,9 @@ from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PA
 from aws_gate.utils import is_existing_profile, is_existing_region
 
 
+DEFAULT_GATE_KEY_PATH = os.path.join(DEFAULT_GATE_DIR, 'key')
+
+
 logger = logging.getLogger(__name__)
 
 
