@@ -87,15 +87,15 @@ def deferred_signals(signal_list=None):
             signal.signal(deferred_signal, signal.SIG_DFL)
 
 
-def execute(path, args, capture_output=True):
-    ret = None
+def execute(path, args, **kwargs):
+    ret, result = None, None
     try:
         logger.debug('Executing "%s"', ' '.join([path] + args))
-        result = subprocess.run([path] + args, capture_output=capture_output)
+        result = subprocess.run([path] + args, check=True, **kwargs)
     except subprocess.CalledProcessError as e:
         logger.error('Command "%s" exited with %s', ' '.join([path] + args), e.returncode)
 
-    if result.stdout:
+    if result and result.stdout:
         ret = result.stdout.decode()
         ret = ret.rstrip()
 
