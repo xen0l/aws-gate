@@ -1,6 +1,10 @@
-0.4.1 (2019-08-12)
+0.4.2 (unreleased)
 ------------------
 
+* Use default region and profile in list command
+
+0.4.1 (2019-08-12)
+------------------
 
 * Homebrew package is now available
 

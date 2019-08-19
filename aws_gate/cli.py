@@ -113,7 +113,7 @@ def main():
     if args.subcommand == 'session':
         session(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
     if args.subcommand in ['ls', 'list']:
-        list_instances(region_name=args.region, profile_name=args.profile)
+        list_instances(region_name=region, profile_name=profile)
 
 
 if __name__ == '__main__':
