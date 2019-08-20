@@ -1,4 +1,4 @@
-0.4.2 (unreleased)
+0.4.2 (2019-08-21)
 ------------------
 
 * Use default region and profile in list command
