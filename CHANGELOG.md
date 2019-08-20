@@ -2,6 +2,7 @@
 ------------------
 
 * Use default region and profile in list command
+* Always use own version of session-manager-plugin if available
 
 0.4.1 (2019-08-12)
 ------------------
