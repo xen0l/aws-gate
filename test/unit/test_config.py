@@ -5,7 +5,8 @@ from unittest.mock import patch
 from marshmallow import ValidationError
 
 from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
-from aws_gate.config import GateConfig, EmptyConfigurationError, load_config_from_files, _locate_config_files
+from aws_gate.config import GateConfig, EmptyConfigurationError, load_config_from_files, _locate_config_files, \
+    validate_profile, validate_region
 
 
 class TestConfig(unittest.TestCase):
@@ -129,3 +130,13 @@ class TestConfig(unittest.TestCase):
 
             self.assertEqual(config.get_host('foobar'), expected_host)
             self.assertEqual(config.get_host('non-existent'), {})
+
+    def test_validate_profile(self):
+        with patch('aws_gate.config.is_existing_profile', return_value=False):
+            with self.assertRaises(ValidationError):
+                validate_profile('test-profile')
+
+    def test_validate_region(self):
+        with patch('aws_gate.config.is_existing_region', return_value=False):
+            with self.assertRaises(ValidationError):
+                validate_region('test-region')

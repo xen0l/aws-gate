@@ -1,5 +1,6 @@
+import argparse
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, create_autospec
 
 from marshmallow import ValidationError
 
@@ -22,11 +23,11 @@ class TestCli(unittest.TestCase):
                                       default=self._default_profile), 'args_profile')
 
     def test_get_profile_from_config(self):
-        self.assertEqual(_get_profile(args=MagicMock(), config=self._config,
+        self.assertEqual(_get_profile(args=create_autospec(argparse.Namespace), config=self._config,
                                       default=self._default_profile), 'config_profile')
 
     def test_get_profile_from_default(self):
-        self.assertEqual(_get_profile(args=MagicMock(), config=MagicMock(),
+        self.assertEqual(_get_profile(args=create_autospec(argparse.Namespace), config=MagicMock(default_profile=None),
                                       default=self._default_profile), 'default_profile')
 
     def test_get_region_from_args(self):
@@ -34,11 +35,11 @@ class TestCli(unittest.TestCase):
                                      default=self._default_region), 'args_region')
 
     def test_get_region_from_config(self):
-        self.assertEqual(_get_region(args=MagicMock(), config=self._config,
+        self.assertEqual(_get_region(args=create_autospec(argparse.Namespace), config=self._config,
                                      default=self._default_region), 'config_region')
 
     def test_get_region_from_default(self):
-        self.assertEqual(_get_region(args=MagicMock(), config=MagicMock(),
+        self.assertEqual(_get_region(args=create_autospec(argparse.Namespace), config=MagicMock(default_region=None),
                                      default=self._default_region), 'default_region')
 
     def test_cli_invalid_config(self):
