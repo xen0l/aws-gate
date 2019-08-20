@@ -6,6 +6,7 @@ import subprocess
 
 import boto3
 
+from aws_gate.constants import DEFAULT_GATE_BIN_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -87,15 +88,18 @@ def deferred_signals(signal_list=None):
             signal.signal(deferred_signal, signal.SIG_DFL)
 
 
-def execute(path, args, capture_output=True):
-    ret = None
-    try:
-        logger.debug('Executing "%s"', ' '.join([path] + args))
-        result = subprocess.run([path] + args, capture_output=capture_output)
-    except subprocess.CalledProcessError as e:
-        logger.error('Command "%s" exited with %s', ' '.join([path] + args), e.returncode)
+def execute(cmd, args, **kwargs):
+    ret, result = None, None
 
-    if result.stdout:
+    env = DEFAULT_GATE_BIN_PATH + os.pathsep + os.environ['PATH']
+
+    try:
+        logger.debug('Executing "%s"', ' '.join([cmd] + args))
+        result = subprocess.run([cmd] + args, env={'PATH': env}, check=True, **kwargs)
+    except subprocess.CalledProcessError as e:
+        logger.error('Command "%s" exited with %s', ' '.join([cmd] + args), e.returncode)
+
+    if result and result.stdout:
         ret = result.stdout.decode()
         ret = ret.rstrip()
 

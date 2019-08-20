@@ -6,15 +6,9 @@ from yaml.constructor import ConstructorError
 from yaml.parser import ParserError
 from marshmallow import Schema, fields, post_load, ValidationError, validates_schema
 
+from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
 from aws_gate.utils import is_existing_profile, is_existing_region
 
-DEFAULT_GATE_DIR = os.path.expanduser('~/.aws-gate')
-DEFAULT_GATE_CONFIG_PATH = os.path.join(DEFAULT_GATE_DIR, 'config')
-DEFAULT_GATE_CONFIGD_PATH = os.path.join(DEFAULT_GATE_DIR, 'config.d')
-
-PLUGIN_NAME = 'session-manager-plugin'
-DEFAULT_GATE_BIN_PATH = os.path.join(DEFAULT_GATE_DIR, 'bin')
-PLUGIN_INSTALL_PATH = os.path.join(DEFAULT_GATE_BIN_PATH, PLUGIN_NAME)
 
 logger = logging.getLogger(__name__)
 
