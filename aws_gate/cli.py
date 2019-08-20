@@ -22,14 +22,14 @@ logger = logging.getLogger(__name__)
 
 def _get_profile(args, config, default):
     profile = None
-    if 'profile' in args:
+    if 'profile' in args and args.profile:
         profile = args.profile
     return profile or config.default_profile or default
 
 
 def _get_region(args, config, default):
     region = None
-    if 'region' in args:
+    if 'region' in args and args.region:
         region = args.region
     return region or config.default_region or default
 
@@ -103,7 +103,7 @@ def main():
     try:
         config = load_config_from_files()
     except (ValidationError, ScannerError) as e:
-        raise ValueError('Invalid configuration provided: {}'.format(e.message))
+        raise ValueError('Invalid configuration provided: {}'.format(e))
 
     profile = _get_profile(args=args, config=config, default=default_profile)
     region = _get_region(args=args, config=config, default=default_region)
