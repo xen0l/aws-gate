@@ -5,7 +5,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, ed25519
 
-from aws_gate.config import DEFAULT_GATE_KEY_PATH
+from aws_gate.constants import DEFAULT_GATE_KEY_PATH
 
 
 logger = logging.getLogger(__name__)

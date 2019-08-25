@@ -5,7 +5,7 @@ from hypothesis import given, example
 from hypothesis.strategies import text, integers, sampled_from
 
 from aws_gate.ssh_common import GateKey, SUPPORTED_KEY_TYPES, KEY_MIN_SIZE
-from aws_gate.config import DEFAULT_GATE_KEY_PATH
+from aws_gate.constants import DEFAULT_GATE_KEY_PATH
 
 
 class TestSSHCommon(unittest.TestCase):
