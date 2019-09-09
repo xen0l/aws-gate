@@ -105,7 +105,7 @@ def main():
 
     if DEBUG:
         log_level = logging.DEBUG
-        log_format = '%(asctime)s - %(name)-16s - %(levelname)-5s - %(message)s'
+        log_format = '%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s'
 
     logging.basicConfig(level=log_level, stream=sys.stderr, format=log_format)
 

@@ -1,8 +1,11 @@
 import os
 import functools
+import logging
 
 from aws_gate.constants import PLUGIN_INSTALL_PATH
 from aws_gate.utils import execute
+
+logger = logging.getLogger(__name__)
 
 
 def _plugin_exists(plugin_path):
@@ -25,6 +28,7 @@ def plugin_version(required_version):
         @functools.wraps(wrapped_function)
         def _wrapper(*args, **kwargs):
             version = execute(PLUGIN_INSTALL_PATH, ['--version'], capture_output=True)
+            logger.debug('session-manager-plugin version: {} (required version: {})'.format(version, required_version))
 
             if version and int(version.replace('.', '')) < int(required_version.replace('.', '')):
                 raise ValueError('Invalid plugin version: {}'.format(version))
