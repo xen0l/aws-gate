@@ -87,7 +87,8 @@ class TestSSHSession(unittest.TestCase):
 
         with patch.object(self.ssm, 'start_session', return_value=self.response), \
                 patch.object(self.ssm, 'terminate_session', return_value=self.response), \
-                patch('aws_gate.ssh.execute', return_value=mock_output):
+                patch('aws_gate.ssh.execute', return_value=mock_output), \
+                patch('aws_gate.ssh.DEBUG', return_value=True):
             with SSHSession(instance_id=self.instance_id, ssm=self.ssm) as ssh_session:
 
                 ssh_session.open()
