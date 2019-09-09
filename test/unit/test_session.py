@@ -1,5 +1,3 @@
-import errno
-import os
 import unittest
 from unittest.mock import patch, MagicMock
 
@@ -45,18 +43,11 @@ class TestSSMSession(unittest.TestCase):
     def test_open_ssm_session(self):
         mock_output = MagicMock(stdout=b'output')
 
-        with patch('aws_gate.session.execute', return_value=mock_output) as m:
+        with patch('aws_gate.session.execute_plugin', return_value=mock_output) as m:
             sess = SSMSession(instance_id=self.instance_id, ssm=self.ssm)
             sess.open()
 
             self.assertTrue(m.called)
-
-    def test_open_ssm_session_exception(self):
-        with patch('aws_gate.session.execute',
-                   side_effect=OSError(errno.ENOENT, os.strerror(errno.ENOENT))):
-            with self.assertRaises(ValueError):
-                sess = SSMSession(instance_id=self.instance_id, ssm=self.ssm)
-                sess.open()
 
     def test_ssm_session_context_manager(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response) as sm, \

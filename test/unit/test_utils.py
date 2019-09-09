@@ -1,3 +1,5 @@
+import errno
+import os
 import subprocess
 import unittest
 from unittest.mock import patch, MagicMock, call
@@ -63,9 +65,15 @@ class TestUtils(unittest.TestCase):
         with patch('aws_gate.utils.subprocess.run', return_value=mock_output):
             self.assertEqual(execute(cmd, args), 'output')
 
-    def test_execute_exception(self):
+    def test_execute_command_exited_with_nonzero_rc(self):
         with patch('aws_gate.utils.subprocess.run',
                    side_effect=subprocess.CalledProcessError(returncode=1, cmd='error')) as mock:
             execute('/usr/bin/ls', ['-l'])
 
             self.assertTrue(mock.called)
+
+    def test_execute_command_not_found(self):
+        with patch('aws_gate.utils.subprocess.run',
+                   side_effect=OSError(errno.ENOENT, os.strerror(errno.ENOENT))):
+            with self.assertRaises(ValueError):
+                execute('/usr/bin/ls', ['-l'])

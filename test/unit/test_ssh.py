@@ -1,5 +1,3 @@
-import errno
-import os
 import json
 import unittest
 from unittest.mock import patch, MagicMock
@@ -66,13 +64,6 @@ class TestSSHSession(unittest.TestCase):
 
             self.assertTrue(m.called)
 
-    def test_open_ssh_session_exception(self):
-        with patch('aws_gate.ssh.execute',
-                   side_effect=OSError(errno.ENOENT, os.strerror(errno.ENOENT))):
-            with self.assertRaises(ValueError):
-                sess = SSHSession(instance_id=self.instance_id, ssm=self.ssm)
-                sess.open()
-
     def test_ssh_session_context_manager(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response) as sm, \
                 patch.object(self.ssm, 'terminate_session', return_value=self.response) as tm:
@@ -108,8 +99,8 @@ class TestSSHSession(unittest.TestCase):
 
         with patch.object(self.ssm, 'start_session', return_value=self.response), \
                 patch.object(self.ssm, 'terminate_session', return_value=self.response), \
-                patch('aws_gate.ssh.execute', return_value=mock_output), \
-                patch('aws_gate.ssh.DEBUG', return_value=True):
+                patch('aws_gate.ssh.DEBUG', return_value=True), \
+                patch('aws_gate.ssh.execute', return_value=mock_output):
             with SSHSession(instance_id=self.instance_id, ssm=self.ssm) as ssh_session:
 
                 ssh_session.open()

@@ -1,3 +1,4 @@
+import errno
 import os
 import contextlib
 import logging
@@ -6,7 +7,7 @@ import subprocess
 
 import boto3
 
-from aws_gate.constants import DEFAULT_GATE_BIN_PATH
+from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -98,9 +99,17 @@ def execute(cmd, args, **kwargs):
         result = subprocess.run([cmd] + args, env={'PATH': env}, check=True, **kwargs)
     except subprocess.CalledProcessError as e:
         logger.error('Command "%s" exited with %s', ' '.join([cmd] + args), e.returncode)
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            raise ValueError('{} cannot be found'.format(PLUGIN_NAME))
 
     if result and result.stdout:
         ret = result.stdout.decode()
         ret = ret.rstrip()
 
     return ret
+
+
+def execute_plugin(args):
+    with deferred_signals():
+        return execute(PLUGIN_NAME, args)
