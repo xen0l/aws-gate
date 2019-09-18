@@ -99,7 +99,7 @@ aws-gate session Name:SSM-test
 
 * name (uses tag identifier under the hood)
 ```
-aws-gate session SSM-tes
+aws-gate session SSM-test
 ```
 
 ## Debugging mode
