@@ -1,3 +1,13 @@
+0.4.4 (unreleased)
+------------------
+
+
+0.4.3 (2019-09-26)
+------------------
+
+* Fix problem with uncaptured command output
+* bootstrap not working when ~/.aws-gate is missing
+
 0.4.2 (2019-08-21)
 ------------------
 
