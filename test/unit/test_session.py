@@ -65,7 +65,7 @@ class TestSSMSession(unittest.TestCase):
                 patch('aws_gate.session.SSMSession', return_value=MagicMock()) as session_mock, \
                 patch('aws_gate.session.is_existing_profile', return_value=True), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             session(config=self.config, instance_name=self.instance_id)
             self.assertTrue(session_mock.called)
 
@@ -74,7 +74,7 @@ class TestSSMSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.config, profile_name='invalid-profile', instance_name=self.instance_id)
 
@@ -83,7 +83,7 @@ class TestSSMSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.config, region_name='invalid-region', instance_name=self.instance_id)
 
@@ -92,7 +92,7 @@ class TestSSMSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.config, instance_name=self.instance_id)
 
@@ -101,6 +101,6 @@ class TestSSMSession(unittest.TestCase):
                 patch('aws_gate.session.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.session.query_instance', return_value=None), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 session(config=self.empty_config, instance_name=self.instance_id)

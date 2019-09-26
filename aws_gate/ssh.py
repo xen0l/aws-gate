@@ -1,4 +1,3 @@
-import errno
 import logging
 import json
 
@@ -13,31 +12,45 @@ logger = logging.getLogger(__name__)
 
 
 class SSHSession(BaseSession):
-    def __init__(self, instance_id, region_name='eu-west-1', ssm=None, ssh_key=None, port='22', user='ec2-user'):
+    def __init__(self, instance_id, region_name='eu-west-1', profile_name='default', ssm=None, ssh_key=None, port='22',
+                 user='ec2-user'):
         self._instance_id = instance_id
         self._region_name = region_name
+        self._profile_name = profile_name
         self._ssm = ssm
         self._ssh_key = ssh_key
         self._port = port
         self._user = user
 
+        self._parameters = {
+            'Target': self._instance_id,
+            'DocumentName': 'AWS-StartSSHSession',
+            'Parameters': {
+                'portNumber': [str(self._port)]
+            }
+        }
         self._ssh_cmd = None
 
     def _build_ssh_command(self):
 
-        cmd = ['ssh', '-l', self._user, '-p', self._port, '-F', '/dev/null']
+        import shlex
+
+        def quote_args(args):
+            return [shlex.quote(arg) for arg in args]
+
+        cmd = ['ssh', '-l', self._user, '-p', str(self._port), '-F', '/dev/null']
 
         if DEBUG:
             cmd.append('-vv')
         else:
             cmd.append('-q')
 
+        import shlex
         cmd.append('-o')
-        cmd.append('ProxyCommand="{}"'.format(' '.join([PLUGIN_INSTALL_PATH,
-                                                        json.dumps(self._response),
-                                                        self._region_name,
-                                                        'StartSession'])
-                                              ))
+        args = ' '.join([shlex.quote(json.dumps(self._response)),
+                         self._region_name, 'StartSession', self._profile_name,
+                         shlex.quote(json.dumps(self._parameters)), self._ssm.meta.endpoint_url])
+        cmd.append('ProxyCommand="{} {}"'.format(PLUGIN_INSTALL_PATH, args))
         cmd.append(self._instance_id)
 
         return cmd
@@ -45,11 +58,7 @@ class SSHSession(BaseSession):
     def open(self):
         self._ssh_cmd = self._build_ssh_command()
 
-        try:
-            execute(self._ssh_cmd[0], self._ssh_cmd)
-        except OSError as ex:
-            if ex.errno == errno.ENOENT:
-                raise ValueError('{} cannot be found'.format(self._ssh_cmd[0]))
+        execute(self._ssh_cmd[0], self._ssh_cmd[1:])
 
     @property
     def ssh_cmd(self):
@@ -85,5 +94,6 @@ def ssh(config, instance_name, user='ec2-user', port=22, key_type='rsa', key_siz
 
     logger.info('Opening SSH session on instance %s (%s) via profile %s', instance_id, region_name, profile_name)
     with GateKey(key_type=key_type, key_size=key_size) as ssh_key:
-        with SSHSession(instance_id=instance_name, user=user, port=port, ssm=ssm, ssh_key=ssh_key) as ssh_session:
+        with SSHSession(instance_id=instance_name, profile_name=profile, user=user, port=port, ssm=ssm,
+                        ssh_key=ssh_key) as ssh_session:
             ssh_session.open()

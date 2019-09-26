@@ -8,7 +8,7 @@ from hypothesis import given
 from hypothesis.strategies import lists, text
 
 from aws_gate.utils import is_existing_profile, _create_aws_session, get_aws_client, get_aws_resource, \
-    AWS_REGIONS, is_existing_region, execute
+    AWS_REGIONS, is_existing_region, execute, execute_plugin
 
 
 # pylint: disable=too-few-public-methods
@@ -77,3 +77,23 @@ class TestUtils(unittest.TestCase):
                    side_effect=OSError(errno.ENOENT, os.strerror(errno.ENOENT))):
             with self.assertRaises(ValueError):
                 execute('/usr/bin/ls', ['-l'])
+
+    @given(lists(text()))
+    def test_execute_plugin(self, args):
+        mock_output = MagicMock(stdout=b'output')
+
+        with patch('aws_gate.utils.subprocess.run', return_value=mock_output):
+            self.assertEqual(execute_plugin(args), 'output')
+
+    def test_execute_plugin_args(self):
+        mock_output = MagicMock(stdout=b'output')
+
+        with patch('aws_gate.utils.subprocess.run', return_value=mock_output) as m:
+            cmd = 'ls'
+            args = ['-l']
+
+            execute(cmd, args, capture_output=True)
+
+            self.assertTrue(m.called)
+#            self.assertIn(capture_output=True, )
+#            m.assert_called_with(cmd, args, capture_output=True)

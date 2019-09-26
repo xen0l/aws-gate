@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def _check_plugin_version(path=PLUGIN_INSTALL_PATH):
-    return execute(path, ['--version'])
+    return execute(path, ['--version'], capture_output=True)
 
 
 class Plugin:

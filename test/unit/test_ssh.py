@@ -124,7 +124,7 @@ class TestSSHSession(unittest.TestCase):
                 patch('aws_gate.ssh.SSHSession', return_value=MagicMock()) as session_mock, \
                 patch('aws_gate.ssh.is_existing_profile', return_value=True), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             ssh(config=self.config, instance_name=self.instance_id)
             self.assertTrue(session_mock.called)
 
@@ -134,7 +134,7 @@ class TestSSHSession(unittest.TestCase):
                 patch('aws_gate.ssh.query_instance', return_value=None), \
                 patch('aws_gate.ssh.GateKey', return_value=self.ssh_key), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 ssh(config=self.config, profile_name='invalid-profile', instance_name=self.instance_id)
 
@@ -144,7 +144,7 @@ class TestSSHSession(unittest.TestCase):
                 patch('aws_gate.ssh.query_instance', return_value=None), \
                 patch('aws_gate.ssh.GateKey', return_value=self.ssh_key), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 ssh(config=self.config, region_name='invalid-region', instance_name=self.instance_id)
 
@@ -154,7 +154,7 @@ class TestSSHSession(unittest.TestCase):
                 patch('aws_gate.ssh.query_instance', return_value=None), \
                 patch('aws_gate.ssh.GateKey', return_value=self.ssh_key), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 ssh(config=self.config, instance_name=self.instance_id)
 
@@ -164,6 +164,6 @@ class TestSSHSession(unittest.TestCase):
                 patch('aws_gate.ssh.query_instance', return_value=None), \
                 patch('aws_gate.ssh.GateKey', return_value=self.ssh_key), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute', return_value='1.1.23.0'):
+                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
             with self.assertRaises(ValueError):
                 ssh(config=self.empty_config, instance_name=self.instance_id)
