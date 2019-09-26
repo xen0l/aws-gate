@@ -24,7 +24,7 @@ def plugin_version(required_version):
     def _outer_wrapper(wrapped_function):
         @functools.wraps(wrapped_function)
         def _wrapper(*args, **kwargs):
-            version = execute(PLUGIN_INSTALL_PATH, ['--version'])
+            version = execute(PLUGIN_INSTALL_PATH, ['--version'], capture_output=True)
 
             if version and int(version.replace('.', '')) < int(required_version.replace('.', '')):
                 raise ValueError('Invalid plugin version: {}'.format(version))
