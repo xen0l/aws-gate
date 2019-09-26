@@ -55,8 +55,8 @@ class TestBootstrap(unittest.TestCase):
                 patch('aws_gate.bootstrap._check_plugin_version', return_value='1.1.23.0'):
             plugin.install()
 
-            self.assertTrue(os_mock.mkdir.called)
-            self.assertEqual(os_mock.mkdir.call_args, call(DEFAULT_GATE_BIN_PATH))
+            self.assertTrue(os_mock.makedirs.called)
+            self.assertEqual(os_mock.makedirs.call_args, call(DEFAULT_GATE_BIN_PATH))
             self.assertTrue(shutil_mock.copyfileobj.called)
             self.assertTrue(os_mock.chmod.called)
 

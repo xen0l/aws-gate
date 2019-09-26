@@ -68,7 +68,7 @@ class MacPlugin(Plugin):
 
         if not os.path.exists(DEFAULT_GATE_BIN_PATH):
             logger.debug('Creating %s', DEFAULT_GATE_BIN_PATH)
-            os.mkdir(DEFAULT_GATE_BIN_PATH)
+            os.makedirs(DEFAULT_GATE_BIN_PATH)
 
         with open(plugin_src_path, 'rb') as f_src, open(plugin_dst_path, 'wb') as f_dst:
             logger.debug('Copying %s to %s', plugin_src_path, plugin_dst_path)
