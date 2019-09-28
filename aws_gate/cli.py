@@ -11,7 +11,6 @@ from aws_gate.config import load_config_from_files
 from aws_gate.constants import SUPPORTED_KEY_TYPES, DEBUG, AWS_DEFAULT_REGION
 from aws_gate.bootstrap import bootstrap
 from aws_gate.session import session
-from aws_gate.ssh import ssh
 from aws_gate.ssh_proxy import ssh_proxy
 from aws_gate.list import list_instances
 from aws_gate.utils import get_default_region
@@ -51,16 +50,6 @@ def parse_arguments():
     session_parser.add_argument('-p', '--profile', help='AWS profile to use')
     session_parser.add_argument('-r', '--region', help='AWS region to use')
     session_parser.add_argument('instance_name', help='Instance we wish to open session to')
-
-    # 'ssh' subcommand
-    ssh_parser = subparsers.add_parser('ssh', help='Open new SSH session on instance and connect to it')
-    ssh_parser.add_argument('-p', '--profile', help='AWS profile to use')
-    ssh_parser.add_argument('-r', '--region', help='AWS region to use')
-    ssh_parser.add_argument('-l', '--os-user', type=str, default='ec2-user')
-    ssh_parser.add_argument('-P', '--port', type=int, default=22)
-    ssh_parser.add_argument('--key-type', type=str, default='rsa', choices=SUPPORTED_KEY_TYPES, help=argparse.SUPPRESS)
-    ssh_parser.add_argument('--key-size', type=int, default=2048, help=argparse.SUPPRESS)
-    ssh_parser.add_argument('instance_name', help='Instance we wish to open session to')
 
     # 'ssh-proxy' subcommand
     ssh_proxy_parser = subparsers.add_parser('ssh-proxy', help='Open new SSH proxy session to instance')
@@ -135,11 +124,9 @@ def main():
         bootstrap(force=args.force)
     if args.subcommand == 'session':
         session(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
-    if args.subcommand == 'ssh':
-        ssh(config=config, instance_name=args.instance_name, user=args.os_user,
-            port=args.port, key_type=args.key_type, key_size=args.key_size)
     if args.subcommand == 'ssh-proxy':
-        ssh_proxy(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
+        ssh_proxy(config=config, instance_name=args.instance_name, user=args.os_user,
+                  port=args.port, key_type=args.key_type, key_size=args.key_size)
     if args.subcommand in ['ls', 'list']:
         list_instances(region_name=region, profile_name=profile)
 
