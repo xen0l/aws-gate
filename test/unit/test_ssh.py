@@ -56,7 +56,7 @@ class TestSSHSession(unittest.TestCase):
             self.assertTrue(self.ssm.terminate_session.called)
 
     def test_open_ssh_session(self):
-        mock_output = MagicMock(stdout=b'output')
+        mock_output = MagicMock(stdout='output')
 
         with patch('aws_gate.ssh.execute', return_value=mock_output) as m:
             sess = SSHSession(instance_id=self.instance_id, ssm=self.ssm)
@@ -74,11 +74,9 @@ class TestSSHSession(unittest.TestCase):
             self.assertTrue(tm.called)
 
     def test_ssh_session_generated_command(self):
-        mock_output = MagicMock(stdout=b'output')
-
         with patch.object(self.ssm, 'start_session', return_value=self.response), \
                 patch.object(self.ssm, 'terminate_session', return_value=self.response), \
-                patch('aws_gate.ssh.execute', return_value=mock_output):
+                patch('aws_gate.ssh.execute', return_value='output'):
             with SSHSession(instance_id=self.instance_id, ssm=self.ssm) as ssh_session:
 
                 ssh_session.open()
@@ -95,12 +93,10 @@ class TestSSHSession(unittest.TestCase):
             self.assertEqual(ssh_session.ssh_cmd, expected_cmd)
 
     def test_ssh_session_generated_command_debug(self):
-        mock_output = MagicMock(stdout=b'output')
-
         with patch.object(self.ssm, 'start_session', return_value=self.response), \
                 patch.object(self.ssm, 'terminate_session', return_value=self.response), \
                 patch('aws_gate.ssh.DEBUG', return_value=True), \
-                patch('aws_gate.ssh.execute', return_value=mock_output):
+                patch('aws_gate.ssh.execute', return_value='output'):
             with SSHSession(instance_id=self.instance_id, ssm=self.ssm) as ssh_session:
 
                 ssh_session.open()

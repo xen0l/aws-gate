@@ -16,6 +16,10 @@ class SSMSession(BaseSession):
         self._region_name = region_name
         self._ssm = ssm
 
+        self._session_parameters = {
+            'Target': self._instance_id
+        }
+
     def open(self):
         execute_plugin([json.dumps(self._response), self._region_name, 'StartSession'])
 

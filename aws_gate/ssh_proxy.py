@@ -3,6 +3,7 @@ import logging
 
 from aws_gate.decorators import plugin_version, plugin_required
 from aws_gate.session_common import BaseSession
+from aws_gate.ssh_common import GateKey
 from aws_gate.query import query_instance
 from aws_gate.utils import get_aws_client, get_aws_resource, is_existing_profile, is_existing_region, \
     execute_plugin
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class SSHProxySession(BaseSession):
-    def __init__(self, instance_id, region_name='eu-west-1', profile_name='default', ssm=None, port='22',
+    def __init__(self, instance_id, region_name='eu-west-1', profile_name='', ssm=None, port='22',
                  user='ec2-user'):
         self._instance_id = instance_id
         self._region_name = region_name
@@ -20,7 +21,7 @@ class SSHProxySession(BaseSession):
         self._port = port
         self._user = user
 
-        self._parameters = {
+        self._session_parameters = {
             'Target': self._instance_id,
             'DocumentName': 'AWS-StartSSHSession',
             'Parameters': {
@@ -29,13 +30,18 @@ class SSHProxySession(BaseSession):
         }
 
     def open(self):
-        execute_plugin([json.dumps(self._response), self._region_name, 'StartSession', self._profile_name,
-                        json.dumps(self._parameters), self._ssm.meta.endpoint_url])
+        execute_plugin([json.dumps(self._response),
+                        self._region_name,
+                        'StartSession',
+                        self._profile_name,
+                        json.dumps(self._session_parameters),
+                        self._ssm.meta.endpoint_url])
 
 
 @plugin_required
 @plugin_version('1.1.23.0')
-def ssh_proxy(config, instance_name, profile_name='default', region_name='eu-west-1'):
+def ssh_proxy(config, instance_name, user='ec2-user', port=22, key_type='rsa', key_size=2048,
+              profile_name='default', region_name='eu-west-1'):
     if not is_existing_profile(profile_name):
         raise ValueError('Invalid profile provided: {}'.format(profile_name))
 
@@ -60,5 +66,7 @@ def ssh_proxy(config, instance_name, profile_name='default', region_name='eu-wes
         raise ValueError('No instance could be found for name: {}'.format(instance))
 
     logger.info('Opening session on instance %s (%s) via profile %s', instance_id, region_name, profile_name)
-    with SSHProxySession(instance_id, region_name=region_name, profile_name=profile, ssm=ssm) as sess:
-        sess.open()
+    with GateKey(key_type=key_type, key_size=key_size):
+        with SSHProxySession(instance_id, region_name=region_name, profile_name=profile, ssm=ssm, port=port,
+                             user=user) as ssh_proxy_session:
+            ssh_proxy_session.open()

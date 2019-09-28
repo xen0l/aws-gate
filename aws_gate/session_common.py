@@ -8,6 +8,8 @@ class BaseSession:
     _session_id = None
     _token_value = None
 
+    _session_parameters = {}
+
     def __enter__(self):
         # create and establish session
         self.create()
@@ -19,7 +21,7 @@ class BaseSession:
 
     def create(self):
         logger.debug('Creating a new session on instance: %s (%s)', self._instance_id, self._region_name)
-        self._response = self._ssm.start_session(Target=self._instance_id)
+        self._response = self._ssm.start_session(**self._session_parameters)
         logger.debug('Received response: %s', self._response)
 
         self._session_id, self._token_value = self._response['SessionId'], self._response['TokenValue']

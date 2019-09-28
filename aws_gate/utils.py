@@ -73,7 +73,7 @@ def get_default_region():
 @contextlib.contextmanager
 def deferred_signals(signal_list=None):
     if signal_list is None:
-        signal_list = [signal.SIGHUP, signal.SIGINT, signal.SIGTSTP]
+        signal_list = [signal.SIGHUP, signal.SIGINT, signal.SIGTERM]
 
     for deferred_signal in signal_list:
         signal_name = signal.Signals(deferred_signal).name
@@ -110,6 +110,6 @@ def execute(cmd, args, **kwargs):
     return ret
 
 
-def execute_plugin(args):
+def execute_plugin(args, **kwargs):
     with deferred_signals():
-        return execute(PLUGIN_NAME, args, capture_output=True)
+        return execute(PLUGIN_NAME, args, **kwargs)

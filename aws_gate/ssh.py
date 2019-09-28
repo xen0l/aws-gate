@@ -1,7 +1,7 @@
 import logging
 import json
 
-from aws_gate.constants import PLUGIN_INSTALL_PATH, DEBUG
+from aws_gate.constants import PLUGIN_INSTALL_PATH, DEBUG, PLUGIN_NAME
 from aws_gate.ssh_common import GateKey
 from aws_gate.query import query_instance
 from aws_gate.decorators import plugin_version, plugin_required
@@ -22,22 +22,17 @@ class SSHSession(BaseSession):
         self._port = port
         self._user = user
 
-        self._parameters = {
+        self._ssh_cmd = None
+
+        self._session_parameters = {
             'Target': self._instance_id,
             'DocumentName': 'AWS-StartSSHSession',
             'Parameters': {
                 'portNumber': [str(self._port)]
             }
         }
-        self._ssh_cmd = None
 
     def _build_ssh_command(self):
-
-        import shlex
-
-        def quote_args(args):
-            return [shlex.quote(arg) for arg in args]
-
         cmd = ['ssh', '-l', self._user, '-p', str(self._port), '-F', '/dev/null']
 
         if DEBUG:
@@ -45,12 +40,17 @@ class SSHSession(BaseSession):
         else:
             cmd.append('-q')
 
-        import shlex
         cmd.append('-o')
-        args = ' '.join([shlex.quote(json.dumps(self._response)),
-                         self._region_name, 'StartSession', self._profile_name,
-                         shlex.quote(json.dumps(self._parameters)), self._ssm.meta.endpoint_url])
-        cmd.append('ProxyCommand="{} {}"'.format(PLUGIN_INSTALL_PATH, args))
+
+#        cmd.append('ProxyCommand=sh -c "{} {} {}"'.format('aws-gate', 'ssh-proxy', self._instance_id))
+        cmd.append('ProxyCommand="{} {} {} {} {} {} {}"'.format(PLUGIN_INSTALL_PATH,
+                                                                json.dumps(self._response),
+                                                                self._region_name,
+                                                                'StartSession',
+                                                                self._profile_name,
+                                                                json.dumps(self._session_parameters),
+                                                                self._ssm.meta.endpoint_url))
+
         cmd.append(self._instance_id)
 
         return cmd

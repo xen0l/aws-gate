@@ -41,9 +41,7 @@ class TestSSMSession(unittest.TestCase):
             self.assertTrue(self.ssm.terminate_session.called)
 
     def test_open_ssm_session(self):
-        mock_output = MagicMock(stdout=b'output')
-
-        with patch('aws_gate.session.execute_plugin', return_value=mock_output) as m:
+        with patch('aws_gate.session.execute_plugin', return_value='output') as m:
             sess = SSMSession(instance_id=self.instance_id, ssm=self.ssm)
             sess.open()
 

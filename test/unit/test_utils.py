@@ -78,22 +78,14 @@ class TestUtils(unittest.TestCase):
             with self.assertRaises(ValueError):
                 execute('/usr/bin/ls', ['-l'])
 
-    @given(lists(text()))
-    def test_execute_plugin(self, args):
-        mock_output = MagicMock(stdout=b'output')
-
-        with patch('aws_gate.utils.subprocess.run', return_value=mock_output):
-            self.assertEqual(execute_plugin(args), 'output')
+    def test_execute_plugin(self):
+        with patch('aws_gate.utils.execute', return_value='output'):
+            output = execute_plugin(['--version'], capture_output=True)
+            self.assertEqual(output, 'output')
 
     def test_execute_plugin_args(self):
-        mock_output = MagicMock(stdout=b'output')
-
-        with patch('aws_gate.utils.subprocess.run', return_value=mock_output) as m:
-            cmd = 'ls'
-            args = ['-l']
-
-            execute(cmd, args, capture_output=True)
+        with patch('aws_gate.utils.execute', return_value='output') as m:
+            execute_plugin(['--version'], capture_output=True)
 
             self.assertTrue(m.called)
-#            self.assertIn(capture_output=True, )
-#            m.assert_called_with(cmd, args, capture_output=True)
+            self.assertIn('[\'--version\'], capture_output=True', str(m.call_args))

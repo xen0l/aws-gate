@@ -27,7 +27,7 @@ def plugin_version(required_version):
     def _outer_wrapper(wrapped_function):
         @functools.wraps(wrapped_function)
         def _wrapper(*args, **kwargs):
-            version = execute_plugin(['--version'])
+            version = execute_plugin(['--version'], capture_output=True)
             logger.debug('session-manager-plugin version: %s (required version: %s)', version, required_version)
 
             if version and int(version.replace('.', '')) < int(required_version.replace('.', '')):

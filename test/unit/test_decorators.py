@@ -31,12 +31,13 @@ class TestDecorators(unittest.TestCase):
                 test_function()
 
     def test_plugin_version(self):
-        with patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
+        with patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0') as m:
             @plugin_version('1.1.23.0')
             def test_function():
                 return 'executed'
 
             self.assertEqual(test_function(), 'executed')
+            self.assertEqual(m.call_args, call(['--version'], capture_output=True))
 
     def test_plugin_version_bad_version(self):
         with patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
