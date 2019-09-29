@@ -67,7 +67,7 @@ class TestSSHProxySession(unittest.TestCase):
             self.assertTrue(tm.called)
 
     def test_ssh_proxy_session(self):
-        with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
+        with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.query_instance', return_value=self.instance_id), \
                 patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
@@ -81,7 +81,7 @@ class TestSSHProxySession(unittest.TestCase):
             self.assertTrue(session_mock.called)
 
     def test_ssh_proxy_exception_invalid_profile(self):
-        with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
+        with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
                 patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
@@ -92,7 +92,7 @@ class TestSSHProxySession(unittest.TestCase):
                 ssh_proxy(config=self.config, profile_name='invalid-profile', instance_name=self.instance_id)
 
     def test_ssh_proxy_exception_invalid_region(self):
-        with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
+        with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
                 patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
@@ -103,7 +103,7 @@ class TestSSHProxySession(unittest.TestCase):
                 ssh_proxy(config=self.config, region_name='invalid-region', instance_name=self.instance_id)
 
     def test_ssh_proxy_exception_unknown_instance_id(self):
-        with patch('aws_gate.session.get_aws_client', return_value=MagicMock()), \
+        with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
                 patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
                 patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
