@@ -1,6 +1,6 @@
 flake8==3.7.8
 placebo==0.9.0
-pylint==2.3.1
+pylint==2.4.1
 pytest-cov==2.7.1
 pytest-flake8==1.0.4
 pytest-pylint==0.14.1
