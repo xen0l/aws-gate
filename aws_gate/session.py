@@ -1,19 +1,20 @@
 import json
 import logging
 
-from aws_gate.decorators import plugin_version, plugin_required
-from aws_gate.session_common import BaseSession
+from aws_gate.constants import AWS_DEFAULT_PROFILE, AWS_DEFAULT_REGION
+from aws_gate.decorators import plugin_version, plugin_required, valid_aws_profile, valid_aws_region
 from aws_gate.query import query_instance
-from aws_gate.utils import get_aws_client, get_aws_resource, is_existing_profile, is_existing_region, \
-    execute_plugin
+from aws_gate.session_common import BaseSession
+from aws_gate.utils import get_aws_client, get_aws_resource, execute_plugin, fetch_instance_details
 
 logger = logging.getLogger(__name__)
 
 
 class SSMSession(BaseSession):
-    def __init__(self, instance_id, region_name='eu-west-1', ssm=None):
+    def __init__(self, instance_id, region_name=AWS_DEFAULT_REGION, profile_name=AWS_DEFAULT_REGION, ssm=None):
         self._instance_id = instance_id
         self._region_name = region_name
+        self._profile_name = profile_name is not None or ''
         self._ssm = ssm
 
         self._session_parameters = {
@@ -21,27 +22,20 @@ class SSMSession(BaseSession):
         }
 
     def open(self):
-        execute_plugin([json.dumps(self._response), self._region_name, 'StartSession'])
+        execute_plugin([json.dumps(self._response),
+                        self._region_name,
+                        'StartSession',
+                        self._profile_name,
+                        json.dumps(self._session_parameters),
+                        self._ssm.meta.endpoint_url])
 
 
 @plugin_required
 @plugin_version('1.1.23.0')
-def session(config, instance_name, profile_name='default', region_name='eu-west-1'):
-    if not is_existing_profile(profile_name):
-        raise ValueError('Invalid profile provided: {}'.format(profile_name))
-
-    if not is_existing_region(region_name):
-        raise ValueError('Invalid region provided: {}'.format(profile_name))
-
-    config_data = config.get_host(instance_name)
-    if config_data and config_data['name'] and config_data['profile'] and config_data['region']:
-        region = config_data['region']
-        profile = config_data['profile']
-        instance = config_data['name']
-    else:
-        region = region_name
-        profile = profile_name
-        instance = instance_name
+@valid_aws_profile
+@valid_aws_region
+def session(config, instance_name, profile_name=AWS_DEFAULT_PROFILE, region_name=AWS_DEFAULT_REGION):
+    instance, profile, region = fetch_instance_details(config, instance_name, profile_name, region_name)
 
     ssm = get_aws_client('ssm', region_name=region, profile_name=profile)
     ec2 = get_aws_resource('ec2', region_name=region, profile_name=profile)

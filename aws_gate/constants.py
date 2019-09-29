@@ -3,6 +3,9 @@ import os
 DEBUG = 'GATE_DEBUG' in os.environ
 
 AWS_DEFAULT_REGION = 'eu-west-1'
+AWS_DEFAULT_PROFILE = 'default'
+
+DEFAULT_OS_USER = 'ec2-user'
 
 DEFAULT_GATE_DIR = os.path.expanduser('~/.aws-gate')
 DEFAULT_GATE_CONFIG_PATH = os.path.join(DEFAULT_GATE_DIR, 'config')

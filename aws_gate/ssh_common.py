@@ -7,7 +7,6 @@ from cryptography.hazmat.primitives.asymmetric import rsa, ed25519
 
 from aws_gate.constants import DEFAULT_GATE_KEY_PATH
 
-
 logger = logging.getLogger(__name__)
 
 SUPPORTED_KEY_TYPES = ['rsa', 'ed25519']

@@ -1,9 +1,9 @@
-import os
 import functools
 import logging
+import os
 
 from aws_gate.constants import PLUGIN_INSTALL_PATH
-from aws_gate.utils import execute_plugin
+from aws_gate.utils import execute_plugin, is_existing_profile, is_existing_region
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,7 @@ def plugin_required(wrapped_function):
 
         result = wrapped_function(*args, **kwargs)
         return result
+
     return _wrapper
 
 
@@ -35,5 +36,31 @@ def plugin_version(required_version):
 
             result = wrapped_function(*args, **kwargs)
             return result
+
         return _wrapper
+
     return _outer_wrapper
+
+
+def valid_aws_profile(wrapped_function):
+    @functools.wraps(wrapped_function)
+    def _wrapper(**kwargs):
+        if not is_existing_profile(kwargs['profile_name']):
+            raise ValueError('Invalid profile provided: {}'.format(kwargs['profile_name']))
+
+        result = wrapped_function(**kwargs)
+        return result
+
+    return _wrapper
+
+
+def valid_aws_region(wrapped_function):
+    @functools.wraps(wrapped_function)
+    def _wrapper(**kwargs):
+        if not is_existing_region(kwargs['region_name']):
+            raise ValueError('Invalid region provided: {}'.format(kwargs['region_name']))
+
+        result = wrapped_function(**kwargs)
+        return result
+
+    return _wrapper

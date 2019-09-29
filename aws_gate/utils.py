@@ -1,7 +1,7 @@
-import errno
-import os
 import contextlib
+import errno
 import logging
+import os
 import signal
 import subprocess
 
@@ -113,3 +113,17 @@ def execute(cmd, args, **kwargs):
 def execute_plugin(args, **kwargs):
     with deferred_signals():
         return execute(PLUGIN_NAME, args, **kwargs)
+
+
+def fetch_instance_details(config, instance_name, profile_name, region_name):
+    config_data = config.get_host(instance_name)
+    if config_data and config_data['name'] and config_data['profile'] and config_data['region']:
+        region = config_data['region']
+        profile = config_data['profile']
+        instance = config_data['name']
+    else:
+        region = region_name
+        profile = profile_name
+        instance = instance_name
+
+    return instance, profile, region
