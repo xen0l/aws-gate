@@ -75,7 +75,6 @@ class TestSSHProxySession(unittest.TestCase):
                 patch('aws_gate.decorators.is_existing_profile', return_value=True), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
                 patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
-
             ssh_proxy(config=self.config, instance_name=self.instance_id,
                       profile_name='default', region_name='eu-west-1')
 
@@ -88,7 +87,6 @@ class TestSSHProxySession(unittest.TestCase):
              patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
              patch('aws_gate.decorators._plugin_exists', return_value=True), \
              patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
-
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.config, profile_name='invalid-profile',
                           instance_name=self.instance_id, region_name='eu-west-1')
@@ -100,7 +98,6 @@ class TestSSHProxySession(unittest.TestCase):
              patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
              patch('aws_gate.decorators._plugin_exists', return_value=True), \
              patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
-
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.config, region_name='invalid-region',
                           instance_name=self.instance_id, profile_name='default')
@@ -112,7 +109,6 @@ class TestSSHProxySession(unittest.TestCase):
              patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
              patch('aws_gate.decorators._plugin_exists', return_value=True), \
              patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
-
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.config, instance_name=self.instance_id,
                           profile_name='default', region_name='eu-west-1')
@@ -124,7 +120,6 @@ class TestSSHProxySession(unittest.TestCase):
              patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
              patch('aws_gate.decorators._plugin_exists', return_value=True), \
              patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
-
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.empty_config, instance_name=self.instance_id,
                           profile_name='default', region_name='eu-west-1')

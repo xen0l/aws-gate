@@ -1,8 +1,8 @@
-import unittest
-import unittest.mock
 import io
+import unittest.mock
 
 from placebo.utils import placebo_session
+
 from aws_gate.list import list_instances
 
 
