@@ -3,7 +3,7 @@ import os
 
 from wrapt import decorator
 
-from aws_gate.constants import PLUGIN_INSTALL_PATH
+from aws_gate.constants import PLUGIN_INSTALL_PATH, PLUGIN_NAME
 from aws_gate.utils import execute_plugin, is_existing_profile, is_existing_region
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ def _plugin_exists(plugin_path):
 @decorator
 def plugin_required(wrapped_function, instance, args, kwargs):  # pylint: disable=unused-argument
     if not _plugin_exists(PLUGIN_INSTALL_PATH):
-        raise OSError('session-manager-plugin not found')
+        raise OSError('{} not found'.format(PLUGIN_NAME))
 
     return wrapped_function(*args, **kwargs)
 
