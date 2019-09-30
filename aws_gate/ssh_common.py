@@ -13,7 +13,7 @@ SUPPORTED_KEY_TYPES = ['rsa', 'ed25519']
 KEY_MIN_SIZE = 2048
 
 
-class GateKey:
+class SshKey:
     def __init__(self, key_path=DEFAULT_GATE_KEY_PATH, key_type='rsa', key_size=KEY_MIN_SIZE):
         self._key_path = None
         self._key_type = None

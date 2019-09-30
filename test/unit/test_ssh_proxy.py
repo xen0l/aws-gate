@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from aws_gate.ssh_proxy import SSHProxySession, ssh_proxy
+from aws_gate.ssh_proxy import SshProxySession, ssh_proxy
 
 
 class TestSSHProxySession(unittest.TestCase):
@@ -36,14 +36,14 @@ class TestSSHProxySession(unittest.TestCase):
 
     def test_create_ssh_proxy_session(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response):
-            sess = SSHProxySession(instance_id=self.instance_id, ssm=self.ssm)
+            sess = SshProxySession(instance_id=self.instance_id, ssm=self.ssm)
             sess.create()
 
             self.assertTrue(self.ssm.start_session.called)
 
     def test_terminate_ssh_proxy_session(self):
         with patch.object(self.ssm, 'terminate_session', return_value=self.response):
-            sess = SSHProxySession(instance_id=self.instance_id, ssm=self.ssm)
+            sess = SshProxySession(instance_id=self.instance_id, ssm=self.ssm)
 
             sess.create()
             sess.terminate()
@@ -52,7 +52,7 @@ class TestSSHProxySession(unittest.TestCase):
 
     def test_open_ssh_proxy_session(self):
         with patch('aws_gate.ssh_proxy.execute_plugin', return_value='output') as m:
-            sess = SSHProxySession(instance_id=self.instance_id, ssm=self.ssm)
+            sess = SshProxySession(instance_id=self.instance_id, ssm=self.ssm)
             sess.open()
 
             self.assertTrue(m.called)
@@ -60,7 +60,7 @@ class TestSSHProxySession(unittest.TestCase):
     def test_ssh_proxy_session_context_manager(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response) as sm, \
                 patch.object(self.ssm, 'terminate_session', return_value=self.response) as tm:
-            with SSHProxySession(instance_id=self.instance_id, ssm=self.ssm):
+            with SshProxySession(instance_id=self.instance_id, ssm=self.ssm):
                 pass
 
             self.assertTrue(sm.called)
@@ -68,10 +68,10 @@ class TestSSHProxySession(unittest.TestCase):
 
     def test_ssh_proxy_session(self):
         with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.query_instance', return_value=self.instance_id), \
-                patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
-                patch('aws_gate.ssh_proxy.SSHProxySession', return_value=MagicMock()) as session_mock, \
+             patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
+             patch('aws_gate.ssh_proxy.query_instance', return_value=self.instance_id), \
+             patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
+             patch('aws_gate.ssh_proxy.SshProxySession', return_value=MagicMock()) as session_mock, \
                 patch('aws_gate.decorators.is_existing_profile', return_value=True), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \
                 patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
@@ -83,11 +83,11 @@ class TestSSHProxySession(unittest.TestCase):
 
     def test_ssh_proxy_exception_invalid_profile(self):
         with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
-                patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
-                patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
+             patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
+             patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
+             patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
+             patch('aws_gate.decorators._plugin_exists', return_value=True), \
+             patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
 
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.config, profile_name='invalid-profile',
@@ -95,11 +95,11 @@ class TestSSHProxySession(unittest.TestCase):
 
     def test_ssh_proxy_exception_invalid_region(self):
         with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
-                patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
-                patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
+             patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
+             patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
+             patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
+             patch('aws_gate.decorators._plugin_exists', return_value=True), \
+             patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
 
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.config, region_name='invalid-region',
@@ -107,11 +107,11 @@ class TestSSHProxySession(unittest.TestCase):
 
     def test_ssh_proxy_exception_unknown_instance_id(self):
         with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
-                patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
-                patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
+             patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
+             patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
+             patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
+             patch('aws_gate.decorators._plugin_exists', return_value=True), \
+             patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
 
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.config, instance_name=self.instance_id,
@@ -119,11 +119,11 @@ class TestSSHProxySession(unittest.TestCase):
 
     def test_ssh_proxy_without_config(self):
         with patch('aws_gate.ssh_proxy.get_aws_client', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
-                patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
-                patch('aws_gate.ssh_proxy.GateKey', return_value=self.ssh_key), \
-                patch('aws_gate.decorators._plugin_exists', return_value=True), \
-                patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
+             patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
+             patch('aws_gate.ssh_proxy.query_instance', return_value=None), \
+             patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
+             patch('aws_gate.decorators._plugin_exists', return_value=True), \
+             patch('aws_gate.decorators.execute_plugin', return_value='1.1.23.0'):
 
             with self.assertRaises(ValueError):
                 ssh_proxy(config=self.empty_config, instance_name=self.instance_id,
