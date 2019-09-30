@@ -1,7 +1,8 @@
 import json
 import logging
 
-from aws_gate.constants import AWS_DEFAULT_PROFILE, AWS_DEFAULT_REGION, DEFAULT_OS_USER
+from aws_gate.constants import AWS_DEFAULT_PROFILE, AWS_DEFAULT_REGION, DEFAULT_OS_USER, DEFAULT_SSH_PORT, \
+    DEFAULT_KEY_ALGORITHM, DEFAULT_KEY_SIZE
 from aws_gate.decorators import plugin_version, plugin_required, valid_aws_profile, valid_aws_region
 from aws_gate.query import query_instance
 from aws_gate.session_common import BaseSession
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SshProxySession(BaseSession):
     def __init__(self, instance_id, ssm=None, region_name=AWS_DEFAULT_REGION, profile_name=AWS_DEFAULT_PROFILE,
-                 port='22', user=DEFAULT_OS_USER):
+                 port=DEFAULT_SSH_PORT, user=DEFAULT_OS_USER):
         self._instance_id = instance_id
         self._region_name = region_name
         self._profile_name = profile_name is not None or ''
@@ -42,8 +43,8 @@ class SshProxySession(BaseSession):
 @plugin_version('1.1.23.0')
 @valid_aws_profile
 @valid_aws_region
-def ssh_proxy(config, instance_name, user=DEFAULT_OS_USER, port=22, key_type='rsa', key_size=2048,
-              profile_name=AWS_DEFAULT_PROFILE, region_name=AWS_DEFAULT_REGION):
+def ssh_proxy(config, instance_name, user=DEFAULT_OS_USER, port=DEFAULT_SSH_PORT, key_type=DEFAULT_KEY_ALGORITHM,
+              key_size=DEFAULT_KEY_SIZE, profile_name=AWS_DEFAULT_PROFILE, region_name=AWS_DEFAULT_REGION):
     instance, profile, region = fetch_instance_details(config, instance_name, profile_name, region_name)
 
     ssm = get_aws_client('ssm', region_name=region, profile_name=profile)

@@ -9,7 +9,8 @@ from yaml.scanner import ScannerError
 from aws_gate import __version__, __description__
 from aws_gate.bootstrap import bootstrap
 from aws_gate.config import load_config_from_files
-from aws_gate.constants import SUPPORTED_KEY_TYPES, DEBUG, AWS_DEFAULT_REGION, AWS_DEFAULT_PROFILE, DEFAULT_OS_USER
+from aws_gate.constants import SUPPORTED_KEY_TYPES, DEBUG, AWS_DEFAULT_REGION, AWS_DEFAULT_PROFILE, DEFAULT_OS_USER, \
+    DEFAULT_SSH_PORT, DEFAULT_KEY_ALGORITHM, DEFAULT_KEY_SIZE
 from aws_gate.list import list_instances
 from aws_gate.session import session
 from aws_gate.ssh_proxy import ssh_proxy
@@ -54,10 +55,10 @@ def parse_arguments():
     ssh_proxy_parser.add_argument('-p', '--profile', help='AWS profile to use')
     ssh_proxy_parser.add_argument('-r', '--region', help='AWS region to use')
     ssh_proxy_parser.add_argument('-l', '--os-user', type=str, default=DEFAULT_OS_USER)
-    ssh_proxy_parser.add_argument('-P', '--port', type=int, default=22)
-    ssh_proxy_parser.add_argument('--key-type', type=str, default='rsa',
+    ssh_proxy_parser.add_argument('-P', '--port', type=int, default=DEFAULT_SSH_PORT)
+    ssh_proxy_parser.add_argument('--key-type', type=str, default=DEFAULT_KEY_ALGORITHM,
                                   choices=SUPPORTED_KEY_TYPES, help=argparse.SUPPRESS)
-    ssh_proxy_parser.add_argument('--key-size', type=int, default=2048, help=argparse.SUPPRESS)
+    ssh_proxy_parser.add_argument('--key-size', type=int, default=DEFAULT_KEY_SIZE, help=argparse.SUPPRESS)
     ssh_proxy_parser.add_argument('instance_name', help='Instance we wish to open session to')
 
     # 'list' subcommand

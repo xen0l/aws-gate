@@ -6,6 +6,9 @@ AWS_DEFAULT_REGION = 'eu-west-1'
 AWS_DEFAULT_PROFILE = 'default'
 
 DEFAULT_OS_USER = 'ec2-user'
+DEFAULT_SSH_PORT = 22
+DEFAULT_KEY_ALGORITHM = 'rsa'
+DEFAULT_KEY_SIZE = 2048
 
 DEFAULT_GATE_DIR = os.path.expanduser('~/.aws-gate')
 DEFAULT_GATE_CONFIG_PATH = os.path.join(DEFAULT_GATE_DIR, 'config')
