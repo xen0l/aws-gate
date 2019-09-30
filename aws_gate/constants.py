@@ -10,6 +10,7 @@ DEFAULT_SSH_PORT = 22
 DEFAULT_KEY_ALGORITHM = 'rsa'
 DEFAULT_KEY_SIZE = 2048
 SUPPORTED_KEY_TYPES = ['rsa', 'ed25519']
+KEY_MIN_SIZE = DEFAULT_KEY_SIZE
 
 DEFAULT_GATE_DIR = os.path.expanduser('~/.aws-gate')
 DEFAULT_GATE_CONFIG_PATH = os.path.join(DEFAULT_GATE_DIR, 'config')
@@ -23,5 +24,3 @@ DEFAULT_GATE_KEY_PATH = os.path.join(DEFAULT_GATE_DIR, 'key')
 
 MAC_PLUGIN_URL = 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip'
 
-SUPPORTED_KEY_TYPES = ['rsa', 'ed25519']
-KEY_MIN_SIZE = 2048
