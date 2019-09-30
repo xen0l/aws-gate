@@ -25,8 +25,8 @@ class TestBootstrap(unittest.TestCase):
     def test_plugin_download(self):
         plugin = Plugin()
         with patch('aws_gate.bootstrap.os'), \
-             patch('aws_gate.bootstrap.shutil'), \
-             patch('aws_gate.bootstrap.requests', return_value=MagicMock()) as requests_mock:
+                patch('aws_gate.bootstrap.shutil'), \
+                patch('aws_gate.bootstrap.requests', return_value=MagicMock()) as requests_mock:
             plugin.download()
 
             self.assertTrue(requests_mock.get.called)
@@ -40,8 +40,8 @@ class TestBootstrap(unittest.TestCase):
     def test_mac_plugin_extract_valid(self):
         plugin = MacPlugin()
         with patch('aws_gate.bootstrap.zipfile.is_zipfile', return_value=True), \
-             patch('aws_gate.bootstrap.os.path.split'), \
-             patch('aws_gate.bootstrap.zipfile.ZipFile', return_value=MagicMock()) as zip_mock:
+                patch('aws_gate.bootstrap.os.path.split'), \
+                patch('aws_gate.bootstrap.zipfile.ZipFile', return_value=MagicMock()) as zip_mock:
             plugin.extract()
 
             self.assertTrue(zip_mock.called)
@@ -67,7 +67,7 @@ class TestBootstrap(unittest.TestCase):
 
     def test_bootstrap_darwin(self):
         with patch('aws_gate.bootstrap.platform.system', return_value='Darwin'), \
-             patch('aws_gate.bootstrap.MacPlugin', return_value=MagicMock()) as mock:
+                patch('aws_gate.bootstrap.MacPlugin', return_value=MagicMock()) as mock:
             bootstrap()
 
             self.assertTrue(mock.called)

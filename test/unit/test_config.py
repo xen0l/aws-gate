@@ -117,8 +117,8 @@ class TestConfig(unittest.TestCase):
 
     def test_locate_config_files(self):
         with patch('aws_gate.config.os.path.isdir', return_value=True), \
-             patch('aws_gate.config.os.listdir', return_value=['foo.yaml']), \
-             patch('aws_gate.config.os.path.isfile', return_value=True):
+                patch('aws_gate.config.os.listdir', return_value=['foo.yaml']), \
+                patch('aws_gate.config.os.path.isfile', return_value=True):
             expected_config_files = [os.path.join(DEFAULT_GATE_CONFIGD_PATH, 'foo.yaml'), DEFAULT_GATE_CONFIG_PATH]
             self.assertEqual(_locate_config_files(), expected_config_files)
 

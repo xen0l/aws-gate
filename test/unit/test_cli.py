@@ -44,27 +44,27 @@ class TestCli(unittest.TestCase):
 
     def test_cli_invalid_config(self):
         with patch('aws_gate.cli.parse_arguments', return_value=MagicMock(subcommand='bootstrap')), \
-             patch('aws_gate.cli.load_config_from_files', side_effect=ValidationError(message='error')):
+                patch('aws_gate.cli.load_config_from_files', side_effect=ValidationError(message='error')):
             with self.assertRaises(ValueError):
                 main()
 
     def test_cli_bootstrap(self):
         with patch('aws_gate.cli.parse_arguments', return_value=MagicMock(subcommand='bootstrap')), \
-             patch('aws_gate.cli.bootstrap') as m:
+                patch('aws_gate.cli.bootstrap') as m:
             main()
 
             self.assertTrue(m.called)
 
     def test_cli_session(self):
         with patch('aws_gate.cli.parse_arguments', return_value=MagicMock(subcommand='session')), \
-             patch('aws_gate.cli.session') as m:
+                patch('aws_gate.cli.session') as m:
             main()
 
             self.assertTrue(m.called)
 
     def test_cli_list(self):
         with patch('aws_gate.cli.parse_arguments', return_value=MagicMock(subcommand='list')), \
-             patch('aws_gate.cli.list_instances') as m:
+                patch('aws_gate.cli.list_instances') as m:
             main()
 
             self.assertTrue(m.called)

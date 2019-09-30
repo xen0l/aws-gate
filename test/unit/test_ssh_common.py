@@ -55,7 +55,7 @@ class TestSSHCommon(unittest.TestCase):
 
     def test_delete_key(self):
         with patch('builtins.open', new_callable=mock_open()), \
-             patch('aws_gate.ssh_common.os', new_callable=MagicMock()) as m:
+                patch('aws_gate.ssh_common.os', new_callable=MagicMock()) as m:
             key = SshKey()
             key.generate()
             key.write_to_file()
