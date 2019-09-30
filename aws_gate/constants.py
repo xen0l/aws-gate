@@ -23,4 +23,3 @@ PLUGIN_INSTALL_PATH = os.path.join(DEFAULT_GATE_BIN_PATH, PLUGIN_NAME)
 DEFAULT_GATE_KEY_PATH = os.path.join(DEFAULT_GATE_DIR, 'key')
 
 MAC_PLUGIN_URL = 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip'
-
