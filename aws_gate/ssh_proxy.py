@@ -54,8 +54,8 @@ def ssh_proxy(config, instance_name, user=DEFAULT_OS_USER, port=DEFAULT_SSH_PORT
     if instance_id is None:
         raise ValueError('No instance could be found for name: {}'.format(instance))
 
-    logger.info('Opening SSH proxy session on instance %s (%s) via profile %s', instance_id, region_name, profile_name)
+    logger.info('Opening SSH proxy session on instance %s (%s) via profile %s', instance_id, region, profile)
     with SshKey(key_type=key_type, key_size=key_size):
-        with SshProxySession(instance_id, region_name=region_name, profile_name=profile, ssm=ssm, port=port,
+        with SshProxySession(instance_id, region_name=region, profile_name=profile, ssm=ssm, port=port,
                              user=user) as ssh_proxy_session:
             ssh_proxy_session.open()

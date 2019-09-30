@@ -44,6 +44,6 @@ def session(config, instance_name, profile_name=AWS_DEFAULT_PROFILE, region_name
     if instance_id is None:
         raise ValueError('No instance could be found for name: {}'.format(instance))
 
-    logger.info('Opening session on instance %s (%s) via profile %s', instance_id, region_name, profile_name)
-    with SSMSession(instance_id, region_name=region_name, ssm=ssm) as sess:
+    logger.info('Opening session on instance %s (%s) via profile %s', instance_id, region, profile)
+    with SSMSession(instance_id, region_name=region, ssm=ssm) as sess:
         sess.open()
