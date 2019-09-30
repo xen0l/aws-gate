@@ -5,12 +5,11 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, ed25519
 
-from aws_gate.constants import DEFAULT_GATE_KEY_PATH
+from aws_gate.constants import DEFAULT_GATE_KEY_PATH, DEFAULT_KEY_SIZE, SUPPORTED_KEY_TYPES
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_KEY_TYPES = ['rsa', 'ed25519']
-KEY_MIN_SIZE = 2048
+KEY_MIN_SIZE = DEFAULT_KEY_SIZE
 
 
 class SshKey:
