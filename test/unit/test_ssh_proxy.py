@@ -34,6 +34,10 @@ class TestSSHProxySession(unittest.TestCase):
 
         self.region_name = 'eu-west-1'
 
+        self.get_instance_details_response = {
+            'availability_zone': 'eu-west-1a'
+        }
+
     def test_create_ssh_proxy_session(self):
         with patch.object(self.ssm, 'start_session', return_value=self.response):
             sess = SshProxySession(instance_id=self.instance_id, ssm=self.ssm)
@@ -51,7 +55,7 @@ class TestSSHProxySession(unittest.TestCase):
             self.assertTrue(self.ssm.terminate_session.called)
 
     def test_open_ssh_proxy_session(self):
-        with patch('aws_gate.ssh_proxy.execute_plugin', return_value='output') as m:
+        with patch('aws_gate.session_common.execute_plugin', return_value='output') as m:
             sess = SshProxySession(instance_id=self.instance_id, ssm=self.ssm)
             sess.open()
 
@@ -71,6 +75,8 @@ class TestSSHProxySession(unittest.TestCase):
              patch('aws_gate.ssh_proxy.get_aws_resource', return_value=MagicMock()), \
              patch('aws_gate.ssh_proxy.query_instance', return_value=self.instance_id), \
              patch('aws_gate.ssh_proxy.SshKey', return_value=self.ssh_key), \
+             patch('aws_gate.ssh_proxy.SshKeyUploader', return_value=MagicMock()), \
+             patch('aws_gate.ssh_proxy.get_instance_details', return_value=self.get_instance_details_response), \
              patch('aws_gate.ssh_proxy.SshProxySession', return_value=MagicMock()) as session_mock, \
                 patch('aws_gate.decorators.is_existing_profile', return_value=True), \
                 patch('aws_gate.decorators._plugin_exists', return_value=True), \

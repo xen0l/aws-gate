@@ -6,7 +6,7 @@ from aws_gate.decorators import plugin_version, plugin_required, valid_aws_profi
 from aws_gate.query import query_instance
 from aws_gate.session_common import BaseSession
 from aws_gate.ssh_common import SshKey, SshKeyUploader
-from aws_gate.utils import get_aws_client, get_aws_resource, fetch_instance_details_from_config
+from aws_gate.utils import get_aws_client, get_aws_resource, fetch_instance_details_from_config, get_instance_details
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +46,7 @@ def ssh_proxy(config, instance_name, user=DEFAULT_OS_USER, port=DEFAULT_SSH_PORT
     if instance_id is None:
         raise ValueError('No instance could be found for name: {}'.format(instance))
 
-    az = None
-    for i in ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': ['SSM-test']},
-                                           {'Name': 'instance-state-name', 'Values': ['running']}]):
-        az = i.placement['AvailabilityZone']
+    az = get_instance_details(instance_id=instance_id, ec2=ec2)['availability_zone']
 
     logger.info('Opening SSH proxy session on instance %s (%s) via profile %s', instance_id, region, profile)
     with SshKey(key_type=key_type, key_size=key_size) as ssh_key:

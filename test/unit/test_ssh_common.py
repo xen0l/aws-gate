@@ -5,10 +5,16 @@ from hypothesis import given, example
 from hypothesis.strategies import text, integers, sampled_from
 
 from aws_gate.constants import DEFAULT_GATE_KEY_PATH
-from aws_gate.ssh_common import SshKey, SUPPORTED_KEY_TYPES, KEY_MIN_SIZE
+from aws_gate.ssh_common import SshKey, SUPPORTED_KEY_TYPES, KEY_MIN_SIZE, SshKeyUploader
 
 
 class TestSSHCommon(unittest.TestCase):
+    def setUp(self):
+        self.ssh_key = MagicMock()
+        self.ssh_key.configure_mock(**{
+            'public_key.return_value': 'ssh-rsa ranodombase64string'
+        })
+
     @given(sampled_from(SUPPORTED_KEY_TYPES), integers(min_value=KEY_MIN_SIZE))
     def test_initialize_key(self, key_type, key_size):
         key = SshKey(key_type=key_type)
@@ -63,3 +69,25 @@ class TestSSHCommon(unittest.TestCase):
 
             self.assertTrue(m.remove.called)
             self.assertEqual(m.remove.call_args, call(DEFAULT_GATE_KEY_PATH))
+
+    def test_uploader(self):
+        ec2_ic_mock = MagicMock()
+
+        uploader = SshKeyUploader(instance_id='i-1234567890', az='eu-west-1a', ssh_key=self.ssh_key, ec2_ic=ec2_ic_mock)
+        uploader.upload()
+
+        self.assertTrue(ec2_ic_mock.send_ssh_public_key.called)
+
+    def test_uploader_as_context_manager(self):
+        ec2_ic_mock = MagicMock()
+        with SshKeyUploader(instance_id='i-1234567890', az='eu-west-1a', ssh_key=self.ssh_key, ec2_ic=ec2_ic_mock):
+            self.assertTrue(ec2_ic_mock.send_ssh_public_key.called)
+
+    def test_uploader_exception(self):
+        ec2_ic_mock = MagicMock()
+        ec2_ic_mock.configure_mock(**{'send_ssh_public_key.return_value': {'Success': False, 'RequestId': '12345'}})
+
+        uploader = SshKeyUploader(instance_id='i-1234567890', az='eu-west-1a', ssh_key=self.ssh_key,
+                                  ec2_ic=ec2_ic_mock)
+        with self.assertRaises((ValueError)):
+            uploader.upload()

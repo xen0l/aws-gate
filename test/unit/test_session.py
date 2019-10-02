@@ -40,7 +40,7 @@ class TestSSMSession(unittest.TestCase):
             self.assertTrue(self.ssm.terminate_session.called)
 
     def test_open_ssm_session(self):
-        with patch('aws_gate.session.execute_plugin', return_value='output') as m:
+        with patch('aws_gate.session_common.execute_plugin', return_value='output') as m:
             sess = SSMSession(instance_id=self.instance_id, ssm=self.ssm)
             sess.open()
 

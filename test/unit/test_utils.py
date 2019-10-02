@@ -4,11 +4,14 @@ import subprocess
 import unittest
 from unittest.mock import patch, MagicMock, call
 
+from botocore.exceptions import ClientError
 from hypothesis import given
 from hypothesis.strategies import lists, text
+from placebo.utils import placebo_session
 
+from aws_gate.exceptions import AWSConnectionError
 from aws_gate.utils import is_existing_profile, _create_aws_session, get_aws_client, get_aws_resource, \
-    AWS_REGIONS, is_existing_region, execute, execute_plugin, fetch_instance_details_from_config
+    AWS_REGIONS, is_existing_region, execute, execute_plugin, fetch_instance_details_from_config, get_instance_details
 
 
 # pylint: disable=too-few-public-methods
@@ -22,7 +25,12 @@ class MockSession:
 
 
 class TestUtils(unittest.TestCase):
-    def setUp(self):
+    @placebo_session
+    def setUp(self, session):
+        self.ec2 = session.resource('ec2', region_name='eu-west-1')
+
+        self.instance_id = 'i-0c32153096cd68a6d'
+
         self.config_data = {
             'alias': 'test',
             'name': 'SSM-test',
@@ -131,3 +139,29 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(expected_instance_name, instance_name)
         self.assertEqual(expected_profile, profile)
         self.assertEqual(expeted_region, region)
+
+    def test_get_instance_details_aws_api_exception(self):
+        ec2_mock = MagicMock()
+
+        # https://github.com/surbas/pg2kinesis/blob/master/tests/test_stream.py#L20
+        error_response = {'Error': {'Code': 'ResourceInUseException'}}
+        ec2_mock.configure_mock(**{'instances.filter.side_effect': ClientError(error_response, 'random_ec2_op')})
+
+        with self.assertRaises(AWSConnectionError):
+            get_instance_details(self.instance_id, ec2=ec2_mock)
+
+    def test_get_instance_details(self):
+        expected_details = {
+            'instance_id': 'i-0c32153096cd68a6d',
+            'vpc_id': 'vpc-1981f29759da4a354',
+            'private_dns_name': 'ip-10-69-104-49.eu-west-1.compute.internal',
+            'private_ip_address': '10.69.104.49',
+            'public_dns_name': 'ec2-18-201-115-108.eu-west-1.compute.amazonaws.com',
+            'public_ip_addess': '18.201.115.108',
+            'availability_zone': 'eu-west-1a',
+            'instance_name': 'dummy-instance'
+        }
+
+        details = get_instance_details(self.instance_id, ec2=self.ec2)
+
+        self.assertEqual(details, expected_details)
