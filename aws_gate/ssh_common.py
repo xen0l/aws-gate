@@ -5,7 +5,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, ed25519
 
-from aws_gate.constants import DEFAULT_GATE_KEY_PATH, DEFAULT_KEY_SIZE, SUPPORTED_KEY_TYPES
+from aws_gate.constants import DEFAULT_GATE_KEY_PATH, DEFAULT_KEY_SIZE, SUPPORTED_KEY_TYPES, DEFAULT_OS_USER
 
 logger = logging.getLogger(__name__)
 
@@ -96,3 +96,29 @@ class SshKey:
             raise ValueError('Invalid key size: {}'.format(value))
 
         self._key_size = value
+
+
+class SshKeyUploader:
+    def __init__(self, instance_id, az, user=DEFAULT_OS_USER, ssh_key=None, ec2_ic=None):
+        self._instance_id = instance_id
+        self._az = az
+        self._ssh_key = ssh_key
+        self._ec2_ic = ec2_ic
+        self._user = user
+
+    def __enter__(self):
+        self.upload()
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def upload(self):
+        logger.debug('Uploading SSH public key: %s', self._ssh_key.public_key.decode())
+        response = self._ec2_ic.send_ssh_public_key(InstanceId=self._instance_id,
+                                                    InstanceOSUser=self._user,
+                                                    SSHPublicKey=str(self._ssh_key.public_key.decode()),
+                                                    AvailabilityZone=self._az)
+        logger.debug('Received response: %s', response)
+        if not response['Success']:
+            raise ValueError('Failed to upload SSH key to instance {}'.format(self._instance_id))

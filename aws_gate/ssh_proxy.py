@@ -1,4 +1,3 @@
-import json
 import logging
 
 from aws_gate.constants import AWS_DEFAULT_PROFILE, AWS_DEFAULT_REGION, DEFAULT_OS_USER, DEFAULT_SSH_PORT, \
@@ -6,8 +5,8 @@ from aws_gate.constants import AWS_DEFAULT_PROFILE, AWS_DEFAULT_REGION, DEFAULT_
 from aws_gate.decorators import plugin_version, plugin_required, valid_aws_profile, valid_aws_region
 from aws_gate.query import query_instance
 from aws_gate.session_common import BaseSession
-from aws_gate.ssh_common import SshKey
-from aws_gate.utils import get_aws_client, get_aws_resource, execute_plugin, fetch_instance_details
+from aws_gate.ssh_common import SshKey, SshKeyUploader
+from aws_gate.utils import get_aws_client, get_aws_resource, fetch_instance_details_from_config
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class SshProxySession(BaseSession):
                  port=DEFAULT_SSH_PORT, user=DEFAULT_OS_USER):
         self._instance_id = instance_id
         self._region_name = region_name
-        self._profile_name = profile_name is not None or ''
+        self._profile_name = profile_name if profile_name is not None else ''
         self._ssm = ssm
         self._port = port
         self._user = user
@@ -30,14 +29,6 @@ class SshProxySession(BaseSession):
             }
         }
 
-    def open(self):
-        execute_plugin([json.dumps(self._response),
-                        self._region_name,
-                        'StartSession',
-                        self._profile_name,
-                        json.dumps(self._session_parameters),
-                        self._ssm.meta.endpoint_url])
-
 
 @plugin_required
 @plugin_version('1.1.23.0')
@@ -45,17 +36,24 @@ class SshProxySession(BaseSession):
 @valid_aws_region
 def ssh_proxy(config, instance_name, user=DEFAULT_OS_USER, port=DEFAULT_SSH_PORT, key_type=DEFAULT_KEY_ALGORITHM,
               key_size=DEFAULT_KEY_SIZE, profile_name=AWS_DEFAULT_PROFILE, region_name=AWS_DEFAULT_REGION):
-    instance, profile, region = fetch_instance_details(config, instance_name, profile_name, region_name)
+    instance, profile, region = fetch_instance_details_from_config(config, instance_name, profile_name, region_name)
 
     ssm = get_aws_client('ssm', region_name=region, profile_name=profile)
     ec2 = get_aws_resource('ec2', region_name=region, profile_name=profile)
+    ec2_ic = get_aws_client('ec2-instance-connect', region_name=region, profile_name=profile)
 
     instance_id = query_instance(name=instance, ec2=ec2)
     if instance_id is None:
         raise ValueError('No instance could be found for name: {}'.format(instance))
 
+    az = None
+    for i in ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': ['SSM-test']},
+                                           {'Name': 'instance-state-name', 'Values': ['running']}]):
+        az = i.placement['AvailabilityZone']
+
     logger.info('Opening SSH proxy session on instance %s (%s) via profile %s', instance_id, region, profile)
-    with SshKey(key_type=key_type, key_size=key_size):
-        with SshProxySession(instance_id, region_name=region, profile_name=profile, ssm=ssm, port=port,
-                             user=user) as ssh_proxy_session:
-            ssh_proxy_session.open()
+    with SshKey(key_type=key_type, key_size=key_size) as ssh_key:
+        with SshKeyUploader(instance_id=instance_id, az=az, user=user, ssh_key=ssh_key, ec2_ic=ec2_ic):
+            with SshProxySession(instance_id, region_name=region, profile_name=profile, ssm=ssm, port=port,
+                                 user=user) as ssh_proxy_session:
+                ssh_proxy_session.open()

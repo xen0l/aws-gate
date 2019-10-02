@@ -6,8 +6,10 @@ import signal
 import subprocess
 
 import boto3
+import botocore
 
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_NAME
+from aws_gate.exceptions import AWSConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +103,7 @@ def execute(cmd, args, **kwargs):
         logger.error('Command "%s" exited with %s', ' '.join([cmd] + args), e.returncode)
     except OSError as e:
         if e.errno == errno.ENOENT:
-            raise ValueError('{} cannot be found'.format(PLUGIN_NAME))
+            raise ValueError('{} cannot be found'.format(cmd))
 
     if result and result.stdout:
         ret = result.stdout.decode()
@@ -115,7 +117,7 @@ def execute_plugin(args, **kwargs):
         return execute(PLUGIN_NAME, args, **kwargs)
 
 
-def fetch_instance_details(config, instance_name, profile_name, region_name):
+def fetch_instance_details_from_config(config, instance_name, profile_name, region_name):
     config_data = config.get_host(instance_name)
     if config_data and config_data['name'] and config_data['profile'] and config_data['region']:
         region = config_data['region']
@@ -127,3 +129,31 @@ def fetch_instance_details(config, instance_name, profile_name, region_name):
         instance = instance_name
 
     return instance, profile, region
+
+
+def get_instance_details(instance_id, ec2=None):
+    filters = [{
+        'Name': 'instance-id',
+        'Values': [instance_id]
+    }]
+
+    try:
+        ec2_instance = list(ec2.instances.filter(Filters=filters))[0]
+    except botocore.exceptions.ClientError:
+        raise AWSConnectionError
+
+    instance_name = None
+    for tag in ec2_instance.tags:
+        if tag['Key'] == 'Name':
+            instance_name = tag['Value']
+
+    return {
+        'instance_id': instance_id,
+        'vpc_id': ec2_instance.vpc_id,
+        'private_dns_name': ec2_instance.private_dns_name or None,
+        'private_ip_address': ec2_instance.private_ip_address or None,
+        'public_dns_name': ec2_instance.public_dns_name or None,
+        'public_ip_addess': ec2_instance.public_ip_address or None,
+        'availability_zone': ec2_instance.placement['AvailabilityZone'],
+        'instance_name': instance_name
+    }

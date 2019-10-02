@@ -8,7 +8,7 @@ from hypothesis import given
 from hypothesis.strategies import lists, text
 
 from aws_gate.utils import is_existing_profile, _create_aws_session, get_aws_client, get_aws_resource, \
-    AWS_REGIONS, is_existing_region, execute, execute_plugin, fetch_instance_details
+    AWS_REGIONS, is_existing_region, execute, execute_plugin, fetch_instance_details_from_config
 
 
 # pylint: disable=too-few-public-methods
@@ -108,24 +108,25 @@ class TestUtils(unittest.TestCase):
             self.assertTrue(m.called)
             self.assertIn('[\'--version\'], capture_output=True', str(m.call_args))
 
-    def test_fetch_instance_details(self):
+    def test_fetch_instance_details_from_config(self):
         expected_instance_name = self.config_data['name']
         expected_profile = self.config_data['profile']
         expeted_region = self.config_data['region']
 
-        instance_name, profile, region = fetch_instance_details(self.config, 'instance_name', 'profile', 'region')
+        instance_name, profile, region = fetch_instance_details_from_config(self.config, 'instance_name', 'profile',
+                                                                            'region')
 
         self.assertEqual(expected_instance_name, instance_name)
         self.assertEqual(expected_profile, profile)
         self.assertEqual(expeted_region, region)
 
-    def test_fetch_instance_details_with_empty_config(self):
+    def test_fetch_instance_details_from_config_with_empty_config(self):
         expected_instance_name = 'instance_name'
         expected_profile = 'profile'
         expeted_region = 'region'
 
-        instance_name, profile, region = fetch_instance_details(self.empty_config, expected_instance_name,
-                                                                expected_profile, expeted_region)
+        instance_name, profile, region = fetch_instance_details_from_config(self.empty_config, expected_instance_name,
+                                                                            expected_profile, expeted_region)
 
         self.assertEqual(expected_instance_name, instance_name)
         self.assertEqual(expected_profile, profile)
