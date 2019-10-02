@@ -24,7 +24,7 @@ class TestSSHProxySession(unittest.TestCase):
         self.instance_id = 'i-0c32153096cd68a6d'
         self.ssh_key = MagicMock()
         self.ssh_key.configure_mock(**{
-            'key_path.return_value': '/tmp/key' # nosec
+            'key_path.return_value': '/tmp/key'  # nosec
         })
 
         self.response = {
