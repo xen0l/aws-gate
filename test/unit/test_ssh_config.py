@@ -9,13 +9,13 @@ from aws_gate.ssh_config import ssh_config, PROXY_COMMAND
 class TestSSHConfig(unittest.TestCase):
     def test_ssh_config(self):
         expected_output_lines = [
-            '''Host *.eu-west-1.default''',
-            '''IdentityFile {}'''.format(DEFAULT_GATE_KEY_PATH),
-            '''IdentitiesOnly yes''',
-            '''User ec2-user''',
-            '''Port 22''',
-            '''ProxyCommand {}'''.format(' '.join(PROXY_COMMAND)),
-            '\n'
+            r'''Host *.eu-west-1.default''',
+            r'''IdentityFile {}'''.format(DEFAULT_GATE_KEY_PATH),
+            r'''IdentitiesOnly yes''',
+            r'''User ec2-user''',
+            r'''Port 22''',
+            r'''ProxyCommand {}'''.format(' '.join(PROXY_COMMAND)),
+            r'\n'
         ]
         expected_output = '\n'.join(expected_output_lines)
         with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout, \
