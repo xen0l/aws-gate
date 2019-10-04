@@ -60,7 +60,8 @@ class TestSSHCommon(unittest.TestCase):
                 open_mock.assert_called_with(DEFAULT_GATE_KEY_PATH, 'wb')
 
     def test_ssh_key_file_permissions(self):
-        with patch('aws_gate.ssh_common.os') as m:
+        with patch('builtins.open', new_callable=mock_open()), \
+             patch('aws_gate.ssh_common.os') as m:
             key = SshKey()
             key.generate()
             key.write_to_file()
