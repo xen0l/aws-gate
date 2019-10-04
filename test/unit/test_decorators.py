@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, call
 
-from aws_gate.decorators import plugin_required, plugin_version, _plugin_exists
+from aws_gate.decorators import plugin_required, plugin_version, _plugin_exists, valid_aws_profile, valid_aws_region
 
 
 class TestDecorators(unittest.TestCase):
@@ -46,3 +46,37 @@ class TestDecorators(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 test_function()
+
+    def test_valid_aws_profile(self):
+        with patch('aws_gate.decorators.is_existing_profile', return_value=True):
+            @valid_aws_profile
+            def test_function(profile_name):
+                return profile_name
+
+            self.assertEqual(test_function(profile_name='profile'), 'profile')
+
+    def test_valid_aws_profile_invalid_profile(self):
+        with patch('aws_gate.decorators.is_existing_profile', return_value=False):
+            @valid_aws_profile
+            def test_function(profile_name):
+                return profile_name
+
+            with self.assertRaises(ValueError):
+                test_function(profile_name='invalid-profile')
+
+    def test_valid_aws_region(self):
+        with patch('aws_gate.decorators.is_existing_region', return_value=True):
+            @valid_aws_region
+            def test_function(region_name):
+                return region_name
+
+            self.assertEqual(test_function(region_name='eu-west-1'), 'eu-west-1')
+
+    def test_valid_aws_region_invalid_region(self):
+        with patch('aws_gate.decorators.is_existing_region', return_value=False):
+            @valid_aws_region
+            def test_function(region_name):
+                return region_name
+
+            with self.assertRaises(ValueError):
+                test_function(region_name='invalid-region')

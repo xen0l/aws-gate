@@ -7,6 +7,11 @@ logger = logging.getLogger(__name__)
 
 
 class BaseSession:
+    _instance_id = None
+    _ssm = None
+    _region_name = None
+    _profile_name = None
+
     _response = None
     _session_id = None
     _token_value = None
