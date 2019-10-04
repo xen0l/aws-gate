@@ -3,7 +3,7 @@ dist: xenial
 cache:
   pip: true
   directories:
-    - $HOME/.hypothesis
+    - $TRAVIS_BUILD_DIR/.hypothesis
 python:
   - 3.6
   - 3.7
