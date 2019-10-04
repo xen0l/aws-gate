@@ -24,11 +24,11 @@ class TestList(unittest.TestCase):
             self.assertEqual(mock_stdout.getvalue(), "i-0c32153096cd68a6d - dummy-instance\n")
 
     def test_list_instances_invalid_profile(self):
-        with patch('aws_gate.decorators.valid_aws_region'):
+        with patch('aws_gate.decorators.is_existing_region', return_value=True):
             with self.assertRaises(ValueError):
                 list_instances(profile_name='invalid-profile', region_name='eu-west-1')
 
     def test_list_instances_invalid_region(self):
-        with patch('aws_gate.decorators.valid_aws_profile'):
+        with patch('aws_gate.decorators.is_existing_profile', return_value=True):
             with self.assertRaises(ValueError):
                 list_instances(profile_name='default', region_name='invalid-region')
