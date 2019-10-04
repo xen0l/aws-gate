@@ -54,20 +54,20 @@ class TestSSHCommon(unittest.TestCase):
     @given(sampled_from(SUPPORTED_KEY_TYPES))
     def test_initialize_key_as_context_manager(self, key_type):
         with patch('builtins.open', new_callable=mock_open()) as open_mock, \
-                patch('aws_gate.ssh_common.os'):
+                patch('aws_gate.ssh_common.os.remove'):
             with SshKey(key_type=key_type):
                 self.assertTrue(open_mock.called)
                 open_mock.assert_called_with(DEFAULT_GATE_KEY_PATH, 'wb')
 
     def test_ssh_key_file_permissions(self):
         with patch('builtins.open', new_callable=mock_open()), \
-             patch('aws_gate.ssh_common.os') as m:
+             patch('aws_gate.ssh_common.os.chmod') as m:
             key = SshKey()
             key.generate()
             key.write_to_file()
 
-            self.assertTrue(m.chmod.called)
-            self.assertEqual(call(DEFAULT_GATE_KEY_PATH, 0o600), m.chmod.call_args)
+            self.assertTrue(m.called)
+            self.assertEqual(call(DEFAULT_GATE_KEY_PATH, 0o600), m.call_args)
 
     def test_delete_key(self):
         with patch('builtins.open', new_callable=mock_open()), \
