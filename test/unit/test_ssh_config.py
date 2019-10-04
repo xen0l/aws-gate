@@ -25,12 +25,14 @@ class TestSSHConfig(unittest.TestCase):
         self.assertEqual(mock_stdout.getvalue(), expected_output)
 
     def test_ssh_config_invalid_profile(self):
-        with self.assertRaises(ValueError):
-            ssh_config(profile_name='invalid-profile', region_name='eu-west-1')
+        with patch('aws_gate.decorators.valid_aws_region'):
+            with self.assertRaises(ValueError):
+                ssh_config(profile_name='invalid-profile', region_name='eu-west-1')
 
     def test_ssh_config_invalid_region(self):
-        with self.assertRaises(ValueError):
-            ssh_config(profile_name='default', region_name='invalid-profile')
+        with patch('aws_gate.decorators.valid_aws_profile'):
+            with self.assertRaises(ValueError):
+                ssh_config(profile_name='default', region_name='invalid-profile')
 
 
 if __name__ == '__main__':
