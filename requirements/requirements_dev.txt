@@ -6,4 +6,4 @@ pytest-flake8==1.0.4
 pytest-pylint==0.14.1
 pytest==5.2.0
 zest.releaser==6.19.1
-hypothesis==4.38.1
+hypothesis==4.38.2
