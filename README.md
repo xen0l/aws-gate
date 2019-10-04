@@ -102,6 +102,46 @@ aws-gate session Name:SSM-test
 aws-gate session SSM-test
 ```
 
+#### SSH ProxyCommand support
+
+AWS SSM Session Manager supports tunneling SSH sessions over it. Moreover, _aws-gate_ supports generating ephemeral SSH
+keys and uploading them via EC2 Instance Connect API. However, to use this functionality,
+EC2 Instance Connect [setup](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html) is needed.
+
+To use this functionality, simply run **aws-gate ssh-config**, which will generate the required _~/.ssh/config_ snippet for you:
+```
+% aws-gate ssh-config
+Host *.eu-west-1.default
+IdentityFile /Users/xenol/.aws-gate/key
+IdentitiesOnly yes
+User ec2-user
+Port 22
+ProxyCommand sh -c "aws-gate ssh-proxy -p `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\3/g'` -r `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\2/g'` `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\1/g'`"
+```
+
+Store the snippet inside __~/.ssh/config_:
+```
+% aws-gate ssh-config >> ~/.ssh/config
+```
+
+Then connect via *ssh*:
+```
+% ssh ssm-test.eu-west-1.default
+Last login: Fri Oct  4 17:17:02 2019 from localhost
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+1 package(s) needed for security, out of 20 available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-172-31-35-173 ~]$
+```
+
+SSH session to instance _ssm-test_ in eu-west-1 AWS region via _default_ AWS profile is opened.
+
+
 ## Debugging mode
 
 If you run into issues, you can get detailed debug log by setting **GATE_DEBUG** environment variable:

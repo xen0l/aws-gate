@@ -1,6 +1,9 @@
-0.4.4 (unreleased)
+0.5.0 (unreleased)
 ------------------
 
+* Add **ssh-proxy** command to be able to use ssh over Session Manager session
+* Add **ssh-config** command to generate _~/.ssh/config_ configuration for easier integration with _ssh_
+* AWS profile_name and region_name validation happens now on all commands
 
 0.4.3 (2019-09-26)
 ------------------
