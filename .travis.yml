@@ -1,5 +1,9 @@
 language: python
 dist: xenial
+cache:
+  pip: true
+  directories:
+    - .hypothesis
 python:
   - 3.6
   - 3.7
