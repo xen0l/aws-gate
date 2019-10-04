@@ -1,11 +1,14 @@
 import logging
 
 from aws_gate.constants import AWS_DEFAULT_PROFILE, AWS_DEFAULT_REGION
+from aws_gate.decorators import valid_aws_region, valid_aws_profile
 from aws_gate.utils import get_aws_client, get_aws_resource
 
 logger = logging.getLogger(__name__)
 
 
+@valid_aws_profile
+@valid_aws_region
 def list_instances(profile_name=AWS_DEFAULT_PROFILE, region_name=AWS_DEFAULT_REGION):
     ssm = get_aws_client('ssm', region_name=region_name, profile_name=profile_name)
     ec2 = get_aws_resource('ec2', region_name=region_name, profile_name=profile_name)
