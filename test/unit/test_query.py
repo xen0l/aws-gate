@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 from botocore.exceptions import ClientError
 from placebo.utils import placebo_session
+
 from aws_gate.query import _query_aws_api, query_instance, AWSConnectionError
 
 

@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
+import argparse
+import multiprocessing
 import os
 import sys
-import multiprocessing
-import argparse
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-L', '--no-lint', action='store_false', default=True,
@@ -21,7 +20,6 @@ if not os.path.exists(report_dir):
 
 if 'PLACEBO_MODE' not in os.environ:
     os.environ['PLACEBO_MODE'] = 'playback'
-
 
 os.environ['PLACEBO_DIR'] = os.path.join(root_dir, 'test', 'unit', 'placebo')
 

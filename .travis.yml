@@ -1,7 +1,10 @@
 language: python
 dist: xenial
+cache:
+  pip: true
+  directories:
+    - $TRAVIS_BUILD_DIR/.hypothesis
 python:
-  - 3.5
   - 3.6
   - 3.7
 install:

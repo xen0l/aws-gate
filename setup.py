@@ -1,5 +1,6 @@
 import inspect
 import os
+
 from setuptools import setup, find_packages
 
 from aws_gate import __version__, __description__, __author__, __author_email__, __url__

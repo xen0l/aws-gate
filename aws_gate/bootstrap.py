@@ -1,21 +1,21 @@
-import os
 import logging
-import tempfile
-import shutil
-import zipfile
+import os
 import platform
+import shutil
+import tempfile
+import zipfile
+
 import requests
 
 from aws_gate.constants import MAC_PLUGIN_URL, DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH, PLUGIN_NAME
 from aws_gate.exceptions import UnsupportedPlatormError
 from aws_gate.utils import execute
 
-
 logger = logging.getLogger(__name__)
 
 
 def _check_plugin_version(path=PLUGIN_INSTALL_PATH):
-    return execute(path, ['--version'])
+    return execute(path, ['--version'], capture_output=True)
 
 
 class Plugin:
