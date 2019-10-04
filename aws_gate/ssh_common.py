@@ -50,6 +50,8 @@ class SshKey:
     def write_to_file(self):
         with open(self._key_path, 'wb') as f:
             f.write(self.private_key)
+        # 'ssh' refuses to use the key with broad access permissions
+        os.chmod(self._key_path, 0o600)
 
     def delete(self):
         os.remove(self._key_path)
