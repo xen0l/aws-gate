@@ -54,7 +54,7 @@ class TestSSHCommon(unittest.TestCase):
     @given(sampled_from(SUPPORTED_KEY_TYPES))
     def test_initialize_key_as_context_manager(self, key_type):
         with patch('builtins.open', new_callable=mock_open()) as open_mock, \
-                patch('aws_gate.ssh_common.os.remove'):
+                patch('aws_gate.ssh_common.os'):
             with SshKey(key_type=key_type):
                 self.assertTrue(open_mock.called)
                 open_mock.assert_called_with(DEFAULT_GATE_KEY_PATH, 'wb')
