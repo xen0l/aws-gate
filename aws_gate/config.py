@@ -2,13 +2,12 @@ import logging
 import os
 
 import yaml
+from marshmallow import Schema, fields, post_load, ValidationError, validates_schema
 from yaml.constructor import ConstructorError
 from yaml.parser import ParserError
-from marshmallow import Schema, fields, post_load, ValidationError, validates_schema
 
 from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
 from aws_gate.utils import is_existing_profile, is_existing_region
-
 
 logger = logging.getLogger(__name__)
 

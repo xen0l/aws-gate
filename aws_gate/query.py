@@ -5,7 +5,6 @@ import botocore.exceptions
 
 from aws_gate.exceptions import AWSConnectionError
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -88,7 +87,6 @@ def getinstanceidbyinstancename(name, ec2=None):
 
 
 def query_instance(name, ec2=None):
-
     if ec2 is None:
         raise ValueError('EC2 client is not initialized')
 
