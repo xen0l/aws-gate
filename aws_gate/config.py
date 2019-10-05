@@ -33,7 +33,7 @@ def validate_region(region):
 
 
 def validate_defaults(data):
-    schema = DefaultsSchema(strict=True)
+    schema = DefaultsSchema()
     schema.load(data)
 
 
@@ -42,8 +42,8 @@ class DefaultsSchema(Schema):
     region = fields.String(required=False, validate=validate_region)
 
     # pylint: disable=unused-argument
-    @validates_schema(pass_original=True)
-    def check_unknown_fields(self, data, original_data):
+    @validates_schema
+    def check_unknown_fields(self, original_data, **kwargs):
         _validate_unknown_fields(self.fields, original_data)
 
 
@@ -54,23 +54,23 @@ class HostSchema(Schema):
     region = fields.String(required=True, validate=validate_region)
 
     # pylint: disable=unused-argument
-    @validates_schema(pass_original=True)
-    def check_unknown_fields(self, data, original_data):
+    @validates_schema
+    def check_unknown_fields(self, original_data, **kwargs):
         _validate_unknown_fields(self.fields, original_data)
 
 
 class GateConfigSchema(Schema):
-    defaults = fields.Dict(DefaultsSchema, required=False, missing=dict(), validate=validate_defaults)
+    defaults = fields.Nested(DefaultsSchema, required=False, missing=dict(), validate=validate_defaults)
     hosts = fields.List(fields.Nested(HostSchema), required=False, missing=list())
 
     # pylint: disable=unused-argument
-    @validates_schema(pass_original=True)
-    def check_unknown_fields(self, data, original_data):
+    @validates_schema
+    def check_unknown_fields(self, original_data, **kwargs):
         _validate_unknown_fields(self.fields, original_data)
 
     # pylint: disable=no-self-use
     @post_load
-    def create_config(self, data):
+    def create_config(self, data, **kwargs):
         return GateConfig(**data)
 
 
@@ -163,5 +163,5 @@ def load_config_from_files(config_files=None):
         if not config_data:
             raise EmptyConfigurationError('Empty configuration data')
 
-    config = GateConfigSchema(strict=True).load(config_data).data
+    config = GateConfigSchema().load(config_data)
     return config
