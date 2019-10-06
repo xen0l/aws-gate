@@ -78,7 +78,7 @@ def parse_arguments():
 
     if not args.subcommand:
         parser.print_help()
-        sys.exit(0)
+        sys.exit(1)
 
     return args
 

@@ -2,7 +2,7 @@ import logging
 import os
 
 import yaml
-from marshmallow import Schema, fields, post_load, ValidationError, validates_schema
+from marshmallow import Schema, fields, post_load, ValidationError
 from yaml.constructor import ConstructorError
 from yaml.parser import ParserError
 
@@ -14,12 +14,6 @@ logger = logging.getLogger(__name__)
 
 class EmptyConfigurationError(Exception):
     pass
-
-
-def _validate_unknown_fields(expected_fields, original_fields):
-    unknown = set(original_fields) - set(expected_fields)
-    if unknown:
-        raise ValidationError('Unknown field', unknown)
 
 
 def validate_profile(profile):
@@ -41,11 +35,6 @@ class DefaultsSchema(Schema):
     profile = fields.String(required=False, validate=validate_profile)
     region = fields.String(required=False, validate=validate_region)
 
-    # pylint: disable=unused-argument
-    @validates_schema
-    def check_unknown_fields(self, original_data, **kwargs):
-        _validate_unknown_fields(self.fields, original_data)
-
 
 class HostSchema(Schema):
     alias = fields.String(required=True)
@@ -53,22 +42,12 @@ class HostSchema(Schema):
     profile = fields.String(required=True, validate=validate_profile)
     region = fields.String(required=True, validate=validate_region)
 
-    # pylint: disable=unused-argument
-    @validates_schema
-    def check_unknown_fields(self, original_data, **kwargs):
-        _validate_unknown_fields(self.fields, original_data)
-
 
 class GateConfigSchema(Schema):
     defaults = fields.Nested(DefaultsSchema, required=False, missing=dict(), validate=validate_defaults)
     hosts = fields.List(fields.Nested(HostSchema), required=False, missing=list())
 
-    # pylint: disable=unused-argument
-    @validates_schema
-    def check_unknown_fields(self, original_data, **kwargs):
-        _validate_unknown_fields(self.fields, original_data)
-
-    # pylint: disable=no-self-use
+    # pylint: disable=no-self-use,unused-argument
     @post_load
     def create_config(self, data, **kwargs):
         return GateConfig(**data)

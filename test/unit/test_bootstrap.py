@@ -1,12 +1,21 @@
 import unittest
 from unittest.mock import patch, MagicMock, call, mock_open
 
-from aws_gate.bootstrap import Plugin, MacPlugin, bootstrap
+import requests
+
+from aws_gate.bootstrap import Plugin, MacPlugin, bootstrap, _check_plugin_version
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH
 from aws_gate.exceptions import UnsupportedPlatormError
 
 
 class TestBootstrap(unittest.TestCase):
+    def test_check_plugin_version(self):
+        with patch('aws_gate.bootstrap.execute') as m:
+            _check_plugin_version()
+
+            self.assertTrue(m.called)
+            self.assertEqual(m.call_args, call(PLUGIN_INSTALL_PATH, ['--version'], capture_output=True))
+
     def test_plugin_is_installed(self):
         with patch('aws_gate.bootstrap.shutil.which', return_value=PLUGIN_INSTALL_PATH):
             plugin = Plugin()
@@ -30,6 +39,16 @@ class TestBootstrap(unittest.TestCase):
             plugin.download()
 
             self.assertTrue(requests_mock.get.called)
+
+    def test_plugin_download_exception(self):
+        plugin = Plugin()
+        with patch('aws_gate.bootstrap.os'), \
+             patch('aws_gate.bootstrap.shutil'), \
+             patch('aws_gate.bootstrap.logger.error') as m, \
+             patch('aws_gate.bootstrap.requests.get', side_effect=requests.exceptions.HTTPError):
+            plugin.download()
+
+            self.assertTrue(m.called)
 
     def test_mac_plugin_extract_invalid_zip(self):
         plugin = MacPlugin()
