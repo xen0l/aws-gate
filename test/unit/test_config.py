@@ -38,6 +38,10 @@ class TestConfig(unittest.TestCase):
         with self.assertRaises(EmptyConfigurationError):
             self._load_config_files(config_files=self._locate_test_file())
 
+    def test_config_invalid_attribute(self):
+        with self.assertRaises(ValidationError):
+            self._load_config_files(config_files=self._locate_test_file())
+
     def test_valid_config(self):
         expected_config = {
             'defaults': {
