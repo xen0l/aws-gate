@@ -1,10 +1,10 @@
 import argparse
 import unittest
-from unittest.mock import patch, MagicMock, create_autospec
+from unittest.mock import patch, MagicMock, create_autospec, call
 
 from marshmallow import ValidationError
 
-from aws_gate.cli import main, _get_profile, _get_region
+from aws_gate.cli import main, _get_profile, _get_region, parse_arguments
 
 
 class TestCli(unittest.TestCase):
@@ -68,3 +68,36 @@ class TestCli(unittest.TestCase):
             main()
 
             self.assertTrue(m.called)
+
+    def test_cli_ssh_config(self):
+        with patch('aws_gate.cli.parse_arguments', return_value=MagicMock(subcommand='ssh-config')), \
+             patch('aws_gate.cli.ssh_config') as m:
+            main()
+
+            self.assertTrue(m.called)
+
+    def test_cli_ssh_proxy(self):
+        with patch('aws_gate.cli.parse_arguments', return_value=MagicMock(subcommand='ssh-proxy')), \
+             patch('aws_gate.cli.ssh_proxy') as m:
+            main()
+
+            self.assertTrue(m.called)
+
+    def test_cli_parse_arguments_unknown_subcommand(self):
+
+        parser_mock = MagicMock()
+        parser_mock.configure_mock(**{
+            'parse_args.return_value': MagicMock(subcommand=False)
+        })
+
+        with patch('aws_gate.cli.argparse.ArgumentParser', return_value=parser_mock), \
+                patch('sys.exit') as exit_mock:
+            parse_arguments()
+
+            self.assertTrue(parser_mock.print_help.called)
+            self.assertTrue(exit_mock.called)
+            # TODO:
+            # - consider switching this to sys.exit(1)f
+            self.assertEqual(exit_mock.call_args, call(0))
+
+
