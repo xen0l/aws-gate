@@ -84,14 +84,13 @@ class TestCli(unittest.TestCase):
             self.assertTrue(m.called)
 
     def test_cli_parse_arguments_unknown_subcommand(self):
-
         parser_mock = MagicMock()
         parser_mock.configure_mock(**{
             'parse_args.return_value': MagicMock(subcommand=False)
         })
 
         with patch('aws_gate.cli.argparse.ArgumentParser', return_value=parser_mock), \
-                patch('sys.exit') as exit_mock:
+             patch('sys.exit') as exit_mock:
             parse_arguments()
 
             self.assertTrue(parser_mock.print_help.called)
@@ -99,5 +98,3 @@ class TestCli(unittest.TestCase):
             # TODO:
             # - consider switching this to sys.exit(1)f
             self.assertEqual(exit_mock.call_args, call(0))
-
-
