@@ -95,6 +95,4 @@ class TestCli(unittest.TestCase):
 
             self.assertTrue(parser_mock.print_help.called)
             self.assertTrue(exit_mock.called)
-            # TODO:
-            # - consider switching this to sys.exit(1)f
-            self.assertEqual(exit_mock.call_args, call(0))
+            self.assertEqual(exit_mock.call_args, call(1))
