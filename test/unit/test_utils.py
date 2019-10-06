@@ -58,14 +58,28 @@ class TestUtils(unittest.TestCase):
             _create_aws_session(region_name='eu-west-1')
 
             self.assertTrue(session_mock.Session.called)
-            self.assertEqual(session_mock.Session.mock_calls, [call(region_name='eu-west-1')])
+            self.assertEqual(session_mock.Session.call_args, call(region_name='eu-west-1'))
 
     def test_create_aws_session_with_profile(self):
         with patch('aws_gate.utils.boto3.session', return_value=MagicMock()) as session_mock:
             _create_aws_session(region_name='eu-west-1', profile_name='default')
 
             self.assertTrue(session_mock.Session.called)
-            self.assertEqual(session_mock.Session.mock_calls, [call(region_name='eu-west-1', profile_name='default')])
+            self.assertEqual(session_mock.Session.call_args, call(region_name='eu-west-1', profile_name='default'))
+
+    def test_create_aws_profile_credentials_from_env_vars(self):
+        credentials_dict = {
+            'AWS_ACCESS_KEY_ID': 'a',
+            'AWS_SECRET_ACCESS_KEY': 'b',
+            'AWS_SESSION_TOKEN': 'c'
+        }
+        with patch('aws_gate.utils.boto3.session', return_value=MagicMock()) as session_mock, \
+                patch.dict(os.environ, credentials_dict):
+            _create_aws_session()
+
+            self.assertTrue(session_mock.Session.called)
+            self.assertEqual(session_mock.Session.call_args,
+                             call(aws_access_key_id='a', aws_secret_access_key='b', aws_session_token='c'))
 
     def test_get_aws_client(self):
         with patch('aws_gate.utils._create_aws_session', return_value=MagicMock()) as mock:
