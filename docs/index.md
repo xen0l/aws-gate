@@ -10,7 +10,7 @@ aws-gate is a AWS SSM Session Manager CLI client. It aims to provide richer user
 * [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) bootstrapping
 * Querying instances by different instance identifiers
 * config and config.d support
-* SSH ProxyCommand support
+* SSH ProxyCommand support (allows to use ssh and scp over AWS SSM session)
 
 ## Motivation
 

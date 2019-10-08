@@ -45,3 +45,38 @@ _sesion-manager-plugin_ can be updated via _aws-gate_ itself:
 aws-gate bootstrap -f
 ```
 
+## EC2 Instance IAM profile configuration
+
+In order to use SSM, EC2 instnace has to use IAM profile with the **AmazonSSMManagedInstanceCore**  managed policy attached or custom policy with similar permissions.
+
+## Ephemeral SSH key support
+
+When using SSH ProxyCommand support, _aws-gate_ always generates ephemeral SSH key in _~/.aws-gate/key_. Then this SSH key is uploaded to the EC2 Instance metadata via [SendSSHPublicKey](https://docs.aws.amazon.com/ec2-instance-connect/latest/APIReference/API_SendSSHPublicKey.html) API function (feature of [EC2 Instance Connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Connect-using-EC2-Instance-Connect.html)). This means that on your EC2 instance, you need to have EC2 Instance Connect working (as simple as installing one package). Follow the instructions [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html#ec2-instance-connect-install).
+
+## Minimal IAM permissions for uploading ephemeral SSH keys
+
+When using _aws-gate_, ensure that you have the following permissions (replace $REGION and $ACCOUNTID with correct values):
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2-instance-connect:SendSSHPublicKey"
+            ],
+            "Resource": [
+                "arn:aws:ec2:$REGION:$ACCOUNTID:instance/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "ec2:osuser": "ec2-user"
+                }
+            }
+        }
+    ]
+}
+```
+
+I recommend creating a custom IAM policy and attaching to your IAM role.
