@@ -91,7 +91,7 @@ aws-gate session 34.245.174.13
 
 * private IP address
 ```
-aws-gate sssion 172.31.35.113
+aws-gate session 172.31.35.113
 ```
 
 * tags
