@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock, call, mock_open
 
 import requests
 
-from aws_gate.bootstrap import Plugin, MacPlugin, bootstrap, _check_plugin_version
+from aws_gate.bootstrap import Plugin, MacPlugin, bootstrap, _check_plugin_version, LinuxPlugin
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH
 from aws_gate.exceptions import UnsupportedPlatormError
 
@@ -20,11 +20,6 @@ class TestBootstrap(unittest.TestCase):
         with patch('aws_gate.bootstrap.shutil.which', return_value=PLUGIN_INSTALL_PATH):
             plugin = Plugin()
             self.assertFalse(plugin.is_installed)
-
-    def test_plugin_install_raises_notimplementederror(self):
-        plugin = Plugin()
-        with self.assertRaises(NotImplementedError):
-            plugin.install()
 
     def test_plugin_extract_raises_notimplementederror(self):
         plugin = Plugin()
@@ -45,7 +40,7 @@ class TestBootstrap(unittest.TestCase):
         with patch('aws_gate.bootstrap.os'), \
              patch('aws_gate.bootstrap.shutil'), \
              patch('aws_gate.bootstrap.logger.error') as m, \
-             patch('aws_gate.bootstrap.requests.get', side_effect=requests.exceptions.HTTPError):
+                patch('aws_gate.bootstrap.requests.get', side_effect=requests.exceptions.HTTPError):
             plugin.download()
 
             self.assertTrue(m.called)
@@ -79,6 +74,16 @@ class TestBootstrap(unittest.TestCase):
             self.assertTrue(shutil_mock.copyfileobj.called)
             self.assertTrue(os_mock.chmod.called)
 
+    def test_linux_plugin_extract_valid(self):
+        plugin = LinuxPlugin()
+        with patch('aws_gate.bootstrap.unix_ar') as unix_ar_mock, \
+                patch('aws_gate.bootstrap.tarfile') as tarfile_mock, \
+                patch('aws_gate.bootstrap.os.path.split'):
+            plugin.extract()
+
+            self.assertTrue(unix_ar_mock.open.called)
+            self.assertTrue(tarfile_mock.open.called)
+
     def test_bootstrap_unsupported_platform(self):
         with patch('aws_gate.bootstrap.platform.system', return_value='non-existing-os'):
             with self.assertRaises(UnsupportedPlatormError):
@@ -87,6 +92,13 @@ class TestBootstrap(unittest.TestCase):
     def test_bootstrap_darwin(self):
         with patch('aws_gate.bootstrap.platform.system', return_value='Darwin'), \
              patch('aws_gate.bootstrap.MacPlugin', return_value=MagicMock()) as mock:
+            bootstrap()
+
+            self.assertTrue(mock.called)
+
+    def test_bootstrap_linux(self):
+        with patch('aws_gate.bootstrap.platform.system', return_value='Linux'), \
+             patch('aws_gate.bootstrap.LinuxPlugin', return_value=MagicMock()) as mock:
             bootstrap()
 
             self.assertTrue(mock.called)

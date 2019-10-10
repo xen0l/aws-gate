@@ -4,3 +4,4 @@ PyYAML>=5.1,<5.2
 requests==2.22.0
 cryptography==2.7
 wrapt==1.11.2
+unix-ar==0.2.1

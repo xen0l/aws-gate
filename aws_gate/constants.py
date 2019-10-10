@@ -22,4 +22,14 @@ PLUGIN_INSTALL_PATH = os.path.join(DEFAULT_GATE_BIN_PATH, PLUGIN_NAME)
 
 DEFAULT_GATE_KEY_PATH = os.path.join(DEFAULT_GATE_DIR, 'key')
 
-MAC_PLUGIN_URL = 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip'
+SSM_PLUGIN_BASE_URL = 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest'
+SSM_PLUGIN_PATH = {
+    'Darwin': {
+        'download': SSM_PLUGIN_BASE_URL + '/mac/sessionmanager-bundle.zip',
+        'bundle': os.path.join('sessionmanager-bundle', 'bin', PLUGIN_NAME)
+    },
+    'Linux': {
+        'download': SSM_PLUGIN_BASE_URL + '/ubuntu_64bit/session-manager-plugin.deb',
+        'bundle': os.path.join('usr', 'local', 'sessionmanagerplugin', 'bin', PLUGIN_NAME)
+    }
+}

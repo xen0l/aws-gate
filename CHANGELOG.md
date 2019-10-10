@@ -1,4 +1,9 @@
-0.5.0 (unreleased)
+0.6.0 (unreleased)
+------------------
+
+* Add support for Linux in **bootstrap**
+
+0.5.0 (2019-10-04)
 ------------------
 
 * Add **ssh-proxy** command to be able to use ssh over Session Manager session
