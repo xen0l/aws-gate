@@ -18,12 +18,12 @@ class EmptyConfigurationError(Exception):
 
 def validate_profile(profile):
     if not is_existing_profile(profile):
-        raise ValidationError('Invalid profile provided: {}'.format(profile))
+        raise ValidationError("Invalid profile provided: {}".format(profile))
 
 
 def validate_region(region):
     if not is_existing_region(region):
-        raise ValidationError('Invalid region name provided: {}'.format(region))
+        raise ValidationError("Invalid region name provided: {}".format(region))
 
 
 def validate_defaults(data):
@@ -44,7 +44,9 @@ class HostSchema(Schema):
 
 
 class GateConfigSchema(Schema):
-    defaults = fields.Nested(DefaultsSchema, required=False, missing=dict(), validate=validate_defaults)
+    defaults = fields.Nested(
+        DefaultsSchema, required=False, missing=dict(), validate=validate_defaults
+    )
     hosts = fields.List(fields.Nested(HostSchema), required=False, missing=list())
 
     # pylint: disable=no-self-use,unused-argument
@@ -68,18 +70,18 @@ class GateConfig:
 
     @property
     def default_region(self):
-        if 'region' in self._defaults:
-            return self._defaults['region']
+        if "region" in self._defaults:
+            return self._defaults["region"]
         return None
 
     @property
     def default_profile(self):
-        if 'profile' in self._defaults:
-            return self._defaults['profile']
+        if "profile" in self._defaults:
+            return self._defaults["profile"]
         return None
 
     def get_host(self, name):
-        host = [host for host in self._hosts if host['alias'] == name]
+        host = [host for host in self._hosts if host["alias"] == name]
         if host:
             return host[0]
         return {}
@@ -93,11 +95,11 @@ def _locate_config_files():
         for f in configd_files:
             file_path = os.path.join(DEFAULT_GATE_CONFIGD_PATH, f)
             if os.path.isfile(file_path):
-                logger.debug('Located config file: %s', file_path)
+                logger.debug("Located config file: %s", file_path)
                 config_files.append(file_path)
 
     if os.path.isfile(DEFAULT_GATE_CONFIG_PATH):
-        logger.debug('Located config file: %s', DEFAULT_GATE_CONFIG_PATH)
+        logger.debug("Located config file: %s", DEFAULT_GATE_CONFIG_PATH)
         config_files.append(DEFAULT_GATE_CONFIG_PATH)
 
     return config_files
@@ -112,7 +114,11 @@ def _merge_data(src, dst):
                 else:
                     dst[key] = src[key]
         else:
-            raise TypeError('Cannot merge {} with dict, src={} dst={}'.format(type(src).__name__, src, dst))
+            raise TypeError(
+                "Cannot merge {} with dict, src={} dst={}".format(
+                    type(src).__name__, src, dst
+                )
+            )
 
     elif isinstance(dst, list):
         if isinstance(src, list):
@@ -133,14 +139,14 @@ def load_config_from_files(config_files=None):
     if config_files:
         for path in config_files:
             try:
-                with open(path, 'r') as config_file:
+                with open(path, "r") as config_file:
                     data = yaml.safe_load(config_file) or {}
             except (ConstructorError, ParserError):
                 data = {}
             _merge_data(data, config_data)
 
         if not config_data:
-            raise EmptyConfigurationError('Empty configuration data')
+            raise EmptyConfigurationError("Empty configuration data")
 
     config = GateConfigSchema().load(config_data)
     return config

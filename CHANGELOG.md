@@ -2,6 +2,8 @@
 ------------------
 
 * Add support for Linux in **bootstrap**
+* Black coding style is now used
+* pre-commit hooks are available for easier development
 
 0.5.0 (2019-10-04)
 ------------------

@@ -21,17 +21,14 @@ def _query_aws_api(filters, ec2=None):
 
     # We are always interested only in running EC2 instances as we cannot
     # open a session to terminated EC2 instance.
-    filters = filters + [{
-        'Name': 'instance-state-name',
-        'Values': ['running']
-    }]
+    filters = filters + [{"Name": "instance-state-name", "Values": ["running"]}]
 
     try:
         ec2_instances = list(ec2.instances.filter(Filters=filters))
-        logger.debug('Found %s maching instances', len(ec2_instances))
+        logger.debug("Found %s maching instances", len(ec2_instances))
         for i in ec2_instances:
             if i.instance_id:
-                logger.debug('Matching instance: %s', i.instance_id)
+                logger.debug("Matching instance: %s", i.instance_id)
                 ret = i.instance_id
     except botocore.exceptions.ClientError:
         raise AWSConnectionError
@@ -40,86 +37,71 @@ def _query_aws_api(filters, ec2=None):
 
 
 def getinstanceidbyprivatednsname(name, ec2=None):
-    filters = [{
-        'Name': 'private-dns-name',
-        'Values': [name]
-    }]
+    filters = [{"Name": "private-dns-name", "Values": [name]}]
     return _query_aws_api(filters=filters, ec2=ec2)
 
 
 def getinstanceidbydnsname(name, ec2=None):
-    filters = [{
-        'Name': 'dns-name',
-        'Values': [name]
-    }]
+    filters = [{"Name": "dns-name", "Values": [name]}]
     return _query_aws_api(filters=filters, ec2=ec2)
 
 
 def getinstanceidbyprivateipaddress(name, ec2=None):
-    filters = [{
-        'Name': 'private-ip-address',
-        'Values': [name]
-    }]
+    filters = [{"Name": "private-ip-address", "Values": [name]}]
     return _query_aws_api(filters=filters, ec2=ec2)
 
 
 def getinstanceidbyipaddress(name, ec2=None):
-    filters = [{
-        'Name': 'ip-address',
-        'Values': [name]
-    }]
+    filters = [{"Name": "ip-address", "Values": [name]}]
     return _query_aws_api(filters=filters, ec2=ec2)
 
 
 def getinstanceidbytag(name, ec2=None):
-    key, value = name.split(':')
+    key, value = name.split(":")
 
-    filters = [{
-        'Name': 'tag:{}'.format(key),
-        'Values': [value]
-    }]
+    filters = [{"Name": "tag:{}".format(key), "Values": [value]}]
 
     return _query_aws_api(filters=filters, ec2=ec2)
 
 
 def getinstanceidbyinstancename(name, ec2=None):
-    return getinstanceidbytag('Name:{}'.format(name), ec2=ec2)
+    return getinstanceidbytag("Name:{}".format(name), ec2=ec2)
 
 
 def query_instance(name, ec2=None):
     if ec2 is None:
-        raise ValueError('EC2 client is not initialized')
+        raise ValueError("EC2 client is not initialized")
 
-    logger.debug('Querying EC2 API for instance identifier: %s', name)
+    logger.debug("Querying EC2 API for instance identifier: %s", name)
 
     identifier_type = None
     func_dispatcher = {
-        'dns-name': getinstanceidbydnsname,
-        'private-dns-name': getinstanceidbyprivatednsname,
-        'ip-address': getinstanceidbyipaddress,
-        'private-ip-address': getinstanceidbyprivateipaddress,
-        'tag': getinstanceidbytag,
-        'name': getinstanceidbyinstancename,
+        "dns-name": getinstanceidbydnsname,
+        "private-dns-name": getinstanceidbyprivatednsname,
+        "ip-address": getinstanceidbyipaddress,
+        "private-ip-address": getinstanceidbyprivateipaddress,
+        "tag": getinstanceidbytag,
+        "name": getinstanceidbyinstancename,
     }
 
     # If we are provided with instance ID directly, we don't need to contact EC2
     # API and can return the value directly.
-    if name.startswith('id-') or name.startswith('i-'):
+    if name.startswith("id-") or name.startswith("i-"):
         return name
 
     if _is_valid_ip(name):
         if not ipaddress.ip_address(name).is_private:
-            identifier_type = 'ip-address'
+            identifier_type = "ip-address"
         else:
-            identifier_type = 'private-ip-address'
+            identifier_type = "private-ip-address"
     else:
-        if name.endswith('compute.amazonaws.com'):
-            identifier_type = 'dns-name'
-        elif name.endswith('compute.internal'):
-            identifier_type = 'private-dns-name'
-        elif name.count(':') == 1:
-            identifier_type = 'tag'
+        if name.endswith("compute.amazonaws.com"):
+            identifier_type = "dns-name"
+        elif name.endswith("compute.internal"):
+            identifier_type = "private-dns-name"
+        elif name.count(":") == 1:
+            identifier_type = "tag"
         else:
-            identifier_type = 'name'
+            identifier_type = "name"
 
     return func_dispatcher[identifier_type](name=name, ec2=ec2)

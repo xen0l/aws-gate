@@ -9,8 +9,16 @@ from yaml.scanner import ScannerError
 from aws_gate import __version__, __description__
 from aws_gate.bootstrap import bootstrap
 from aws_gate.config import load_config_from_files
-from aws_gate.constants import SUPPORTED_KEY_TYPES, DEBUG, AWS_DEFAULT_REGION, AWS_DEFAULT_PROFILE, DEFAULT_OS_USER, \
-    DEFAULT_SSH_PORT, DEFAULT_KEY_ALGORITHM, DEFAULT_KEY_SIZE
+from aws_gate.constants import (
+    SUPPORTED_KEY_TYPES,
+    DEBUG,
+    AWS_DEFAULT_REGION,
+    AWS_DEFAULT_PROFILE,
+    DEFAULT_OS_USER,
+    DEFAULT_SSH_PORT,
+    DEFAULT_KEY_ALGORITHM,
+    DEFAULT_KEY_SIZE,
+)
 from aws_gate.list import list_instances
 from aws_gate.session import session
 from aws_gate.ssh_config import ssh_config
@@ -22,57 +30,85 @@ logger = logging.getLogger(__name__)
 
 def _get_profile(args, config, default):
     profile = None
-    if hasattr(args, 'profile'):
+    if hasattr(args, "profile"):
         profile = args.profile
     return profile or config.default_profile or default
 
 
 def _get_region(args, config, default):
     region = None
-    if hasattr(args, 'region'):
+    if hasattr(args, "region"):
         region = args.region
     return region or config.default_region or default
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description=__description__)
-    parser.add_argument('-v', '--verbose', help='increase output verbosity',
-                        action='store_true')
-    parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
-    subparsers = parser.add_subparsers(title='subcommands', dest='subcommand')
+    parser.add_argument(
+        "-v", "--verbose", help="increase output verbosity", action="store_true"
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=__version__),
+    )
+    subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
     # 'bootstrap' subcommand
-    bootstrap_parser = subparsers.add_parser('bootstrap', help='Download and install session-manager-plugin')
-    bootstrap_parser.add_argument('-f', '--force', action='store_true', help='Forces bootstrap operation')
+    bootstrap_parser = subparsers.add_parser(
+        "bootstrap", help="Download and install session-manager-plugin"
+    )
+    bootstrap_parser.add_argument(
+        "-f", "--force", action="store_true", help="Forces bootstrap operation"
+    )
 
     # 'session' subcommand
-    session_parser = subparsers.add_parser('session', help='Open new session on instance and connect to it')
-    session_parser.add_argument('-p', '--profile', help='AWS profile to use')
-    session_parser.add_argument('-r', '--region', help='AWS region to use')
-    session_parser.add_argument('instance_name', help='Instance we wish to open session to')
+    session_parser = subparsers.add_parser(
+        "session", help="Open new session on instance and connect to it"
+    )
+    session_parser.add_argument("-p", "--profile", help="AWS profile to use")
+    session_parser.add_argument("-r", "--region", help="AWS region to use")
+    session_parser.add_argument(
+        "instance_name", help="Instance we wish to open session to"
+    )
 
     # 'ssh_config' subcommand
-    ssh_config_parser = subparsers.add_parser('ssh-config', help='Generate SSH configuration file')
-    ssh_config_parser.add_argument('-p', '--profile', help='AWS profile to use')
-    ssh_config_parser.add_argument('-r', '--region', help='AWS region to use')
-    ssh_config_parser.add_argument('-l', '--os-user', type=str, default=DEFAULT_OS_USER)
-    ssh_config_parser.add_argument('-P', '--port', type=int, default=DEFAULT_SSH_PORT)
+    ssh_config_parser = subparsers.add_parser(
+        "ssh-config", help="Generate SSH configuration file"
+    )
+    ssh_config_parser.add_argument("-p", "--profile", help="AWS profile to use")
+    ssh_config_parser.add_argument("-r", "--region", help="AWS region to use")
+    ssh_config_parser.add_argument("-l", "--os-user", type=str, default=DEFAULT_OS_USER)
+    ssh_config_parser.add_argument("-P", "--port", type=int, default=DEFAULT_SSH_PORT)
 
     # 'ssh-proxy' subcommand
-    ssh_proxy_parser = subparsers.add_parser('ssh-proxy', help='Open new SSH proxy session to instance')
-    ssh_proxy_parser.add_argument('-p', '--profile', help='AWS profile to use')
-    ssh_proxy_parser.add_argument('-r', '--region', help='AWS region to use')
-    ssh_proxy_parser.add_argument('-l', '--os-user', type=str, default=DEFAULT_OS_USER)
-    ssh_proxy_parser.add_argument('-P', '--port', type=int, default=DEFAULT_SSH_PORT)
-    ssh_proxy_parser.add_argument('--key-type', type=str, default=DEFAULT_KEY_ALGORITHM,
-                                  choices=SUPPORTED_KEY_TYPES, help=argparse.SUPPRESS)
-    ssh_proxy_parser.add_argument('--key-size', type=int, default=DEFAULT_KEY_SIZE, help=argparse.SUPPRESS)
-    ssh_proxy_parser.add_argument('instance_name', help='Instance we wish to open session to')
+    ssh_proxy_parser = subparsers.add_parser(
+        "ssh-proxy", help="Open new SSH proxy session to instance"
+    )
+    ssh_proxy_parser.add_argument("-p", "--profile", help="AWS profile to use")
+    ssh_proxy_parser.add_argument("-r", "--region", help="AWS region to use")
+    ssh_proxy_parser.add_argument("-l", "--os-user", type=str, default=DEFAULT_OS_USER)
+    ssh_proxy_parser.add_argument("-P", "--port", type=int, default=DEFAULT_SSH_PORT)
+    ssh_proxy_parser.add_argument(
+        "--key-type",
+        type=str,
+        default=DEFAULT_KEY_ALGORITHM,
+        choices=SUPPORTED_KEY_TYPES,
+        help=argparse.SUPPRESS,
+    )
+    ssh_proxy_parser.add_argument(
+        "--key-size", type=int, default=DEFAULT_KEY_SIZE, help=argparse.SUPPRESS
+    )
+    ssh_proxy_parser.add_argument(
+        "instance_name", help="Instance we wish to open session to"
+    )
 
     # 'list' subcommand
-    ls_parser = subparsers.add_parser('list', aliases=['ls'], help='List available instances')
-    ls_parser.add_argument('-p', '--profile', help='AWS profile to use')
-    ls_parser.add_argument('-r', '--region', help='AWS region to use')
+    ls_parser = subparsers.add_parser(
+        "list", aliases=["ls"], help="List available instances"
+    )
+    ls_parser.add_argument("-p", "--profile", help="AWS profile to use")
+    ls_parser.add_argument("-r", "--region", help="AWS region to use")
 
     args = parser.parse_args()
 
@@ -84,15 +120,16 @@ def parse_arguments():
 
 
 def main():
-    # We want to provide default values in cases they are not configured in ~/.aws/config or availabe as
-    # environment variables
+    # We want to provide default values in cases they are not configured
+    # in ~/.aws/config or availabe a environment variables
     default_region = get_default_region()
     if default_region is None:
         default_region = AWS_DEFAULT_REGION
 
-    # We try to obtain default profile from the environment or use 'default' to save call to boto3.
-    # boto3 will also return 'default': https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
-    default_profile = os.environ.get('AWS_PROFILE') or AWS_DEFAULT_PROFILE
+    # We try to obtain default profile from the environment or use 'default' to
+    # save call to boto3. boto3 will also return'default':
+    # https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
+    default_profile = os.environ.get("AWS_PROFILE") or AWS_DEFAULT_PROFILE
 
     args = parse_arguments()
 
@@ -100,44 +137,59 @@ def main():
         sys.excepthook = lambda exc_type, exc_value, traceback: logger.error(exc_value)
 
     log_level = logging.ERROR
-    log_format = '%(message)s'
+    log_format = "%(message)s"
 
     # We want to silence dependencies
-    logging.getLogger('botocore').setLevel(logging.CRITICAL)
-    logging.getLogger('boto3').setLevel(logging.CRITICAL)
-    logging.getLogger('urllib3').setLevel(logging.CRITICAL)
+    logging.getLogger("botocore").setLevel(logging.CRITICAL)
+    logging.getLogger("boto3").setLevel(logging.CRITICAL)
+    logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 
     if args.verbose:
         log_level = logging.INFO
 
     if DEBUG:
         log_level = logging.DEBUG
-        log_format = '%(asctime)s - %(name)-28s - %(levelname)-5s - %(message)s'
+        log_format = "%(asctime)s - %(name)-28s - %(levelname)-5s - %(message)s"
 
     logging.basicConfig(level=log_level, stream=sys.stderr, format=log_format)
 
     try:
         config = load_config_from_files()
     except (ValidationError, ScannerError) as e:
-        raise ValueError('Invalid configuration provided: {}'.format(e))
+        raise ValueError("Invalid configuration provided: {}".format(e))
 
     profile = _get_profile(args=args, config=config, default=default_profile)
     region = _get_region(args=args, config=config, default=default_region)
 
     logger.debug('Using AWS profile "%s" in region "%s"', profile, region)
 
-    if args.subcommand == 'bootstrap':
+    if args.subcommand == "bootstrap":
         bootstrap(force=args.force)
-    if args.subcommand == 'session':
-        session(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile)
-    if args.subcommand == 'ssh-config':
-        ssh_config(region_name=region, profile_name=profile, user=args.os_user, port=args.port)
-    if args.subcommand == 'ssh-proxy':
-        ssh_proxy(config=config, instance_name=args.instance_name, region_name=region, profile_name=profile,
-                  user=args.os_user, port=args.port, key_type=args.key_type, key_size=args.key_size)
-    if args.subcommand in ['ls', 'list']:
+    if args.subcommand == "session":
+        session(
+            config=config,
+            instance_name=args.instance_name,
+            region_name=region,
+            profile_name=profile,
+        )
+    if args.subcommand == "ssh-config":
+        ssh_config(
+            region_name=region, profile_name=profile, user=args.os_user, port=args.port
+        )
+    if args.subcommand == "ssh-proxy":
+        ssh_proxy(
+            config=config,
+            instance_name=args.instance_name,
+            region_name=region,
+            profile_name=profile,
+            user=args.os_user,
+            port=args.port,
+            key_type=args.key_type,
+            key_size=args.key_size,
+        )
+    if args.subcommand in ["ls", "list"]:
         list_instances(region_name=region, profile_name=profile)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
