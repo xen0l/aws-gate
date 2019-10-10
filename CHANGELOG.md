@@ -1,4 +1,4 @@
-0.6.0 (unreleased)
+0.6.0 (2019-10-11)
 ------------------
 
 * Add support for Linux in **bootstrap**
