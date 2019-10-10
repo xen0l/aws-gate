@@ -2,12 +2,14 @@ import logging
 import os
 import platform
 import shutil
+import tarfile
 import tempfile
 import zipfile
 
 import requests
+import unix_ar
 
-from aws_gate.constants import MAC_PLUGIN_URL, DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH, PLUGIN_NAME
+from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH, PLUGIN_NAME, SSM_PLUGIN_PATH
 from aws_gate.exceptions import UnsupportedPlatormError
 from aws_gate.utils import execute
 
@@ -42,28 +44,9 @@ class Plugin:
         except requests.exceptions.HTTPError as e:
             logger.error('HTTP error while downloading %s: %s', self.url, e)
 
-    def extract(self):
-        raise NotImplementedError
-
-    def install(self):
-        raise NotImplementedError
-
-
-class MacPlugin(Plugin):
-    url = MAC_PLUGIN_URL
-
-    def extract(self):
-        if not zipfile.is_zipfile(self.download_path):
-            raise ValueError('Invalid macOS session-manager-plugin ZIP file found {}'.format(self.download_path))
-
-        with zipfile.ZipFile(self.download_path, 'r') as zip_file:
-            download_dir = os.path.split(self.download_path)[0]
-            logger.debug('Extracting session-manager-plugin archive at %s', download_dir)
-            zip_file.extractall(download_dir)
-
     def install(self):
         download_dir = os.path.split(self.download_path)[0]
-        plugin_src_path = os.path.join(download_dir, 'sessionmanager-bundle', 'bin', PLUGIN_NAME)
+        plugin_src_path = os.path.join(download_dir, SSM_PLUGIN_PATH[platform.system()]['bundle'])
         plugin_dst_path = PLUGIN_INSTALL_PATH
 
         if not os.path.exists(DEFAULT_GATE_BIN_PATH):
@@ -80,11 +63,41 @@ class MacPlugin(Plugin):
         version = _check_plugin_version(PLUGIN_INSTALL_PATH)
         print('{} (version {}) installed successfully!'.format(PLUGIN_NAME, version))
 
+    def extract(self):
+        raise NotImplementedError
+
+
+class MacPlugin(Plugin):
+    url = SSM_PLUGIN_PATH['Darwin']['download']
+
+    def extract(self):
+        if not zipfile.is_zipfile(self.download_path):
+            raise ValueError('Invalid macOS session-manager-plugin ZIP file found {}'.format(self.download_path))
+
+        with zipfile.ZipFile(self.download_path, 'r') as zip_file:
+            download_dir = os.path.split(self.download_path)[0]
+            logger.debug('Extracting session-manager-plugin archive at %s', download_dir)
+            zip_file.extractall(download_dir)
+
+
+class LinuxPlugin(Plugin):
+    url = SSM_PLUGIN_PATH['Linux']['download']
+
+    def extract(self):
+        ar_file = unix_ar.open(self.download_path)
+        tarball = ar_file.open('data.tar.gz/')
+        tar_file = tarfile.open(fileobj=tarball)
+        download_dir = os.path.split(self.download_path)[0]
+        logger.debug('Extracting session-manager-plugin archive at %s', download_dir)
+        tar_file.extractall(download_dir)
+
 
 def bootstrap(force=False):
     system = platform.system()
     if system == 'Darwin':
         plugin = MacPlugin()
+    elif system == 'Linux':
+        plugin = LinuxPlugin()
     else:
         raise UnsupportedPlatormError('Unable to bootstrap session-manager-plugin on {}'.format(system))
 
