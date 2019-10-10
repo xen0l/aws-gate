@@ -14,7 +14,7 @@ install:
 before_script:
   - pytest --version
 script:
-  - ./test/run.py
+  - ./tests/run.py
 after_success:
   - codecov
 deploy:

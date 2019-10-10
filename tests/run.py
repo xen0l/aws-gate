@@ -33,7 +33,7 @@ if not os.path.exists(report_dir):
 if "PLACEBO_MODE" not in os.environ:
     os.environ["PLACEBO_MODE"] = "playback"
 
-os.environ["PLACEBO_DIR"] = os.path.join(root_dir, "test", "unit", "placebo")
+os.environ["PLACEBO_DIR"] = os.path.join(root_dir, "tests", "unit", "placebo")
 
 cmd = ["pytest", "--verbose"]
 
