@@ -120,14 +120,15 @@ def parse_arguments():
 
 
 def main():
-    # We want to provide default values in cases they are not configured in ~/.aws/config or availabe as
-    # environment variables
+    # We want to provide default values in cases they are not configured
+    # in ~/.aws/config or availabe a environment variables
     default_region = get_default_region()
     if default_region is None:
         default_region = AWS_DEFAULT_REGION
 
-    # We try to obtain default profile from the environment or use 'default' to save call to boto3.
-    # boto3 will also return 'default': https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
+    # We try to obtain default profile from the environment or use 'default' to
+    # save call to boto3. boto3 will also return'default':
+    # https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
     default_profile = os.environ.get("AWS_PROFILE") or AWS_DEFAULT_PROFILE
 
     args = parse_arguments()
