@@ -13,8 +13,9 @@ from aws_gate.exceptions import AWSConnectionError
 
 logger = logging.getLogger(__name__)
 
-# This list is maintained by hand as new regions are not added that often. This should be removed once, we find a
-# better way how to obtain region list without the need to contact AWS EC2 API
+# This list is maintained by hand as new regions are not added that often. This should be
+# removed once, we find a better way how to obtain region list without the need to
+# contact AWS EC2 API
 AWS_REGIONS = [
     "ap-northeast-1",
     "ap-northeast-2",
