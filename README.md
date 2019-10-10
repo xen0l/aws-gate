@@ -3,6 +3,8 @@
 
 AWS SSM Session manager client
 
+[Documentation](https://aws-gate.readthedocs.io)
+
 ## Motivation
 
 I am using AWS a lot and I am tired of dealing with everything that comes with the bastion host (additional instance one has to maintain, distribute SSH keys (shared SSH keys are not an option for me), exposing SSH to the network). A while ago, Amazon released a service to fix this - [AWS Systems Manager Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html). However, CLI user experience of Session Manager is limited and lacks some features:
@@ -89,7 +91,7 @@ aws-gate session 34.245.174.13
 
 * private IP address
 ```
-aws-gate sssion 172.31.35.113
+aws-gate session 172.31.35.113
 ```
 
 * tags
