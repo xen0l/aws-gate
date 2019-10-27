@@ -1,4 +1,5 @@
 import unittest
+from datetime import timedelta
 from unittest.mock import patch, mock_open, MagicMock, call
 
 from hypothesis import given, example, settings
@@ -20,7 +21,7 @@ class TestSSHCommon(unittest.TestCase):
             **{"public_key.return_value": "ssh-rsa ranodombase64string"}
         )
 
-    @settings(deadline=None)
+    @settings(deadline=timedelta(milliseconds=400))
     @given(sampled_from(SUPPORTED_KEY_TYPES), integers(min_value=KEY_MIN_SIZE))
     def test_initialize_key(self, key_type, key_size):
         key = SshKey(key_type=key_type)
@@ -29,6 +30,7 @@ class TestSSHCommon(unittest.TestCase):
         self.assertTrue(key.key_type, key_type)
         self.assertTrue(key.key_size, key_size)
 
+    @settings(deadline=timedelta(milliseconds=400))
     @given(sampled_from(SUPPORTED_KEY_TYPES))
     def test_ssh_public_key(self, key_type):
         key = SshKey(key_type=key_type)
@@ -57,7 +59,7 @@ class TestSSHCommon(unittest.TestCase):
         with self.assertRaises(ValueError):
             SshKey(key_path="")
 
-    @settings(deadline=None)
+    @settings(deadline=timedelta(milliseconds=400))
     @given(sampled_from(SUPPORTED_KEY_TYPES))
     def test_initialize_key_as_context_manager(self, key_type):
         with patch("builtins.open", new_callable=mock_open()) as open_mock, patch(
