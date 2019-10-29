@@ -5,7 +5,7 @@ flake8==3.7.9
 flake8-bugbear==19.8.0
 hypothesis==4.42.0
 placebo==0.9.0
-pre-commit==1.18.3
+pre-commit==1.20.0
 pylint==2.4.3
 pytest==5.2.2
 pytest-cov==2.8.1
