@@ -120,17 +120,6 @@ def parse_arguments():
 
 
 def main():
-    # We want to provide default values in cases they are not configured
-    # in ~/.aws/config or availabe a environment variables
-    default_region = get_default_region()
-    if default_region is None:
-        default_region = AWS_DEFAULT_REGION
-
-    # We try to obtain default profile from the environment or use 'default' to
-    # save call to boto3. boto3 will also return'default':
-    # https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
-    default_profile = os.environ.get("AWS_PROFILE") or AWS_DEFAULT_PROFILE
-
     args = parse_arguments()
 
     if not DEBUG:
@@ -157,6 +146,27 @@ def main():
         config = load_config_from_files()
     except (ValidationError, ScannerError) as e:
         raise ValueError("Invalid configuration provided: {}".format(e))
+
+    # We want to provide default values in cases they are not configured
+    # in ~/.aws/config or availabe a environment variables
+    default_region = get_default_region()
+    if default_region is None:
+        default_region = AWS_DEFAULT_REGION
+
+    # We try to obtain default profile from the environment or use 'default' to
+    # save a call to boto3. In the environment, we check if we are being called
+    # from aws-vault first or not. Then we return 'default' as boto3 will
+    # https://github.com/boto/boto3/blob/develop/boto3/session.py#L93
+    if "AWS_VAULT" in os.environ:
+        logger.debug(
+            "aws-vault usage detected, defaulting to the AWS profile from $AWS_VAULT"
+        )
+
+    default_profile = (
+        os.environ.get("AWS_VAULT")
+        or os.environ.get("AWS_PROFILE")
+        or AWS_DEFAULT_PROFILE
+    )
 
     profile = _get_profile(args=args, config=config, default=default_profile)
     region = _get_region(args=args, config=config, default=default_region)

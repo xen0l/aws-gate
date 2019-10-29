@@ -1,5 +1,6 @@
 import argparse
 import unittest
+import os
 from unittest.mock import patch, MagicMock, create_autospec, call
 
 from marshmallow import ValidationError
@@ -144,3 +145,22 @@ class TestCli(unittest.TestCase):
             self.assertTrue(parser_mock.print_help.called)
             self.assertTrue(exit_mock.called)
             self.assertEqual(exit_mock.call_args, call(1))
+
+    def test_cli_default_profile_from_aws_vault(self):
+        with patch.dict(os.environ, {"AWS_VAULT": "vault_profile"}), patch(
+            "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="list")
+        ), patch("aws_gate.decorators.is_existing_region", return_value=True), patch(
+            "aws_gate.decorators.is_existing_profile", return_value=True
+        ), patch(
+            "aws_gate.cli.list_instances"
+        ), patch(
+            "aws_gate.cli.logging.getLogger"
+        ) as logger_mock, patch(
+            "aws_gate.cli._get_profile"
+        ) as m:
+            main()
+
+            self.assertTrue(m.called)
+            self.assertEqual(m.call_args[1]["default"], "vault_profile")
+
+            self.assertTrue(logger_mock.called)
