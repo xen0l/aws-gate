@@ -1,3 +1,8 @@
+0.6.1 (2019-10-29)
+------------------
+
+* aws-gate will now use AWS profile from AWS_VAULT environment variable when called from aws-vault
+
 0.6.0 (2019-10-11)
 ------------------
 
