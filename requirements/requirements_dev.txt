@@ -1,7 +1,7 @@
 # https://github.com/HypothesisWorks/hypothesis/issues/2113 
 attrs>=19.2.0
 black==19.3b0
-flake8==3.7.8
+flake8==3.7.9
 flake8-bugbear==19.8.0
 hypothesis==4.42.0
 placebo==0.9.0
