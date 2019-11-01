@@ -21,6 +21,7 @@ from aws_gate.constants import (
 )
 from aws_gate.list import list_instances
 from aws_gate.session import session
+from aws_gate.ssh import ssh
 from aws_gate.ssh_config import ssh_config
 from aws_gate.ssh_proxy import ssh_proxy
 from aws_gate.utils import get_default_region
@@ -72,6 +73,25 @@ def parse_arguments():
         "instance_name", help="Instance we wish to open session to"
     )
 
+    # 'ssh' subcommand
+    ssh_parser = subparsers.add_parser(
+        "ssh", help="Open SSH session on instance and connect to it"
+    )
+    ssh_parser.add_argument("-p", "--profile", help="AWS profile to use")
+    ssh_parser.add_argument("-r", "--region", help="AWS region to use")
+    ssh_parser.add_argument("-l", "--os-user", type=str, default=DEFAULT_OS_USER)
+    ssh_parser.add_argument("-P", "--port", type=int, default=DEFAULT_SSH_PORT)
+    ssh_parser.add_argument(
+        "--key-type",
+        type=str,
+        default=DEFAULT_KEY_ALGORITHM,
+        choices=SUPPORTED_KEY_TYPES,
+        help=argparse.SUPPRESS,
+    )
+    ssh_parser.add_argument(
+        "--key-size", type=int, default=DEFAULT_KEY_SIZE, help=argparse.SUPPRESS
+    )
+    ssh_parser.add_argument("instance_name", help="Instance we wish to open session to")
     # 'ssh_config' subcommand
     ssh_config_parser = subparsers.add_parser(
         "ssh-config", help="Generate SSH configuration file"
@@ -181,6 +201,17 @@ def main():
             instance_name=args.instance_name,
             region_name=region,
             profile_name=profile,
+        )
+    if args.subcommand == "ssh":
+        ssh(
+            config=config,
+            instance_name=args.instance_name,
+            region_name=region,
+            profile_name=profile,
+            user=args.os_user,
+            port=args.port,
+            key_type=args.key_type,
+            key_size=args.key_size,
         )
     if args.subcommand == "ssh-config":
         ssh_config(
