@@ -47,7 +47,7 @@ aws-gate bootstrap -f
 
 ## EC2 Instance IAM profile configuration
 
-In order to use SSM, EC2 instnace has to use IAM profile with the **AmazonSSMManagedInstanceCore**  managed policy attached or custom policy with similar permissions.
+In order to use SSM, EC2 instance has to use IAM profile with the **AmazonSSMManagedInstanceCore**  managed policy attached or custom policy with similar permissions.
 
 ## Ephemeral SSH key support
 
