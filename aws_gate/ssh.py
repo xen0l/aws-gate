@@ -8,8 +8,8 @@ from aws_gate.constants import (
     DEFAULT_SSH_PORT,
     DEFAULT_KEY_ALGORITHM,
     DEFAULT_KEY_SIZE,
-    DEFAULT_GATE_KEY_PATH,
     PLUGIN_INSTALL_PATH,
+    DEBUG,
 )
 from aws_gate.decorators import (
     plugin_version,
@@ -48,6 +48,8 @@ class SshSession(BaseSession):
         self._port = port
         self._user = user
 
+        self._ssh_cmd = None
+
         self._session_parameters = {
             "Target": self._instance_id,
             "DocumentName": "AWS-StartSSHSession",
@@ -55,29 +57,41 @@ class SshSession(BaseSession):
         }
 
     def _build_ssh_command(self):
+        cmd = ["ssh", "-l", self._user, "-p", str(self._port), "-F", "/dev/null"]
 
-        plugin_args = [
-            json.dumps(self._response),
-            self._region_name,
-            "StartSession",
-            self._profile_name,
-            json.dumps(self._session_parameters),
-            "https://ssm.amazonaws.com",  # self._ssm.meta.endpoint_url,
-        ]
+        if DEBUG:
+            cmd.append("-vv")
+        else:
+            cmd.append("-q")
 
-        cmd = ["ssh"]
-        cmd.append("-F")
-        cmd.append("/dev/null")
-        cmd.append("-p")
-        cmd.append(str(self._port))
-        cmd.append("-l")
-        cmd.append(self._user)
-        cmd.append("-i")
-        cmd.append(DEFAULT_GATE_KEY_PATH)
         cmd.append("-o")
-        cmd.append("IdentitiesOnly=yes")
-        cmd.append("-o")
-        cmd.append("Proxycommand={} {}".format(PLUGIN_INSTALL_PATH, plugin_args))
+
+        #        cmd.append('ProxyCommand=sh -c "{} {} {}"'.format('aws-gate', 'ssh-proxy', self._instance_id))
+        _ = " ".join(
+            [
+                PLUGIN_INSTALL_PATH,
+                json.dumps(self._response),
+                self._region_name,
+                "StartSession",
+                self._profile_name,
+                json.dumps(self._session_parameters),
+                self._ssm.meta.endpoint_url,
+            ]
+        )
+
+        cmd.append(
+            # 'ProxyCommand="{} {}"'.format(
+            'ProxyCommand="aws-gate ssh-proxy %h"'.format(
+                PLUGIN_INSTALL_PATH,
+                json.dumps(self._response),
+                # self._region_name,
+                # "StartSession",
+                # self._profile_name,
+                # json.dumps(self._session_parameters),
+                # self._ssm.meta.endpoint_url,
+            )
+        )
+
         cmd.append(self._instance_id)
 
         return cmd
