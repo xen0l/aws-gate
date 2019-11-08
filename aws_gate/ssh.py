@@ -58,6 +58,10 @@ class SshSession(BaseSession):
             "Parameters": {"portNumber": [str(self._port)]},
         }
 
+    @property
+    def ssh_cmd(self):
+        return self._ssh_cmd
+
     def _build_ssh_command(self):
         cmd = [
             "ssh",
@@ -97,9 +101,9 @@ class SshSession(BaseSession):
         return cmd
 
     def open(self):
-        ssh_cmd = self._build_ssh_command()
+        self._ssh_cmd = self._build_ssh_command()
 
-        return execute(ssh_cmd[0], ssh_cmd[1:])
+        return execute(self._ssh_cmd[0], self._ssh_cmd[1:])
 
 
 @plugin_required
