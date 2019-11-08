@@ -74,6 +74,10 @@ class TestSSH(unittest.TestCase):
         ), patch("aws_gate.ssh.query_instance", return_value=self.instance_id), patch(
             "aws_gate.ssh.SshSession", return_value=MagicMock()
         ) as ssh_session_mock, patch(
+            "aws_gate.ssh_proxy.SshKey", return_value=self.ssh_key
+        ), patch(
+            "aws_gate.ssh_proxy.SshKeyUploader", return_value=MagicMock()
+        ), patch(
             "aws_gate.ssh.get_instance_details",
             return_value=self.get_instance_details_response,
         ), patch(
