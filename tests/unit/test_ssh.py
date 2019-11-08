@@ -55,7 +55,7 @@ class TestSSH(unittest.TestCase):
             sess.open()
 
             self.assertTrue(m.called)
-            self.assertIn("-q", sess._build_ssh_command())
+            self.assertIn("-q", sess.ssh_cmd)
 
     def test_open_ssh_session_with_debug(self):
         with patch("aws_gate.ssh.execute", return_value="output") as m, patch(
@@ -65,7 +65,7 @@ class TestSSH(unittest.TestCase):
             sess.open()
 
             self.assertTrue(m.called)
-            self.assertIn("-vv", sess._build_ssh_command())
+            self.assertIn("-vv", sess.ssh_cmd)
 
     def test_ssh_session_context_manager(self):
         with patch.object(
