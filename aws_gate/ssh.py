@@ -1,5 +1,6 @@
 import json
 import logging
+import shlex
 
 from aws_gate.constants import (
     AWS_DEFAULT_PROFILE,
@@ -10,6 +11,7 @@ from aws_gate.constants import (
     DEFAULT_KEY_SIZE,
     PLUGIN_INSTALL_PATH,
     DEBUG,
+    DEFAULT_GATE_KEY_PATH,
 )
 from aws_gate.decorators import (
     plugin_version,
@@ -57,41 +59,39 @@ class SshSession(BaseSession):
         }
 
     def _build_ssh_command(self):
-        cmd = ["ssh", "-l", self._user, "-p", str(self._port), "-F", "/dev/null"]
+        cmd = [
+            "ssh",
+            "-l",
+            self._user,
+            "-p",
+            str(self._port),
+            "-F",
+            "/dev/null",
+            "-i",
+            DEFAULT_GATE_KEY_PATH,
+            "-o",
+            "IdentitiesOnly=yes",
+        ]
 
         if DEBUG:
             cmd.append("-vv")
         else:
             cmd.append("-q")
 
+        proxy_command_args = [
+            PLUGIN_INSTALL_PATH,
+            json.dumps(self._response),
+            self._region_name,
+            "StartSession",
+            self._profile_name,
+            json.dumps(self._session_parameters),
+            self._ssm.meta.endpoint_url,
+        ]
+
+        proxy_command = " ".join(shlex.quote(i) for i in proxy_command_args)
+
         cmd.append("-o")
-
-        #        cmd.append('ProxyCommand=sh -c "{} {} {}"'.format('aws-gate', 'ssh-proxy', self._instance_id))
-        _ = " ".join(
-            [
-                PLUGIN_INSTALL_PATH,
-                json.dumps(self._response),
-                self._region_name,
-                "StartSession",
-                self._profile_name,
-                json.dumps(self._session_parameters),
-                self._ssm.meta.endpoint_url,
-            ]
-        )
-
-        cmd.append(
-            # 'ProxyCommand="{} {}"'.format(
-            'ProxyCommand="aws-gate ssh-proxy %h"'.format(
-                PLUGIN_INSTALL_PATH,
-                json.dumps(self._response),
-                # self._region_name,
-                # "StartSession",
-                # self._profile_name,
-                # json.dumps(self._session_parameters),
-                # self._ssm.meta.endpoint_url,
-            )
-        )
-
+        cmd.append("ProxyCommand={}".format(proxy_command))
         cmd.append(self._instance_id)
 
         return cmd
@@ -149,5 +149,5 @@ def ssh(
                 ssm=ssm,
                 port=port,
                 user=user,
-            ) as ssh_proxy_session:
-                ssh_proxy_session.open()
+            ) as ssh_session:
+                ssh_session.open()
