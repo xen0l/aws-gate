@@ -139,9 +139,9 @@ def parse_arguments():
         "instance_name", help="Instance we wish to open session to"
     )
 
-    # 'list_instances' subcommand
+    # 'list' subcommand
     ls_parser = subparsers.add_parser(
-        "list_instances", aliases=["ls"], help="List available instances"
+        "list", aliases=["ls"], help="List available instances"
     )
     ls_parser.add_argument("-p", "--profile", help="AWS profile to use")
     ls_parser.add_argument("-r", "--region", help="AWS region to use")
