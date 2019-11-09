@@ -50,34 +50,6 @@ class TestCli(unittest.TestCase):
             "default_profile",
         )
 
-    def test_get_region_from_args(self):
-        self.assertEqual(
-            _get_region(
-                args=self._args, config=self._config, default=self._default_region
-            ),
-            "args_region",
-        )
-
-    def test_get_region_from_config(self):
-        self.assertEqual(
-            _get_region(
-                args=create_autospec(argparse.Namespace),
-                config=self._config,
-                default=self._default_region,
-            ),
-            "config_region",
-        )
-
-    def test_get_region_from_default(self):
-        self.assertEqual(
-            _get_region(
-                args=create_autospec(argparse.Namespace),
-                config=MagicMock(default_region=None),
-                default=self._default_region,
-            ),
-            "default_region",
-        )
-
     def test_cli_invalid_config(self):
         with patch(
             "aws_gate.cli.parse_arguments",
@@ -123,6 +95,34 @@ class TestCli(unittest.TestCase):
             self.assertEqual(m.call_args[1]["default"], "vault_profile")
 
             self.assertTrue(logger_mock.called)
+
+
+@pytest.mark.parametrize(
+    "args, config, default, expected",
+    [
+        (
+            MagicMock(profile="args_profile", region="args_region"),
+            MagicMock(default_profile="config_profile", default_region="config_region"),
+            "args_region",
+            "args_region",
+        ),
+        (
+            create_autospec(argparse.Namespace),
+            MagicMock(default_profile="config_profile", default_region="config_region"),
+            "config_region",
+            "config_region",
+        ),
+        (
+            create_autospec(argparse.Namespace),
+            MagicMock(default_region=None),
+            "default_region",
+            "default_region",
+        ),
+    ],
+    ids=["args", "config", "default"],
+)
+def test_get_region(args, config, default, expected):
+    assert _get_region(args, config, default) == expected
 
 
 @pytest.mark.parametrize(
