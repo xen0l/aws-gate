@@ -93,7 +93,7 @@ class TestCli(unittest.TestCase):
     ],
     ids=["args", "config", "default"],
 )
-def test_get_profile(args, config, default, expected):
+def test_cli_get_profile(args, config, default, expected):
     assert _get_profile(args, config, default) == expected
 
 
@@ -121,7 +121,7 @@ def test_get_profile(args, config, default, expected):
     ],
     ids=["args", "config", "default"],
 )
-def test_get_region(args, config, default, expected):
+def test_cli_get_region(args, config, default, expected):
     assert _get_region(args, config, default) == expected
 
 

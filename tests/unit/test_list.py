@@ -4,8 +4,8 @@ from aws_gate.list import list_instances
 
 
 def test_list(mocker, ec2, ssm, capsys):
-    mocker.patch("aws_gate.list_instances.get_aws_resource", return_value=ec2)
-    mocker.patch("aws_gate.list_instances.get_aws_client", return_value=ssm)
+    mocker.patch("aws_gate.list.get_aws_resource", return_value=ec2)
+    mocker.patch("aws_gate.list.get_aws_client", return_value=ssm)
     mocker.patch("aws_gate.decorators.is_existing_region", return_value=True)
     mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
 
