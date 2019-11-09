@@ -10,5 +10,6 @@ pylint==2.4.3
 pytest==5.2.2
 pytest-cov==2.8.1
 pytest-flake8==1.0.4
+pytest-mock==1.11.2
 pytest-pylint==0.14.1
 zest.releaser==6.19.1

@@ -3,7 +3,7 @@ import pytest
 from aws_gate.list import list
 
 
-def test_list_instances(mocker, ec2, ssm, capsys):
+def test_list(mocker, ec2, ssm, capsys):
     mocker.patch("aws_gate.list.get_aws_resource", return_value=ec2)
     mocker.patch("aws_gate.list.get_aws_client", return_value=ssm)
     mocker.patch("aws_gate.decorators.is_existing_region", return_value=True)
@@ -16,12 +16,12 @@ def test_list_instances(mocker, ec2, ssm, capsys):
     assert out == "i-0c32153096cd68a6d - dummy-instance\n"
 
 
-def test_list_instances_invalid_profile(mocker):
+def test_list_invalid_profile(mocker):
     with pytest.raises(ValueError):
         list(profile_name="invalid-profile", region_name="eu-west-1")
 
 
-def test_list_instances_invalid_region(mocker):
+def test_list_invalid_region(mocker):
     mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
 
     with pytest.raises(ValueError):
