@@ -22,34 +22,6 @@ class TestCli(unittest.TestCase):
         with self.assertRaises(SystemExit):
             main()
 
-    def test_get_profile_from_args(self):
-        self.assertEqual(
-            _get_profile(
-                args=self._args, config=self._config, default=self._default_profile
-            ),
-            "args_profile",
-        )
-
-    def test_get_profile_from_config(self):
-        self.assertEqual(
-            _get_profile(
-                args=create_autospec(argparse.Namespace),
-                config=self._config,
-                default=self._default_profile,
-            ),
-            "config_profile",
-        )
-
-    def test_get_profile_from_default(self):
-        self.assertEqual(
-            _get_profile(
-                args=create_autospec(argparse.Namespace),
-                config=MagicMock(default_profile=None),
-                default=self._default_profile,
-            ),
-            "default_profile",
-        )
-
     def test_cli_invalid_config(self):
         with patch(
             "aws_gate.cli.parse_arguments",
@@ -95,6 +67,34 @@ class TestCli(unittest.TestCase):
             self.assertEqual(m.call_args[1]["default"], "vault_profile")
 
             self.assertTrue(logger_mock.called)
+
+
+@pytest.mark.parametrize(
+    "args, config, default, expected",
+    [
+        (
+            MagicMock(profile="args_profile", region="args_region"),
+            MagicMock(default_profile="config_profile", default_region="config_region"),
+            "args_profile",
+            "args_profile",
+        ),
+        (
+            create_autospec(argparse.Namespace),
+            MagicMock(default_profile="config_profile", default_region="config_region"),
+            "config_profile",
+            "config_profile",
+        ),
+        (
+            create_autospec(argparse.Namespace),
+            MagicMock(default_profile=None),
+            "default_profile",
+            "default_profile",
+        ),
+    ],
+    ids=["args", "config", "default"],
+)
+def test_get_profile(args, config, default, expected):
+    assert _get_profile(args, config, default) == expected
 
 
 @pytest.mark.parametrize(
