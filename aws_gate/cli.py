@@ -79,8 +79,12 @@ def parse_arguments():
     )
     ssh_parser.add_argument("-p", "--profile", help="AWS profile to use")
     ssh_parser.add_argument("-r", "--region", help="AWS region to use")
-    ssh_parser.add_argument("-l", "--os-user", type=str, default=DEFAULT_OS_USER)
-    ssh_parser.add_argument("-P", "--port", type=int, default=DEFAULT_SSH_PORT)
+    ssh_parser.add_argument(
+        "-l", "--os-user", help="SSH user to use", type=str, default=DEFAULT_OS_USER
+    )
+    ssh_parser.add_argument(
+        "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
+    )
     ssh_parser.add_argument(
         "--key-type",
         type=str,
@@ -102,8 +106,12 @@ def parse_arguments():
     )
     ssh_config_parser.add_argument("-p", "--profile", help="AWS profile to use")
     ssh_config_parser.add_argument("-r", "--region", help="AWS region to use")
-    ssh_config_parser.add_argument("-l", "--os-user", type=str, default=DEFAULT_OS_USER)
-    ssh_config_parser.add_argument("-P", "--port", type=int, default=DEFAULT_SSH_PORT)
+    ssh_config_parser.add_argument(
+        "-l", "--os-user", help="SSH user to use", type=str, default=DEFAULT_OS_USER
+    )
+    ssh_config_parser.add_argument(
+        "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
+    )
 
     # 'ssh-proxy' subcommand
     ssh_proxy_parser = subparsers.add_parser(
@@ -111,8 +119,12 @@ def parse_arguments():
     )
     ssh_proxy_parser.add_argument("-p", "--profile", help="AWS profile to use")
     ssh_proxy_parser.add_argument("-r", "--region", help="AWS region to use")
-    ssh_proxy_parser.add_argument("-l", "--os-user", type=str, default=DEFAULT_OS_USER)
-    ssh_proxy_parser.add_argument("-P", "--port", type=int, default=DEFAULT_SSH_PORT)
+    ssh_proxy_parser.add_argument(
+        "-l", "--os-user", help="SSH user to use", type=str, default=DEFAULT_OS_USER
+    )
+    ssh_proxy_parser.add_argument(
+        "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
+    )
     ssh_proxy_parser.add_argument(
         "--key-type",
         type=str,

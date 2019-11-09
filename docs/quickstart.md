@@ -79,4 +79,4 @@ When using _aws-gate_, ensure that you have the following permissions (replace $
 }
 ```
 
-I recommend creating a custom IAM policy and attaching to your IAM role.
+I recommend creating a custom IAM policy and attaching it to your IAM role.

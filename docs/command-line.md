@@ -28,6 +28,29 @@ optional arguments:
                         AWS region to use
 ```
 
+# ssh
+
+Open new SSH session on instance and connect to it
+
+```
+usage: aws-gate ssh [-h] [-p PROFILE] [-r REGION] [-l OS_USER] [-P PORT]
+                    instance_name ...
+
+positional arguments:
+  instance_name         Instance we wish to open session to
+  command               command to execute on the instance
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PROFILE, --profile PROFILE
+                        AWS profile to use
+  -r REGION, --region REGION
+                        AWS region to use
+  -l OS_USER, --os-user OS_USER
+                        SSH user to use
+  -P PORT, --port PORT  SSH port to use
+```
+
 # ssh-config
 
 Generate SSH configuration file
@@ -43,7 +66,8 @@ optional arguments:
   -r REGION, --region REGION
                         AWS region to use
   -l OS_USER, --os-user OS_USER
-  -P PORT, --port PORT
+                        SSH user to use
+  -P PORT, --port PORT  SSH port to use
 ```
 
 # ssh-proxy
@@ -51,8 +75,8 @@ optional arguments:
 Open new SSH proxy session to instance
 
 ```
-aws-gate ssh-proxy [-h] [-p PROFILE] [-r REGION] [-l OS_USER] [-P PORT]
-                    instance_name
+usage: aws-gate ssh-proxy [-h] [-p PROFILE] [-r REGION] [-l OS_USER] [-P PORT]
+                          instance_name
 
 positional arguments:
   instance_name         Instance we wish to open session to
@@ -64,7 +88,8 @@ optional arguments:
   -r REGION, --region REGION
                         AWS region to use
   -l OS_USER, --os-user OS_USER
-  -P PORT, --port PORT
+                        SSH user to use
+  -P PORT, --port PORT  SSH port to use
 ```
 
 # list (ls)

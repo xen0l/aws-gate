@@ -143,6 +143,31 @@ Run "sudo yum update" to apply all updates.
 
 SSH session to instance _ssm-test_ in eu-west-1 AWS region via _default_ AWS profile is opened.
 
+#### SSH support
+
+*aws-gate* provides a way to open SSH session on the instance directly. This is achieved by wrapping around _ssh_ under the hood.
+Simply run **aws-gate ssh <instance_identifier>**:
+
+```
+% aws-gate ssh ssm-test
+Last login: Sat Nov  9 10:23:11 2019 from localhost
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+28 package(s) needed for security, out of 56 available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-172-31-35-173 ~]$
+```
+
+If you wish to execute a specific command (or plug it into your shell pipelines):
+
+```
+% aws-gate ssh ssm-test uname -a
+Linux ip-172-31-35-173.eu-west-1.compute.internal 4.14.123-111.109.amzn2.x86_64 #1 SMP Mon Jun 10 19:37:57 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+```
 
 ## Debugging mode
 
