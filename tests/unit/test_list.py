@@ -1,6 +1,6 @@
 import pytest
 
-from aws_gate.list import list_instances
+from aws_gate.list import list
 
 
 def test_list_instances(mocker, ec2, ssm, capsys):
@@ -9,7 +9,7 @@ def test_list_instances(mocker, ec2, ssm, capsys):
     mocker.patch("aws_gate.decorators.is_existing_region", return_value=True)
     mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
 
-    list_instances(profile_name="default", region_name="eu-west-1")
+    list(profile_name="default", region_name="eu-west-1")
 
     out, err = capsys.readouterr()
 
@@ -18,11 +18,11 @@ def test_list_instances(mocker, ec2, ssm, capsys):
 
 def test_list_instances_invalid_profile(mocker):
     with pytest.raises(ValueError):
-        list_instances(profile_name="invalid-profile", region_name="eu-west-1")
+        list(profile_name="invalid-profile", region_name="eu-west-1")
 
 
 def test_list_instances_invalid_region(mocker):
     mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
 
     with pytest.raises(ValueError):
-        list_instances(profile_name="default", region_name="invalid-region")
+        list(profile_name="default", region_name="invalid-region")

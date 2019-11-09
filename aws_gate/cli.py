@@ -19,7 +19,7 @@ from aws_gate.constants import (
     DEFAULT_KEY_ALGORITHM,
     DEFAULT_KEY_SIZE,
 )
-from aws_gate.list import list_instances
+from aws_gate.list import list
 from aws_gate.session import session
 from aws_gate.ssh import ssh
 from aws_gate.ssh_config import ssh_config
@@ -246,7 +246,7 @@ def main():
             key_size=args.key_size,
         )
     if args.subcommand in ["ls", "list"]:
-        list_instances(region_name=region, profile_name=profile)
+        list(region_name=region, profile_name=profile)
 
 
 if __name__ == "__main__":

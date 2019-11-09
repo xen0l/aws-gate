@@ -108,7 +108,7 @@ class TestCli(unittest.TestCase):
     def test_cli_list(self):
         with patch(
             "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="list")
-        ), patch("aws_gate.cli.list_instances") as m:
+        ), patch("aws_gate.cli.list") as m:
             main()
 
             self.assertTrue(m.called)
@@ -160,7 +160,7 @@ class TestCli(unittest.TestCase):
         ), patch("aws_gate.decorators.is_existing_region", return_value=True), patch(
             "aws_gate.decorators.is_existing_profile", return_value=True
         ), patch(
-            "aws_gate.cli.list_instances"
+            "aws_gate.cli.list"
         ), patch(
             "aws_gate.cli.logging.getLogger"
         ) as logger_mock, patch(
