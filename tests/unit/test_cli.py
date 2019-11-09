@@ -1,6 +1,6 @@
 import argparse
-import unittest
 import os
+import unittest
 from unittest.mock import patch, MagicMock, create_autospec, call
 
 from marshmallow import ValidationError
@@ -109,6 +109,14 @@ class TestCli(unittest.TestCase):
         with patch(
             "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="list")
         ), patch("aws_gate.cli.list_instances") as m:
+            main()
+
+            self.assertTrue(m.called)
+
+    def test_cli_ssh(self):
+        with patch(
+            "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="ssh")
+        ), patch("aws_gate.cli.ssh") as m:
             main()
 
             self.assertTrue(m.called)
