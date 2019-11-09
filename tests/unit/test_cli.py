@@ -3,10 +3,10 @@ import os
 import unittest
 from unittest.mock import patch, MagicMock, create_autospec, call
 
+import pytest
 from marshmallow import ValidationError
 
 from aws_gate.cli import main, _get_profile, _get_region, parse_arguments
-import pytest
 
 
 class TestCli(unittest.TestCase):
@@ -127,10 +127,12 @@ class TestCli(unittest.TestCase):
 @pytest.mark.parametrize(
     "subcommand", ["bootstrap", "list", "session", "ssh", "ssh-config", "ssh-proxy"]
 )
-def test_cli_subcommand(subcommand):
-    with patch(
+def test_cli_subcommand(mocker, subcommand):
+    mocker.patch(
         "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand=subcommand)
-    ), patch("aws_gate.cli.{}".format(subcommand.replace("-", "_"))) as m:
-        main()
+    )
+    m = mocker.patch("aws_gate.cli.{}".format(subcommand.replace("-", "_")))
 
-        assert m.called
+    main()
+
+    assert m.called
