@@ -19,7 +19,7 @@ from aws_gate.constants import (
     DEFAULT_KEY_ALGORITHM,
     DEFAULT_KEY_SIZE,
 )
-from aws_gate.list import list
+from aws_gate.list import list_instances
 from aws_gate.session import session
 from aws_gate.ssh import ssh
 from aws_gate.ssh_config import ssh_config
@@ -139,9 +139,9 @@ def parse_arguments():
         "instance_name", help="Instance we wish to open session to"
     )
 
-    # 'list' subcommand
+    # 'list_instances' subcommand
     ls_parser = subparsers.add_parser(
-        "list", aliases=["ls"], help="List available instances"
+        "list_instances", aliases=["ls"], help="List available instances"
     )
     ls_parser.add_argument("-p", "--profile", help="AWS profile to use")
     ls_parser.add_argument("-r", "--region", help="AWS region to use")
@@ -246,7 +246,7 @@ def main():
             key_size=args.key_size,
         )
     if args.subcommand in ["ls", "list"]:
-        list(region_name=region, profile_name=profile)
+        list_instances(region_name=region, profile_name=profile)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 @valid_aws_profile
 @valid_aws_region
-def list(profile_name=AWS_DEFAULT_PROFILE, region_name=AWS_DEFAULT_REGION):
+def list_instances(profile_name=AWS_DEFAULT_PROFILE, region_name=AWS_DEFAULT_REGION):
     ssm = get_aws_client("ssm", region_name=region_name, profile_name=profile_name)
     ec2 = get_aws_resource("ec2", region_name=region_name, profile_name=profile_name)
 

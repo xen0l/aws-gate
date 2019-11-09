@@ -106,11 +106,12 @@ class TestCli(unittest.TestCase):
 
     def test_cli_default_profile_from_aws_vault(self):
         with patch.dict(os.environ, {"AWS_VAULT": "vault_profile"}), patch(
-            "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="list")
+            "aws_gate.cli.parse_arguments",
+            return_value=MagicMock(subcommand="list_instances"),
         ), patch("aws_gate.decorators.is_existing_region", return_value=True), patch(
             "aws_gate.decorators.is_existing_profile", return_value=True
         ), patch(
-            "aws_gate.cli.list"
+            "aws_gate.cli.list_instances"
         ), patch(
             "aws_gate.cli.logging.getLogger"
         ) as logger_mock, patch(
@@ -125,13 +126,23 @@ class TestCli(unittest.TestCase):
 
 
 @pytest.mark.parametrize(
-    "subcommand", ["bootstrap", "list", "session", "ssh", "ssh-config", "ssh-proxy"]
+    "subcommand",
+    [
+        ("bootstrap", "bootstrap"),
+        ("list", "list_instances"),
+        ("ls", "list_instances"),
+        ("session", "session"),
+        ("ssh", "ssh"),
+        ("ssh-config", "ssh_config"),
+        ("ssh-proxy", "ssh_proxy"),
+    ],
+    ids=lambda x: x[0],
 )
 def test_cli_subcommand(mocker, subcommand):
     mocker.patch(
-        "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand=subcommand)
+        "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand=subcommand[0])
     )
-    m = mocker.patch("aws_gate.cli.{}".format(subcommand.replace("-", "_")))
+    m = mocker.patch("aws_gate.cli.{}".format(subcommand[1]))
 
     main()
 
