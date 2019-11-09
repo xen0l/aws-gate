@@ -6,6 +6,7 @@ from unittest.mock import patch, MagicMock, create_autospec, call
 from marshmallow import ValidationError
 
 from aws_gate.cli import main, _get_profile, _get_region, parse_arguments
+import pytest
 
 
 class TestCli(unittest.TestCase):
@@ -88,57 +89,6 @@ class TestCli(unittest.TestCase):
             with self.assertRaises(ValueError):
                 main()
 
-    def test_cli_bootstrap(self):
-        with patch(
-            "aws_gate.cli.parse_arguments",
-            return_value=MagicMock(subcommand="bootstrap"),
-        ), patch("aws_gate.cli.bootstrap") as m:
-            main()
-
-            self.assertTrue(m.called)
-
-    def test_cli_session(self):
-        with patch(
-            "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="session")
-        ), patch("aws_gate.cli.session") as m:
-            main()
-
-            self.assertTrue(m.called)
-
-    def test_cli_list(self):
-        with patch(
-            "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="list")
-        ), patch("aws_gate.cli.list") as m:
-            main()
-
-            self.assertTrue(m.called)
-
-    def test_cli_ssh(self):
-        with patch(
-            "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="ssh")
-        ), patch("aws_gate.cli.ssh") as m:
-            main()
-
-            self.assertTrue(m.called)
-
-    def test_cli_ssh_config(self):
-        with patch(
-            "aws_gate.cli.parse_arguments",
-            return_value=MagicMock(subcommand="ssh-config"),
-        ), patch("aws_gate.cli.ssh_config") as m:
-            main()
-
-            self.assertTrue(m.called)
-
-    def test_cli_ssh_proxy(self):
-        with patch(
-            "aws_gate.cli.parse_arguments",
-            return_value=MagicMock(subcommand="ssh-proxy"),
-        ), patch("aws_gate.cli.ssh_proxy") as m:
-            main()
-
-            self.assertTrue(m.called)
-
     def test_cli_parse_arguments_unknown_subcommand(self):
         parser_mock = MagicMock()
         parser_mock.configure_mock(
@@ -172,3 +122,15 @@ class TestCli(unittest.TestCase):
             self.assertEqual(m.call_args[1]["default"], "vault_profile")
 
             self.assertTrue(logger_mock.called)
+
+
+@pytest.mark.parametrize(
+    "subcommand", ["bootstrap", "list", "session", "ssh", "ssh-config", "ssh-proxy"]
+)
+def test_cli_subcommand(subcommand):
+    with patch(
+        "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand=subcommand)
+    ), patch("aws_gate.cli.{}".format(subcommand.replace("-", "_"))) as m:
+        main()
+
+        assert m.called
