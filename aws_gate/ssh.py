@@ -42,6 +42,7 @@ class SshSession(BaseSession):
         profile_name=AWS_DEFAULT_PROFILE,
         port=DEFAULT_SSH_PORT,
         user=DEFAULT_OS_USER,
+        command=None,
     ):
         self._instance_id = instance_id
         self._region_name = region_name
@@ -49,6 +50,7 @@ class SshSession(BaseSession):
         self._ssm = ssm
         self._port = port
         self._user = user
+        self._command = command
 
         self._ssh_cmd = None
 
@@ -57,10 +59,6 @@ class SshSession(BaseSession):
             "DocumentName": "AWS-StartSSHSession",
             "Parameters": {"portNumber": [str(self._port)]},
         }
-
-    @property
-    def ssh_cmd(self):
-        return self._ssh_cmd
 
     def _build_ssh_command(self):
         cmd = [
@@ -98,6 +96,10 @@ class SshSession(BaseSession):
         cmd.append("ProxyCommand={}".format(proxy_command))
         cmd.append(self._instance_id)
 
+        if self._command:
+            cmd.append("--")
+            cmd.extend(self._command)
+
         return cmd
 
     def open(self):
@@ -119,6 +121,7 @@ def ssh(
     key_size=DEFAULT_KEY_SIZE,
     profile_name=AWS_DEFAULT_PROFILE,
     region_name=AWS_DEFAULT_REGION,
+    command=None,
 ):
     instance, profile, region = fetch_instance_details_from_config(
         config, instance_name, profile_name, region_name
@@ -153,5 +156,6 @@ def ssh(
                 ssm=ssm,
                 port=port,
                 user=user,
+                command=command,
             ) as ssh_session:
                 ssh_session.open()

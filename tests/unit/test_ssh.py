@@ -50,22 +50,35 @@ class TestSSH(unittest.TestCase):
             self.assertTrue(self.ssm.terminate_session.called)
 
     def test_open_ssh_session(self):
-        with patch("aws_gate.ssh.execute", return_value="output") as m:
-            sess = SshSession(instance_id=self.instance_id, ssm=self.ssm)
-            sess.open()
-
-            self.assertTrue(m.called)
-            self.assertIn("-q", sess.ssh_cmd)
-
-    def test_open_ssh_session_with_debug(self):
         with patch("aws_gate.ssh.execute", return_value="output") as m, patch(
-            "aws_gate.ssh.DEBUG", return_value=True
+            "aws_gate.ssh.DEBUG", False
         ):
             sess = SshSession(instance_id=self.instance_id, ssm=self.ssm)
             sess.open()
 
             self.assertTrue(m.called)
-            self.assertIn("-vv", sess.ssh_cmd)
+            self.assertIn("-q", m.call_args[0][1])
+
+    def test_open_ssh_session_with_debug(self):
+        with patch("aws_gate.ssh.execute", return_value="output") as m, patch(
+            "aws_gate.ssh.DEBUG", True
+        ):
+            sess = SshSession(instance_id=self.instance_id, ssm=self.ssm)
+            sess.open()
+
+            self.assertTrue(m.called)
+            self.assertIn("-vv", m.call_args[0][1])
+
+    def test_open_ssh_session_with_command(self):
+        with patch("aws_gate.ssh.execute", return_value="output") as m:
+            sess = SshSession(
+                instance_id=self.instance_id, ssm=self.ssm, command=["ls", "-l"]
+            )
+            sess.open()
+
+            self.assertTrue(m.called)
+            self.assertIn("--", m.call_args[0][1])
+            self.assertEqual(["ls", "-l"], m.call_args[0][1][-2:])
 
     def test_ssh_session_context_manager(self):
         with patch.object(

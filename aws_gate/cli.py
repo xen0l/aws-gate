@@ -92,6 +92,10 @@ def parse_arguments():
         "--key-size", type=int, default=DEFAULT_KEY_SIZE, help=argparse.SUPPRESS
     )
     ssh_parser.add_argument("instance_name", help="Instance we wish to open session to")
+    ssh_parser.add_argument(
+        "command", help="command to execute on the instance", nargs=argparse.REMAINDER
+    )
+
     # 'ssh_config' subcommand
     ssh_config_parser = subparsers.add_parser(
         "ssh-config", help="Generate SSH configuration file"
@@ -212,6 +216,7 @@ def main():
             port=args.port,
             key_type=args.key_type,
             key_size=args.key_size,
+            command=args.command,
         )
     if args.subcommand == "ssh-config":
         ssh_config(
