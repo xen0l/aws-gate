@@ -13,6 +13,8 @@ from aws_gate.bootstrap import (
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH
 from aws_gate.exceptions import UnsupportedPlatormError
 
+import pytest
+
 
 class TestBootstrap(unittest.TestCase):
     def test_check_plugin_version(self):
@@ -105,18 +107,14 @@ class TestBootstrap(unittest.TestCase):
             with self.assertRaises(UnsupportedPlatormError):
                 bootstrap()
 
-    def test_bootstrap_darwin(self):
-        with patch("aws_gate.bootstrap.platform.system", return_value="Darwin"), patch(
-            "aws_gate.bootstrap.MacPlugin", return_value=MagicMock()
-        ) as mock:
-            bootstrap()
 
-            self.assertTrue(mock.called)
+@pytest.mark.parametrize(
+    "platform", [("Linux", "LinuxPlugin"), ("Darwin", "MacPlugin")], ids=lambda x: x[0]
+)
+def test_bootstrap(mocker, platform):
+    mocker.patch("aws_gate.bootstrap.platform.system", return_value=platform[0])
+    m = mocker.patch("aws_gate.bootstrap.{}".format(platform[1]))
 
-    def test_bootstrap_linux(self):
-        with patch("aws_gate.bootstrap.platform.system", return_value="Linux"), patch(
-            "aws_gate.bootstrap.LinuxPlugin", return_value=MagicMock()
-        ) as mock:
-            bootstrap()
+    bootstrap()
 
-            self.assertTrue(mock.called)
+    assert m.called

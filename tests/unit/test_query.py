@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
+import pytest
 from botocore.exceptions import ClientError
 from placebo.utils import placebo_session
 
@@ -68,6 +69,7 @@ class TestQuery(unittest.TestCase):
             self.instance_id, query_instance("dummy-instance", ec2=self.ec2)
         )
 
-    def test_query_instance_ec2_unitialized(self):
-        with self.assertRaises(ValueError):
-            query_instance("18.205.215.108")
+
+def test_query_instance_ec2_unitialized():
+    with pytest.raises(ValueError):
+        query_instance("18.205.215.108")
