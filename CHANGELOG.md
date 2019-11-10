@@ -1,4 +1,4 @@
-0.7.0 (unreleased)
+0.7.0 (2019-11-09)
 ------------------
 
 * Add **ssh** command to be able to directly connect to instances via SSH
