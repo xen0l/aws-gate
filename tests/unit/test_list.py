@@ -11,12 +11,12 @@ def test_list(mocker, ec2, ssm, capsys):
 
     list_instances(profile_name="default", region_name="eu-west-1")
 
-    out, err = capsys.readouterr()
+    out, _ = capsys.readouterr()
 
     assert out == "i-0c32153096cd68a6d - dummy-instance\n"
 
 
-def test_list_invalid_profile(mocker):
+def test_list_invalid_profile():
     with pytest.raises(ValueError):
         list_instances(profile_name="invalid-profile", region_name="eu-west-1")
 

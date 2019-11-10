@@ -2,6 +2,7 @@ import os
 import unittest
 from unittest.mock import patch
 
+import pytest
 from marshmallow import ValidationError
 
 from aws_gate.config import (
@@ -13,6 +14,19 @@ from aws_gate.config import (
     validate_region,
 )
 from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
+
+
+@pytest.mark.parametrize(
+    "file, exception",
+    [
+        ("test_empty_config.yaml", EmptyConfigurationError),
+        ("test_invalid_config.yaml", ValidationError),
+        ("test_config_invalid.yaml", EmptyConfigurationError),
+        ("test_config_invalid_attribute.yaml", ValidationError),
+    ],
+)
+def test_invalid_config(file, exception):
+    ...
 
 
 class TestConfig(unittest.TestCase):
