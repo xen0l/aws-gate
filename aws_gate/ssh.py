@@ -71,8 +71,6 @@ class SshSession(BaseSession):
             "/dev/null",
             "-i",
             DEFAULT_GATE_KEY_PATH,
-            "-o",
-            "IdentitiesOnly=yes",
         ]
 
         if DEBUG:
@@ -89,11 +87,19 @@ class SshSession(BaseSession):
             json.dumps(self._session_parameters),
             self._ssm.meta.endpoint_url,
         ]
-
         proxy_command = " ".join(shlex.quote(i) for i in proxy_command_args)
 
-        cmd.append("-o")
-        cmd.append("ProxyCommand={}".format(proxy_command))
+        ssh_options = [
+            "IdentitiesOnly=yes",
+            "UserKnownHostsFile=/dev/null",
+            "StrictHostKeyChecking=no",
+            "ProxyCommand={}".format(proxy_command),
+        ]
+
+        for ssh_option in ssh_options:
+            cmd.append("-o")
+            cmd.append(ssh_option)
+
         cmd.append(self._instance_id)
 
         if self._command:
