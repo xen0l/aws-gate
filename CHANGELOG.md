@@ -1,3 +1,8 @@
+0.7.1 (2019-11-11)
+------------------
+
+* Turn off SSH host key verification in **aws-gate ssh**
+
 0.7.0 (2019-11-09)
 ------------------
 

@@ -80,6 +80,15 @@ class TestSSH(unittest.TestCase):
             self.assertIn("--", m.call_args[0][1])
             self.assertEqual(["ls", "-l"], m.call_args[0][1][-2:])
 
+    def test_open_ssh_session_host_key_verification(self):
+        with patch("aws_gate.ssh.execute", return_value="output") as m:
+            sess = SshSession(instance_id=self.instance_id, ssm=self.ssm)
+            sess.open()
+
+            self.assertTrue(m.called)
+            self.assertIn("UserKnownHostsFile=/dev/null", m.call_args[0][1])
+            self.assertIn("StrictHostKeyChecking=no", m.call_args[0][1])
+
     def test_ssh_session_context_manager(self):
         with patch.object(
             self.ssm, "start_session", return_value=self.response
