@@ -48,5 +48,23 @@ def ssm(session):
 
 
 @pytest.fixture
+def ec2_ic_mock(mocker):
+    return mocker.MagicMock()
+
+
+@pytest.fixture
+def ssm_mock(mocker):
+    return mocker.MagicMock()
+
+
+@pytest.fixture
 def instance_id():
     return "i-0c32153096cd68a6d"
+
+
+@pytest.fixture
+def ssh_key(mocker):
+    ssh_key = mocker.MagicMock()
+    ssh_key.configure_mock(**{"public_key.return_value": "ssh-rsa ranodombase64string"})
+
+    return ssh_key
