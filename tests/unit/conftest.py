@@ -54,7 +54,19 @@ def ec2_ic_mock(mocker):
 
 @pytest.fixture
 def ssm_mock(mocker):
-    return mocker.MagicMock()
+    mock = mocker.MagicMock()
+    response = {
+        "SessionId": "session-020bf6cd31f912b53",
+        "TokenValue": "randomtokenvalue",
+    }
+    mock.configure_mock(
+        **{
+            "start_session.return_value": response,
+            "terminate_session.return_value": response,
+        }
+    )
+    type(mock.meta).endpoint_url = mocker.PropertyMock(return_value="ssm")
+    return mock
 
 
 @pytest.fixture
@@ -64,7 +76,42 @@ def instance_id():
 
 @pytest.fixture
 def ssh_key(mocker):
-    ssh_key = mocker.MagicMock()
-    ssh_key.configure_mock(**{"public_key.return_value": "ssh-rsa ranodombase64string"})
+    mock = mocker.MagicMock()
+    mock.configure_mock(
+        **{
+            "public_key.return_value": "ssh-rsa ranodombase64string",
+            "key_path.return_value": "/home/user/.aws-gate/key",
+        }
+    )
 
-    return ssh_key
+    return mock
+
+
+@pytest.fixture
+def config(mocker):
+    mock = mocker.MagicMock()
+    mock.configure_mock(
+        **{
+            "get_host.return_value": {
+                "alias": "test",
+                "name": "SSM-test",
+                "profile": "default",
+                "region": "eu-west-1",
+            }
+        }
+    )
+
+    return mock
+
+
+@pytest.fixture
+def empty_config(mocker):
+    mock = mocker.MagicMock()
+    mock.configure_mock(**{"get_host.return_value": {}})
+
+    return mock
+
+
+@pytest.fixture
+def get_instance_details_response():
+    return {"availability_zone": "eu-west-1a"}
