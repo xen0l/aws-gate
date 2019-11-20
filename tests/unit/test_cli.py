@@ -1,6 +1,6 @@
 import argparse
 import os
-from unittest.mock import MagicMock, create_autospec, call
+from unittest.mock import MagicMock, create_autospec
 
 import pytest
 from marshmallow import ValidationError
@@ -15,7 +15,8 @@ def test_cli_param_error():
 
 def test_cli_invalid_config(mocker):
     mocker.patch(
-        "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="bootstrap")
+        "aws_gate.cli.parse_arguments",
+        return_value=mocker.MagicMock(subcommand="bootstrap"),
     )
     mocker.patch(
         "aws_gate.cli.load_config_from_files",
@@ -27,9 +28,9 @@ def test_cli_invalid_config(mocker):
 
 
 def test_cli_parse_arguments_unknown_subcommand(mocker):
-    parser_mock = MagicMock()
+    parser_mock = mocker.MagicMock()
     parser_mock.configure_mock(
-        **{"parse_args.return_value": MagicMock(subcommand=False)}
+        **{"parse_args.return_value": mocker.MagicMock(subcommand=False)}
     )
 
     exit_mock = mocker.patch("sys.exit")
@@ -39,13 +40,13 @@ def test_cli_parse_arguments_unknown_subcommand(mocker):
 
     assert parser_mock.print_help.called
     assert exit_mock.called
-    assert exit_mock.call_args == call(1)
+    assert exit_mock.call_args == mocker.call(1)
 
 
 def test_cli_default_profile_from_aws_vault(mocker):
     mocker.patch.dict(os.environ, {"AWS_VAULT": "vault_profile"})
     mocker.patch(
-        "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand="list")
+        "aws_gate.cli.parse_arguments", return_value=mocker.MagicMock(subcommand="list")
     )
     mocker.patch("aws_gate.decorators.is_existing_region", return_value=True)
     mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
@@ -131,7 +132,8 @@ def test_cli_get_region(args, config, default, expected):
 )
 def test_cli_subcommand(mocker, subcommand):
     mocker.patch(
-        "aws_gate.cli.parse_arguments", return_value=MagicMock(subcommand=subcommand[0])
+        "aws_gate.cli.parse_arguments",
+        return_value=mocker.MagicMock(subcommand=subcommand[0]),
     )
     m = mocker.patch("aws_gate.cli.{}".format(subcommand[1]))
 

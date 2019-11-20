@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock
-
 import pytest
 
 from aws_gate.ssh_proxy import SshProxySession, ssh_proxy
@@ -45,13 +43,13 @@ def test_ssh_proxy_session(
     mocker.patch("aws_gate.ssh_proxy.get_aws_resource")
     mocker.patch("aws_gate.ssh_proxy.query_instance", return_value=instance_id)
     mocker.patch("aws_gate.ssh_proxy.SshKey", return_value=ssh_key)
-    mocker.patch("aws_gate.ssh_proxy.SshKeyUploader", return_value=MagicMock())
+    mocker.patch("aws_gate.ssh_proxy.SshKeyUploader", return_value=mocker.MagicMock())
     mocker.patch(
         "aws_gate.ssh_proxy.get_instance_details",
         return_value=get_instance_details_response,
     )
     session_mock = mocker.patch(
-        "aws_gate.ssh_proxy.SshProxySession", return_value=MagicMock()
+        "aws_gate.ssh_proxy.SshProxySession", return_value=mocker.MagicMock()
     )
     mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
     mocker.patch("aws_gate.decorators._plugin_exists", return_value=True)

@@ -1,14 +1,11 @@
 import errno
 import os
 import subprocess
-import unittest
-from unittest.mock import MagicMock, call
 
 import pytest
 from botocore.exceptions import ClientError
 from hypothesis import given
 from hypothesis.strategies import lists, text
-from placebo.utils import placebo_session
 
 from aws_gate.exceptions import AWSConnectionError
 from aws_gate.utils import (
@@ -33,27 +30,6 @@ class MockSession:
     @property
     def available_profiles(self):
         return self._available_profiles
-
-
-class TestUtils(unittest.TestCase):
-    @placebo_session
-    def setUp(self, session):
-        self.ec2 = session.resource("ec2", region_name="eu-west-1")
-
-        self.instance_id = "i-0c32153096cd68a6d"
-
-        self.config_data = {
-            "alias": "test",
-            "name": "SSM-test",
-            "profile": "default",
-            "region": "eu-west-1",
-        }
-
-        self.config = MagicMock()
-        self.config.configure_mock(**{"get_host.return_value": self.config_data})
-
-        self.empty_config = MagicMock()
-        self.empty_config.configure_mock(**{"get_host.return_value": {}})
 
 
 def test_existing_profile(mocker):
@@ -113,11 +89,13 @@ def test_get_aws_client(mocker):
     get_aws_client(service_name="ec2", region_name="eu-west-1")
 
     assert mock.called
-    assert mock.mock_calls == [call(profile_name=None, region_name="eu-west-1")]
+    assert mock.mock_calls == [mocker.call(profile_name=None, region_name="eu-west-1")]
 
 
 def test_get_aws_resource(mocker):
-    mock = mocker.patch("aws_gate.utils._create_aws_session", return_value=MagicMock())
+    mock = mocker.patch(
+        "aws_gate.utils._create_aws_session", return_value=mocker.MagicMock()
+    )
     get_aws_resource(service_name="ec2", region_name="eu-west-1")
 
     assert mock.called

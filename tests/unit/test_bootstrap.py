@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock, call, mock_open
-
 import pytest
 import requests
 
@@ -39,7 +37,9 @@ def test_check_plugin_version(mocker):
     _check_plugin_version()
 
     assert m.called
-    assert m.call_args == call(PLUGIN_INSTALL_PATH, ["--version"], capture_output=True)
+    assert m.call_args == mocker.call(
+        PLUGIN_INSTALL_PATH, ["--version"], capture_output=True
+    )
 
 
 def test_plugin_is_installed(mocker):
@@ -60,9 +60,7 @@ def test_plugin_extract_raises_notimplementederror():
 def test_plugin_download(mocker):
     mocker.patch("aws_gate.bootstrap.os")
     mocker.patch("aws_gate.bootstrap.shutil")
-    requests_mock = mocker.patch(
-        "aws_gate.bootstrap.requests", return_value=MagicMock()
-    )
+    requests_mock = mocker.patch("aws_gate.bootstrap.requests")
 
     plugin = Plugin()
     plugin.download()
@@ -96,9 +94,7 @@ def test_mac_plugin_extract_invalid_zip(mocker):
 def test_mac_plugin_extract_valid(mocker):
     mocker.patch("aws_gate.bootstrap.zipfile.is_zipfile", return_value=True)
     mocker.patch("aws_gate.bootstrap.os.path.split")
-    zip_mock = mocker.patch(
-        "aws_gate.bootstrap.zipfile.ZipFile", return_value=MagicMock()
-    )
+    zip_mock = mocker.patch("aws_gate.bootstrap.zipfile.ZipFile")
 
     plugin = MacPlugin()
     plugin.extract()
@@ -107,7 +103,7 @@ def test_mac_plugin_extract_valid(mocker):
 
 
 def test_mac_plugin_install_non_existent_bin_dir(mocker):
-    mocker.patch("builtins.open", mock_open(read_data="data"))
+    mocker.patch("builtins.open", mocker.mock_open(read_data="data"))
     os_mock = mocker.patch("aws_gate.bootstrap.os")
     mocker.patch("aws_gate.bootstrap.os.path.exists", return_value=False)
     mocker.patch("aws_gate.bootstrap._check_plugin_version", return_value="1.1.23.0")
@@ -117,7 +113,7 @@ def test_mac_plugin_install_non_existent_bin_dir(mocker):
     plugin.install()
 
     assert os_mock.makedirs.called
-    assert os_mock.makedirs.call_args == call(DEFAULT_GATE_BIN_PATH)
+    assert os_mock.makedirs.call_args == mocker.call(DEFAULT_GATE_BIN_PATH)
     assert shutil_mock.copyfileobj.called
     assert os_mock.chmod.called
 
