@@ -48,6 +48,11 @@ def ssm(session):
 
 
 @pytest.fixture
+def ec2_mock(mocker):
+    return mocker.MagicMock()
+
+
+@pytest.fixture
 def ec2_ic_mock(mocker):
     return mocker.MagicMock()
 

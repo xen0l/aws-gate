@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import pytest
 from hypothesis import given, example, settings
-from hypothesis.strategies import integers, sampled_from
+from hypothesis.strategies import text, integers, sampled_from
 
 from aws_gate.constants import DEFAULT_GATE_KEY_PATH
 from aws_gate.ssh_common import (
@@ -59,6 +59,12 @@ def test_initialize_key_unsupported_key_size(key_size):
 def test_initialize_key_invalid_key_path():
     with pytest.raises(ValueError):
         SshKey(key_path="")
+
+
+@given(text())
+def test_initialize_key_unsupported_key_type(key_type):
+    with pytest.raises(ValueError):
+        SshKey(key_type=key_type)
 
 
 def test_ssh_key_file_permissions(mocker):
