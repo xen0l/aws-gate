@@ -1,6 +1,4 @@
-import unittest
-from unittest.mock import patch, MagicMock, call, mock_open
-
+import pytest
 import requests
 
 from aws_gate.bootstrap import (
@@ -14,109 +12,119 @@ from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_INSTALL_PATH
 from aws_gate.exceptions import UnsupportedPlatormError
 
 
-class TestBootstrap(unittest.TestCase):
-    def test_check_plugin_version(self):
-        with patch("aws_gate.bootstrap.execute") as m:
-            _check_plugin_version()
+@pytest.mark.parametrize(
+    "platform", [("Linux", "LinuxPlugin"), ("Darwin", "MacPlugin")], ids=lambda x: x[0]
+)
+def test_bootstrap(mocker, platform):
+    mocker.patch("aws_gate.bootstrap.platform.system", return_value=platform[0])
+    m = mocker.patch("aws_gate.bootstrap.{}".format(platform[1]))
 
-            self.assertTrue(m.called)
-            self.assertEqual(
-                m.call_args,
-                call(PLUGIN_INSTALL_PATH, ["--version"], capture_output=True),
-            )
+    bootstrap()
 
-    def test_plugin_is_installed(self):
-        with patch("aws_gate.bootstrap.shutil.which", return_value=PLUGIN_INSTALL_PATH):
-            plugin = Plugin()
-            self.assertFalse(plugin.is_installed)
+    assert m.called
 
-    def test_plugin_extract_raises_notimplementederror(self):
-        plugin = Plugin()
-        with self.assertRaises(NotImplementedError):
-            plugin.extract()
 
-    def test_plugin_download(self):
-        plugin = Plugin()
-        with patch("aws_gate.bootstrap.os"), patch("aws_gate.bootstrap.shutil"), patch(
-            "aws_gate.bootstrap.requests", return_value=MagicMock()
-        ) as requests_mock:
-            plugin.download()
+def test_bootstrap_unsupported_platform(mocker):
+    mocker.patch("aws_gate.bootstrap.platform.system", return_value="non-existing-os")
 
-            self.assertTrue(requests_mock.get.called)
+    with pytest.raises(UnsupportedPlatormError):
+        bootstrap()
 
-    def test_plugin_download_exception(self):
-        plugin = Plugin()
-        with patch("aws_gate.bootstrap.os"), patch("aws_gate.bootstrap.shutil"), patch(
-            "aws_gate.bootstrap.logger.error"
-        ) as m, patch(
-            "aws_gate.bootstrap.requests.get", side_effect=requests.exceptions.HTTPError
-        ):
-            plugin.download()
 
-            self.assertTrue(m.called)
+def test_check_plugin_version(mocker):
+    m = mocker.patch("aws_gate.bootstrap.execute")
 
-    def test_mac_plugin_extract_invalid_zip(self):
-        plugin = MacPlugin()
-        with patch("aws_gate.bootstrap.zipfile.is_zipfile", return_value=False):
-            with self.assertRaises(ValueError):
-                plugin.extract()
+    _check_plugin_version()
 
-    def test_mac_plugin_extract_valid(self):
-        plugin = MacPlugin()
-        with patch("aws_gate.bootstrap.zipfile.is_zipfile", return_value=True), patch(
-            "aws_gate.bootstrap.os.path.split"
-        ), patch(
-            "aws_gate.bootstrap.zipfile.ZipFile", return_value=MagicMock()
-        ) as zip_mock:
-            plugin.extract()
+    assert m.called
+    assert m.call_args == mocker.call(
+        PLUGIN_INSTALL_PATH, ["--version"], capture_output=True
+    )
 
-            self.assertTrue(zip_mock.called)
 
-    def test_mac_plugin_install_non_existent_bin_dir(self):
-        plugin = MacPlugin()
-        with patch("aws_gate.bootstrap.os") as os_mock, patch(
-            "builtins.open", mock_open(read_data="data")
-        ), patch("aws_gate.bootstrap.os.path.exists", return_value=False), patch(
-            "aws_gate.bootstrap.shutil"
-        ) as shutil_mock, patch(
-            "aws_gate.bootstrap._check_plugin_version", return_value="1.1.23.0"
-        ):
-            plugin.install()
+def test_plugin_is_installed(mocker):
+    mocker.patch("aws_gate.bootstrap.shutil.which", return_value=PLUGIN_INSTALL_PATH)
 
-            self.assertTrue(os_mock.makedirs.called)
-            self.assertEqual(os_mock.makedirs.call_args, call(DEFAULT_GATE_BIN_PATH))
-            self.assertTrue(shutil_mock.copyfileobj.called)
-            self.assertTrue(os_mock.chmod.called)
+    plugin = Plugin()
 
-    def test_linux_plugin_extract_valid(self):
-        plugin = LinuxPlugin()
-        with patch("aws_gate.bootstrap.unix_ar") as unix_ar_mock, patch(
-            "aws_gate.bootstrap.tarfile"
-        ) as tarfile_mock, patch("aws_gate.bootstrap.os.path.split"):
-            plugin.extract()
+    assert not plugin.is_installed
 
-            self.assertTrue(unix_ar_mock.open.called)
-            self.assertTrue(tarfile_mock.open.called)
 
-    def test_bootstrap_unsupported_platform(self):
-        with patch(
-            "aws_gate.bootstrap.platform.system", return_value="non-existing-os"
-        ):
-            with self.assertRaises(UnsupportedPlatormError):
-                bootstrap()
+def test_plugin_extract_raises_notimplementederror():
+    plugin = Plugin()
 
-    def test_bootstrap_darwin(self):
-        with patch("aws_gate.bootstrap.platform.system", return_value="Darwin"), patch(
-            "aws_gate.bootstrap.MacPlugin", return_value=MagicMock()
-        ) as mock:
-            bootstrap()
+    with pytest.raises(NotImplementedError):
+        plugin.extract()
 
-            self.assertTrue(mock.called)
 
-    def test_bootstrap_linux(self):
-        with patch("aws_gate.bootstrap.platform.system", return_value="Linux"), patch(
-            "aws_gate.bootstrap.LinuxPlugin", return_value=MagicMock()
-        ) as mock:
-            bootstrap()
+def test_plugin_download(mocker):
+    mocker.patch("aws_gate.bootstrap.os")
+    mocker.patch("aws_gate.bootstrap.shutil")
+    requests_mock = mocker.patch("aws_gate.bootstrap.requests")
 
-            self.assertTrue(mock.called)
+    plugin = Plugin()
+    plugin.download()
+
+    assert requests_mock.get.called
+
+
+def test_plugin_download_exception(mocker):
+    mocker.patch("aws_gate.bootstrap.os")
+    mocker.patch("aws_gate.bootstrap.shutil")
+    mocker.patch(
+        "aws_gate.bootstrap.requests.get", side_effect=requests.exceptions.HTTPError
+    )
+    m = mocker.patch("aws_gate.bootstrap.logger.error")
+
+    plugin = Plugin()
+    plugin.download()
+
+    assert m.called
+
+
+def test_mac_plugin_extract_invalid_zip(mocker):
+    mocker.patch("aws_gate.bootstrap.zipfile.is_zipfile", return_value=False)
+
+    plugin = MacPlugin()
+
+    with pytest.raises(ValueError):
+        plugin.extract()
+
+
+def test_mac_plugin_extract_valid(mocker):
+    mocker.patch("aws_gate.bootstrap.zipfile.is_zipfile", return_value=True)
+    mocker.patch("aws_gate.bootstrap.os.path.split")
+    zip_mock = mocker.patch("aws_gate.bootstrap.zipfile.ZipFile")
+
+    plugin = MacPlugin()
+    plugin.extract()
+
+    assert zip_mock.called
+
+
+def test_mac_plugin_install_non_existent_bin_dir(mocker):
+    mocker.patch("builtins.open", mocker.mock_open(read_data="data"))
+    os_mock = mocker.patch("aws_gate.bootstrap.os")
+    mocker.patch("aws_gate.bootstrap.os.path.exists", return_value=False)
+    mocker.patch("aws_gate.bootstrap._check_plugin_version", return_value="1.1.23.0")
+    shutil_mock = mocker.patch("aws_gate.bootstrap.shutil")
+
+    plugin = MacPlugin()
+    plugin.install()
+
+    assert os_mock.makedirs.called
+    assert os_mock.makedirs.call_args == mocker.call(DEFAULT_GATE_BIN_PATH)
+    assert shutil_mock.copyfileobj.called
+    assert os_mock.chmod.called
+
+
+def test_linux_plugin_extract_valid(mocker):
+    mocker.patch("aws_gate.bootstrap.os.path.split")
+    tarfile_mock = mocker.patch("aws_gate.bootstrap.tarfile")
+    unix_ar_mock = mocker.patch("aws_gate.bootstrap.unix_ar")
+
+    plugin = LinuxPlugin()
+    plugin.extract()
+
+    assert unix_ar_mock.open.called
+    assert tarfile_mock.open.called

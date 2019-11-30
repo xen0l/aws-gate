@@ -1,5 +1,4 @@
-import unittest
-from unittest.mock import patch, call
+import pytest
 
 from aws_gate.decorators import (
     plugin_required,
@@ -10,87 +9,95 @@ from aws_gate.decorators import (
 )
 
 
-class TestDecorators(unittest.TestCase):
-    def test_plugin_exists(self):
-        with patch("aws_gate.decorators.os.path.exists") as m:
-            _plugin_exists("foo")
+def test_plugin_exists(mocker):
+    m = mocker.patch("aws_gate.decorators.os.path.exists")
 
-            self.assertTrue(m.called)
-            self.assertEqual(m.call_args, call("foo"))
+    _plugin_exists("foo")
 
-    def test_plugin_required(self):
-        with patch("aws_gate.decorators._plugin_exists", return_value=True):
+    assert m.called
+    assert m.call_args == mocker.call("foo")
 
-            @plugin_required
-            def test_function():
-                return "executed"
 
-            self.assertEqual(test_function(), "executed")
+def test_plugin_required(mocker):
+    mocker.patch("aws_gate.decorators._plugin_exists", return_value=True)
 
-    def test_plugin_required_plugin_not_installed(self):
-        with patch("aws_gate.decorators._plugin_exists", return_value=False):
+    @plugin_required
+    def test_function():
+        return "executed"
 
-            @plugin_required
-            def test_function():
-                return "executed"
+    assert test_function() == "executed"
 
-            with self.assertRaises(OSError):
-                test_function()
 
-    def test_plugin_version(self):
-        with patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0") as m:
+def test_plugin_required_plugin_not_installed(mocker):
+    mocker.patch("aws_gate.decorators._plugin_exists", return_value=False)
 
-            @plugin_version("1.1.23.0")
-            def test_function():
-                return "executed"
+    @plugin_required
+    def test_function():
+        return "executed"
 
-            self.assertEqual(test_function(), "executed")
-            self.assertEqual(m.call_args, call(["--version"], capture_output=True))
+    with pytest.raises(OSError):
+        test_function()
 
-    def test_plugin_version_bad_version(self):
-        with patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0"):
 
-            @plugin_version("1.1.25.0")
-            def test_function():
-                return "executed"
+def test_plugin_version(mocker):
+    m = mocker.patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0")
 
-            with self.assertRaises(ValueError):
-                test_function()
+    @plugin_version("1.1.23.0")
+    def test_function():
+        return "executed"
 
-    def test_valid_aws_profile(self):
-        with patch("aws_gate.decorators.is_existing_profile", return_value=True):
+    assert test_function() == "executed"
+    assert m.call_args == mocker.call(["--version"], capture_output=True)
 
-            @valid_aws_profile
-            def test_function(profile_name):
-                return profile_name
 
-            self.assertEqual(test_function(profile_name="profile"), "profile")
+def test_plugin_version_bad_version(mocker):
+    mocker.patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0")
 
-    def test_valid_aws_profile_invalid_profile(self):
-        with patch("aws_gate.decorators.is_existing_profile", return_value=False):
+    @plugin_version("1.1.25.0")
+    def test_function():
+        return "executed"
 
-            @valid_aws_profile
-            def test_function(profile_name):
-                return profile_name
+    with pytest.raises(ValueError):
+        test_function()
 
-            with self.assertRaises(ValueError):
-                test_function(profile_name="invalid-profile")
 
-    def test_valid_aws_region(self):
-        with patch("aws_gate.decorators.is_existing_region", return_value=True):
+def test_valid_aws_profile(mocker):
+    mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
 
-            @valid_aws_region
-            def test_function(region_name):
-                return region_name
+    @valid_aws_profile
+    def test_function(profile_name):
+        return profile_name
 
-            self.assertEqual(test_function(region_name="eu-west-1"), "eu-west-1")
+    assert test_function(profile_name="profile") == "profile"
 
-    def test_valid_aws_region_invalid_region(self):
-        with patch("aws_gate.decorators.is_existing_region", return_value=False):
 
-            @valid_aws_region
-            def test_function(region_name):
-                return region_name
+def test_valid_aws_profile_invalid_profile(mocker):
+    mocker.patch("aws_gate.decorators.is_existing_profile", return_value=False)
 
-            with self.assertRaises(ValueError):
-                test_function(region_name="invalid-region")
+    @valid_aws_profile
+    def test_function(profile_name):
+        return profile_name
+
+    with pytest.raises(ValueError):
+        test_function(profile_name="invalid-profile")
+
+
+def test_valid_aws_region(mocker):
+    mocker.patch("aws_gate.decorators.is_existing_region", return_value=True)
+
+    @valid_aws_region
+    def test_function(region_name):
+        return region_name
+
+    assert test_function(region_name="eu-west-1") == "eu-west-1"
+
+
+def test_valid_aws_region_invalid_region(mocker):
+    mocker.patch("aws_gate.decorators.is_existing_region", return_value=False)
+
+    @valid_aws_region
+    def test_function(region_name):
+        return region_name
+
+    with pytest.raises(ValueError):
+        test_function(region_name="invalid-region")

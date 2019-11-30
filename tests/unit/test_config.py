@@ -1,7 +1,6 @@
 import os
-import unittest
-from unittest.mock import patch
 
+import pytest
 from marshmallow import ValidationError
 
 from aws_gate.config import (
@@ -15,146 +14,149 @@ from aws_gate.config import (
 from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
 
 
-class TestConfig(unittest.TestCase):
-    def _load_config_files(self, config_files):
-        config = load_config_from_files(config_files=config_files)
-        self.assertIsInstance(config, GateConfig)
-        return config
+def _load_config_files(config_files):
+    config = load_config_from_files(config_files=config_files)
+    assert isinstance(config, GateConfig)
+    return config
 
-    def _locate_test_file(self):
-        test_dir = os.path.dirname(__file__)
-        test_name = self.id().split(".")[-1]
-        test_path = os.path.join(test_dir, "files", test_name)
 
-        if os.path.isdir(test_path):
-            test_files = [
-                os.path.join(test_path, f) for f in sorted(os.listdir(test_path))
-            ]
-        else:
-            test_files = [test_path + ".yaml"]
-        return test_files
+@pytest.mark.parametrize(
+    "test_input",
+    [
+        ("config_invalid.yaml", ValidationError),
+        ("config_invalid_attribute.yaml", ValidationError),
+        ("config_empty.yaml", EmptyConfigurationError),
+        ("config_invalid_yaml.yaml", EmptyConfigurationError),
+    ],
+    ids=lambda x: x[0].split(".")[0],
+)
+def test_invalid_config(shared_datadir, test_input):
+    test_file, exception = test_input
+    with pytest.raises(exception):
+        config_files = [shared_datadir / test_file]
+        _load_config_files(config_files=config_files)
 
-    def test_empty_config(self):
-        with self.assertRaises(EmptyConfigurationError):
-            self._load_config_files(config_files=self._locate_test_file())
 
-    def test_invalid_config(self):
-        with self.assertRaises(ValidationError):
-            self._load_config_files(config_files=self._locate_test_file())
+def test_valid_config(shared_datadir, mocker):
+    mocker.patch("aws_gate.config.is_existing_profile", return_value=True)
+    expected_config = {
+        "defaults": {"profile": "default-profile", "region": "eu-west-1"},
+        "hosts": [
+            {
+                "alias": "foobar",
+                "name": "foobar",
+                "profile": "test-profile",
+                "region": "eu-west-1",
+            }
+        ],
+    }
 
-    def test_config_invalid_yaml(self):
-        with self.assertRaises(EmptyConfigurationError):
-            self._load_config_files(config_files=self._locate_test_file())
+    config = _load_config_files(config_files=[shared_datadir / "config_valid.yaml"])
 
-    def test_config_invalid_attribute(self):
-        with self.assertRaises(ValidationError):
-            self._load_config_files(config_files=self._locate_test_file())
+    assert config.defaults == expected_config["defaults"]
+    assert config.hosts == expected_config["hosts"]
+    assert config.default_profile == expected_config["defaults"]["profile"]
+    assert config.default_region == expected_config["defaults"]["region"]
 
-    def test_valid_config(self):
-        expected_config = {
-            "defaults": {"profile": "default-profile", "region": "eu-west-1"},
-            "hosts": [
-                {
-                    "alias": "foobar",
-                    "name": "foobar",
-                    "profile": "test-profile",
-                    "region": "eu-west-1",
-                }
-            ],
-        }
 
-        with patch("aws_gate.config.is_existing_profile", return_value=True):
-            config = self._load_config_files(config_files=self._locate_test_file())
+def test_valid_config_without_hosts(shared_datadir, mocker):
+    mocker.patch("aws_gate.config.is_existing_profile", return_value=True)
+    expected_config = {
+        "defaults": {"profile": "default-profile", "region": "eu-west-1"}
+    }
 
-            self.assertEqual(config.defaults, expected_config["defaults"])
-            self.assertEqual(config.hosts, expected_config["hosts"])
-            self.assertEqual(
-                config.default_profile, expected_config["defaults"]["profile"]
-            )
-            self.assertEqual(
-                config.default_region, expected_config["defaults"]["region"]
-            )
+    config = _load_config_files(
+        config_files=[shared_datadir / "config_valid_without_hosts.yaml"]
+    )
 
-    def test_valid_config_without_hosts(self):
-        expected_config = {
-            "defaults": {"profile": "default-profile", "region": "eu-west-1"}
-        }
+    assert config.defaults == expected_config["defaults"]
+    assert config.hosts == []
+    assert config.default_profile == expected_config["defaults"]["profile"]
+    assert config.default_region == expected_config["defaults"]["region"]
 
-        with patch("aws_gate.config.is_existing_profile", return_value=True):
-            config = self._load_config_files(config_files=self._locate_test_file())
 
-            self.assertEqual(config.defaults, expected_config["defaults"])
-            self.assertEqual(config.hosts, [])
-            self.assertEqual(
-                config.default_profile, expected_config["defaults"]["profile"]
-            )
-            self.assertEqual(
-                config.default_region, expected_config["defaults"]["region"]
-            )
+def test_valid_config_without_defaults(shared_datadir):
+    with pytest.raises(ValidationError):
+        _load_config_files(
+            config_files=[shared_datadir / "config_valid_without_defaults.yaml"]
+        )
 
-    def test_valid_config_without_defaults(self):
-        with self.assertRaises(ValidationError):
-            self._load_config_files(config_files=self._locate_test_file())
 
-        with patch("aws_gate.config.is_existing_profile", return_value=True):
-            config = self._load_config_files(config_files=self._locate_test_file())
+def test_valid_config_without_defaults_mocked(shared_datadir, mocker):
+    mocker.patch("aws_gate.config.is_existing_profile", return_value=True)
 
-            self.assertEqual(config.default_profile, None)
-            self.assertEqual(config.default_region, None)
+    config = _load_config_files(
+        config_files=[shared_datadir / "config_valid_without_defaults.yaml"]
+    )
 
-    def test_configd(self):
-        expected_config = {
-            "defaults": {"profile": "default-profile", "region": "eu-west-1"},
-            "hosts": [
-                {
-                    "alias": "bar",
-                    "name": "bar",
-                    "profile": "test-profile",
-                    "region": "eu-west-1",
-                },
-                {
-                    "alias": "foo",
-                    "name": "foo",
-                    "profile": "test-profile",
-                    "region": "eu-west-1",
-                },
-            ],
-        }
-        with patch("aws_gate.config.is_existing_profile", return_value=True):
-            config = self._load_config_files(config_files=self._locate_test_file())
+    assert config.default_profile is None
+    assert config.default_region is None
 
-            self.assertEqual(config.defaults, expected_config["defaults"])
-            self.assertEqual(config.hosts, expected_config["hosts"])
 
-    def test_locate_config_files(self):
-        with patch("aws_gate.config.os.path.isdir", return_value=True), patch(
-            "aws_gate.config.os.listdir", return_value=["foo.yaml"]
-        ), patch("aws_gate.config.os.path.isfile", return_value=True):
-            expected_config_files = [
-                os.path.join(DEFAULT_GATE_CONFIGD_PATH, "foo.yaml"),
-                DEFAULT_GATE_CONFIG_PATH,
-            ]
-            self.assertEqual(_locate_config_files(), expected_config_files)
+def test_configd(shared_datadir, mocker):
+    mocker.patch("aws_gate.config.is_existing_profile", return_value=True)
 
-    def test_config_get_host(self):
-        expected_host = {
-            "alias": "foobar",
-            "name": "foobar",
-            "region": "eu-west-1",
-            "profile": "test-profile",
-        }
-        with patch("aws_gate.config.is_existing_profile", return_value=True):
-            config = self._load_config_files(config_files=self._locate_test_file())
+    expected_config = {
+        "defaults": {"profile": "default-profile", "region": "eu-west-1"},
+        "hosts": [
+            {
+                "alias": "bar",
+                "name": "bar",
+                "profile": "test-profile",
+                "region": "eu-west-1",
+            },
+            {
+                "alias": "foo",
+                "name": "foo",
+                "profile": "test-profile",
+                "region": "eu-west-1",
+            },
+        ],
+    }
+    config_files = [
+        os.path.join(shared_datadir, "configd", file)
+        for file in sorted(os.listdir(shared_datadir / "configd"))
+    ]
+    config = _load_config_files(config_files=config_files)
 
-            self.assertEqual(config.get_host("foobar"), expected_host)
-            self.assertEqual(config.get_host("non-existent"), {})
+    assert config.defaults == expected_config["defaults"]
+    assert config.hosts == expected_config["hosts"]
 
-    def test_validate_profile(self):
-        with patch("aws_gate.config.is_existing_profile", return_value=False):
-            with self.assertRaises(ValidationError):
-                validate_profile("test-profile")
 
-    def test_validate_region(self):
-        with patch("aws_gate.config.is_existing_region", return_value=False):
-            with self.assertRaises(ValidationError):
-                validate_region("test-region")
+def test_locate_config_files(mocker):
+    mocker.patch("aws_gate.config.os.path.isdir", return_value=True)
+    mocker.patch("aws_gate.config.os.listdir", return_value=["foo.yaml"])
+    mocker.patch("aws_gate.config.os.path.isfile", return_value=True)
+    expected_config_files = [
+        os.path.join(DEFAULT_GATE_CONFIGD_PATH, "foo.yaml"),
+        DEFAULT_GATE_CONFIG_PATH,
+    ]
+    assert _locate_config_files() == expected_config_files
+
+
+def test_config_get_host(shared_datadir, mocker):
+    mocker.patch("aws_gate.config.is_existing_profile", return_value=True)
+
+    expected_host = {
+        "alias": "foobar",
+        "name": "foobar",
+        "region": "eu-west-1",
+        "profile": "test-profile",
+    }
+
+    config = _load_config_files(config_files=[shared_datadir / "config_get_host.yaml"])
+
+    assert config.get_host("foobar") == expected_host
+    assert config.get_host("non-existent") == {}
+
+
+def test_validate_profile(mocker):
+    mocker.patch("aws_gate.config.is_existing_profile", return_value=False)
+    with pytest.raises(ValidationError):
+        validate_profile("test-profile")
+
+
+def test_validate_region(mocker):
+    mocker.patch("aws_gate.config.is_existing_region", return_value=False)
+    with pytest.raises(ValidationError):
+        validate_region("test-region")

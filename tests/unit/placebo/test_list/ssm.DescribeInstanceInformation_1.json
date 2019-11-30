@@ -1,0 +1,20 @@
+{
+  "status_code": 200,
+  "data": {
+    "InstanceInformationList": [
+      {
+        "IsLatestVersion": false,
+        "ComputerName": "ip-10-69-104-49.eu-west-1.compute.internal",
+        "PingStatus": "Online",
+        "InstanceId": "i-0c32153096cd68a6d",
+        "IPAddress": "10.69.104.49",
+        "ResourceType": "EC2Instance",
+        "AgentVersion": "2.3.117.0",
+        "PlatformVersion": "2",
+        "PlatformName": "Amazon Linux",
+        "PlatformType": "Linux",
+        "LastPingDateTime": 1546687374.788
+      }
+    ]
+  }
+}
