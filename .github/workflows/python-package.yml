@@ -1,6 +1,12 @@
 name: Python package
 
-on: [push]
+on: 
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
 
 jobs:
   build:
@@ -21,6 +27,15 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
+    - name: Configure dependency caching
+      uses: actions/cache@v1
+      id: cache
+      with:
+        path: ~/.cache/pip
+        key: pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+            pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+            
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -28,7 +43,7 @@ jobs:
         pip install -r requirements/requirements_dev.txt
         pip install coverage
 
-    - name: Test with pytest
+    - name: Run tests
       run: ./tests/run.py
     
     - name: Upload coverage to Codecov  
