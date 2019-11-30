@@ -38,6 +38,13 @@ brew tap xen0l/homebrew-taps
 brew install aws-gate
 ```
 
+or via Docker
+
+```
+docker login docker.pkg.github.com -u $YOUR_GH_USERNAME -p $GH_TOKEN
+docker pull docker.pkg.github.com/xen0l/aws-gate/aws-gate:latest
+```
+
 ### Features
 
 #### config and config.d support

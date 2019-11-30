@@ -22,6 +22,40 @@ brew tap xen0l/homebrew-taps
 brew install aws-gate
 ```
 
+## Installation via Docker
+
+_aws-gate_ is also available as a Docker container via []Github Package Registry](https://github.com/xen0l/aws-gate/packages/):
+
+```
+docker pull docker.pkg.github.com/xen0l/aws-gate/aws-gate:latest
+```
+
+However, before you are able to download the Docker container, you need to generate a personal token and grant it the following scopes:
+
+* repo
+* packages:read
+
+After you have a personal token generated, you will have have to log in to a Github Package Docker registry:
+
+```
+docker login docker.pkg.github.com -u $YOUR_GH_USERNAME -p $GH_TOKEN
+```
+
+**NOTE: be careful that executing this command in your shell might store your token in your shell history!**
+
+### Executing aws-gate as Docker container
+
+When executing _aws-gate_ as Docker container, we have to pass some additional arguments, so it can find _aws-gate_ configuration as well AWS credentials/config file (~/.aws):
+
+```
+docker run --rm -it -v $HOME/.aws-gate/config:/root/.aws-gate/config \
+                    -v $HOME/.aws-gate/config.d:/root/.aws-gate/config.d \
+                    -v $HOME/.aws:/root/.aws \
+                    docker.pkg.github.com/xen0l/aws-gate/aws-gate:latest session ssm-test
+```
+
+**Docker container comes with session-manager-plugin pre-downloaded, so you don't have to worry about it.**
+
 ## Downloading session-manager-plugin
 
 macOS users can use _aws-gate_ directly to fetch session-manager-plugin. _aws-gate_ will automatically install it (no sudo privileges required). To do so, just run
