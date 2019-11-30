@@ -133,6 +133,7 @@ def test_ssh_exception_unknown_instance_id(mocker, instance_id, ssh_key, config)
     mocker.patch("aws_gate.ssh.SshKey", return_value=ssh_key)
     mocker.patch("aws_gate.decorators._plugin_exists", return_value=True)
     mocker.patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0")
+    mocker.patch("aws_gate.decorators.is_existing_profile", return_value=True)
     mocker.patch("aws_gate.decorators.is_existing_region", return_value=True)
 
     with pytest.raises(ValueError):
