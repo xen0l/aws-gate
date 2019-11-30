@@ -1,3 +1,10 @@
+0.7.2 (2019-11-30)
+------------------
+
+* Docker container is now available
+* Tests have been refactored to use pytest
+* aws-gate now uses Github Actions
+
 0.7.1 (2019-11-11)
 ------------------
 
