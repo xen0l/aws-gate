@@ -10,9 +10,16 @@ on:
     tags:
       - v*
 
+    # Don't run for documentation updates
+    paths-ignore:
+      - '**.md'
+          
+
   # Run tests for any PRs.
   pull_request:
-
+    # Don't run for documentation updates
+    paths-ignore:
+      - '**.md'
 env:
   # TODO: Change variable to your image's name.
   IMAGE_NAME: image
