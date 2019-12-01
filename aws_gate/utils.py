@@ -174,11 +174,11 @@ def get_instance_details(instance_id, ec2=None):
 
     return {
         "instance_id": instance_id,
-        "vpc_id": ec2_instance.vpc_id,
-        "private_dns_name": ec2_instance.private_dns_name or None,
-        "private_ip_address": ec2_instance.private_ip_address or None,
-        "public_dns_name": ec2_instance.public_dns_name or None,
-        "public_ip_addess": ec2_instance.public_ip_address or None,
-        "availability_zone": ec2_instance.placement["AvailabilityZone"],
         "instance_name": instance_name,
+        "availability_zone": ec2_instance.placement["AvailabilityZone"],
+        "vpc_id": ec2_instance.vpc_id,
+        "private_ip_address": ec2_instance.private_ip_address or None,
+        "public_ip_addess": ec2_instance.public_ip_address or None,
+        "private_dns_name": ec2_instance.private_dns_name or None,
+        "public_dns_name": ec2_instance.public_dns_name or None,
     }

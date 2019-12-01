@@ -12,6 +12,26 @@ DEFAULT_KEY_SIZE = 2048
 SUPPORTED_KEY_TYPES = ["rsa", "ed25519"]
 KEY_MIN_SIZE = DEFAULT_KEY_SIZE
 
+DEFAULT_LIST_OUTPUT = "human"
+DEFAULT_LIST_OUTPUT_FORMATS = ["json", "human", "tsv", "csv"]
+DEFAULT_LIST_OUTPUT_FIELDS = (
+    "instance_id",
+    "instance_name",
+    "availability_zone",
+    "vpc_id",
+    "private_ip_address",
+    "public_ip_addess",
+    "private_dns_name",
+    "public_dns_name",
+)
+DEFAULT_LIST_HUMAN_FIELDS = (
+    "instance_id",
+    "instance_name",
+    "availability_zone",
+    "vpc_id",
+    "private_ip_address",
+)
+
 DEFAULT_GATE_DIR = os.path.expanduser("~/.aws-gate")
 DEFAULT_GATE_CONFIG_PATH = os.path.join(DEFAULT_GATE_DIR, "config")
 DEFAULT_GATE_CONFIGD_PATH = os.path.join(DEFAULT_GATE_DIR, "config.d")
