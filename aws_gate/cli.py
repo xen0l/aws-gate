@@ -18,6 +18,9 @@ from aws_gate.constants import (
     DEFAULT_SSH_PORT,
     DEFAULT_KEY_ALGORITHM,
     DEFAULT_KEY_SIZE,
+    DEFAULT_LIST_HUMAN_FIELDS,
+    DEFAULT_LIST_OUTPUT_FORMATS,
+    DEFAULT_LIST_OUTPUT,
 )
 from aws_gate.list import list_instances
 from aws_gate.session import session
@@ -145,6 +148,19 @@ def parse_arguments():
     )
     ls_parser.add_argument("-p", "--profile", help="AWS profile to use")
     ls_parser.add_argument("-r", "--region", help="AWS region to use")
+    ls_parser.add_argument(
+        "-f",
+        "--format",
+        help="Output format",
+        default=DEFAULT_LIST_OUTPUT,
+        choices=DEFAULT_LIST_OUTPUT_FORMATS,
+    )
+    ls_parser.add_argument(
+        "-o",
+        "--output",
+        help=argparse.SUPPRESS,
+        default=",".join(DEFAULT_LIST_HUMAN_FIELDS),
+    )
 
     args = parser.parse_args()
 
@@ -246,7 +262,13 @@ def main():
             key_size=args.key_size,
         )
     if args.subcommand in ["ls", "list"]:
-        list_instances(region_name=region, profile_name=profile)
+        fields = args.output.split(",")
+        list_instances(
+            region_name=region,
+            profile_name=profile,
+            output_format=args.format,
+            fields=fields,
+        )
 
 
 if __name__ == "__main__":
