@@ -1,3 +1,9 @@
+0.8.0 (2019-12-03)
+------------------
+
+* **list** subcommand is able to return output in multiple formats: JSON, TSV, CSV and human
+* aws-gate now ships with ZSH completion
+
 0.7.2 (2019-11-30)
 ------------------
 
