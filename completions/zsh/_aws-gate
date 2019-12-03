@@ -1,0 +1,154 @@
+#compdef aws-gate
+
+_AWS_GATE_CONFIG_FILES=(~/.aws-gate/config ~/.aws-gate/config.d/*)
+
+__aws_gate_commands() {
+    local -a commands
+    commands=(
+        'bootstrap:Download and install session-manager-plugin'
+        'session:Open new session on instance and connect to it'
+        'ssh:Open new SSH session on instance and connect to it'
+        'ssh-config:Generate SSH configuration file'
+        'ssh-proxy:Open new SSH proxy session to instance'
+        'list:List available instances'
+        'ls:List available instances'
+        '-h:Display help message'
+        '--help:Display help message'
+        '-v:Increase output verbosity'
+        '--verbose:Increase output verbosity'
+        '--version:Display aws-gate version'
+    )
+    _describe -t commands 'commands' commands
+}
+
+__aws_gate_bootstrap() {
+    _arguments \
+        '-h[Show help message]' \
+        '--help[Show help message]' \
+        '--force[Forces bootstrap operation]'
+}
+
+__aws_gate_session() {
+    _arguments \
+        '-h[Show help message]' \
+        '--help[Show help message]' \
+        '-p[AWS profile to use]:AWS profile:__list_aws_profiles' \
+        '--profile[AWS profile to use]:AWS profile:__list_aws_profiles' \
+        '-r[AWS region to use]:AWS region:__list_aws_regions' \
+        '--region[AWS region to use]:AWS region:__list_aws_regions' \
+        '*:: :__list_hosts'
+}
+
+__aws_gate_ssh() {
+    _arguments \
+        '-h[Show help message]' \
+        '--help[Show help message]' \
+        '-p[AWS profile to use]:AWS profile:__list_aws_profiles' \
+        '--profile[AWS profile to use]:AWS profile:__list_aws_profiles' \
+        '-r[AWS region to use]:AWS region:__list_aws_regions' \
+        '--region[AWS region to use]:AWS region:__list_aws_regions' \
+        '-l[SSH user to use]:login name: __list_ssh_users' \
+        '--os-user[SSH user to use]:login name:__list_ssh_users' \
+        '-P[SSH port to use]' \
+        '--port[SSH port to use]' \
+        '*:: :__list_hosts'
+}
+
+__aws_gate_ssh-config() {
+    __aws_gate_ssh
+}
+
+__aws_gate_ssh-proxy() {
+    __aws_gate_ssh
+}
+
+__aws_gate_list() {
+    _arguments \
+        '-h[Show help message]' \
+        '--help[Show help message]' \
+        '-p[AWS profile to use]:AWS profile:__list_aws_profiles' \
+        '--profile[AWS profile to use]:AWS profile:__list_aws_profiles' \
+        '-r[AWS region to use]:AWS region:__list_aws_regions' \
+        '--region[AWS region to use]:AWS region:__list_aws_regions' \
+        '-f[Output format]:output format:__list_formats' \
+        '--format[Output format]:output format:__list_formats'
+}
+
+__aws_gate_list() {
+    __aws_gate_ls
+}
+
+__list_hosts() {
+    hosts=()
+    for file in "${_AWS_GATE_CONFIG_FILES[@]}"; do
+            hosts_found=false
+            while read -r line; do
+
+                    if ! ${hosts_found}; then
+                            if [[ ${line} =~ "^hosts:" ]]; then
+                                    hosts_found=true
+                            fi
+                            continue
+                    else
+                            if [[ ${line} =~ "^.+alias:" ]]; then
+                                    host="$(echo ${line} | awk '{print $NF}')"
+                                    hosts=(${hosts} ${host})
+                            fi
+                            if [[ ${line} =~ "^(defaults):" ]]; then
+                                    break
+                            fi
+                    fi
+            done < "${file}"
+    done
+
+    _wanted hosts expl "Host" compadd -a hosts
+}
+
+__list_ssh_users () {
+  ssh_users=(ec2-user ubuntu)
+
+  _wanted ssh-user expl "SSH user" compadd -a ssh_users
+}
+
+__list_aws_profiles() {
+    aws_profiles=($(grep '\[' ~/.aws/credentials | grep -v '#' | tr -d '[' | tr -d ']') \
+                  $(grep '\[' ~/.aws/config | grep -v '#' | tr -d '[' | tr -d ']' | cut -d' ' -f 2))
+
+    _wanted aws-profile expl "AWS profile" compadd -a aws_profiles
+}
+
+__list_aws_regions() {
+    aws_regions=(ap-northeast-1 ap-northeast-2 ap-south-1 ap-southeast-1 ap-southeast-2 ca-central-1 eu-central-1 \
+                 eu-north-1 eu-west-1 eu-west-2 eu-west-3 sa-east-1 us-east-1 us-east-2 us-west-1 us-west-2 )
+
+    _wanted aws-region expl "AWS region" compadd -a aws_regions
+}
+
+__list_formats() {
+    output_formats=(tsv csv human json)
+
+    _wanted output-format expl "Output format" compadd -a output_formats
+}
+
+_aws_gate() {
+    local curcontext="${curcontext}" state line
+    local -A opt_args
+
+    _arguments -C \
+        '1:command:->command' \
+        '*::options:->options' && return 0
+
+    case $state in
+        (command) __aws_gate_commands && return 0;;
+        (options)
+            local subcommand=${line[1]}
+            local ret=1
+
+            # call completion for named command e.g. _brew_list
+            local completion_func="__aws_gate_${subcommand}"
+            _call_function ret "${completion_func}" && return ret
+        ;;
+    esac
+}
+
+_aws_gate "$@"
