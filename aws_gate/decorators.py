@@ -13,11 +13,18 @@ def _plugin_exists(plugin_path):
     return os.path.exists(plugin_path)
 
 
+def _plugin_exists_in_path():
+    return any(
+        _plugin_exists(os.path.join(path, PLUGIN_NAME))
+        for path in os.environ["PATH"].split(os.path.pathsep)
+    )
+
+
 @decorator
 def plugin_required(
     wrapped_function, instance, args, kwargs
 ):  # pylint: disable=unused-argument
-    if not _plugin_exists(PLUGIN_INSTALL_PATH):
+    if not _plugin_exists(PLUGIN_INSTALL_PATH) and not _plugin_exists_in_path():
         raise OSError("{} not found".format(PLUGIN_NAME))
 
     return wrapped_function(*args, **kwargs)
