@@ -1,3 +1,11 @@
+0.8.2 (unreleased)
+------------------
+
+0.8.1 (2019-12-10)
+------------------
+
+* _plugin\_required_ decorator now also checks for the presence of system-installed session-manager-plugin (contribution by [@kit494way](https://github.com/kit494way))
+ 
 0.8.0 (2019-12-03)
 ------------------
 
