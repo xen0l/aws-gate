@@ -1,0 +1,227 @@
+#!/usr/bin/env bash
+
+__aws_gate_complete_commands() {
+    local commands="
+        bootstrap
+        list ls
+        session
+        ssh
+        ssh-config
+        ssh-proxy
+        -h --help
+        --verbose
+        -v --version
+    "
+    COMPREPLY=( $(compgen -W "${commands}" -- "${cur}") )
+}
+
+__aws_gate_complete_bootstrap() {
+    local args="
+        -h --help
+        -f --force
+    "
+    COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+}
+
+__aws_gate_complete_session() {
+    case "${prev}" in
+        -p|--profile)
+            __aws_gate_complete_opt_profile
+            ;;
+        -r|--region)
+            __aws_gate_complete_opt_region
+            ;;
+        *)
+            local args="
+                -h --help
+                -p --profile
+                -r --region
+            "
+
+            __aws_gate_merge_hosts_to_args
+
+            COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+            ;;
+    esac
+}
+
+__aws_gate_complete_ssh() {
+    case "${prev}" in
+        -p|--profile)
+            __aws_gate_complete_opt_profile
+            ;;
+        -r|--region)
+            __aws_gate_complete_opt_region
+            ;;
+        -l|--os-user)
+            __aws_gate_complete_ssh_user
+            ;;
+        *)
+            local args="
+                -h --help
+                -p --profile
+                -r --region
+                -l --os-user
+                -P --port
+            "
+
+            __aws_gate_merge_hosts_to_args
+
+            COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+            ;;
+    esac
+}
+
+__aws_gate_complete_list() {
+    local args="
+        -h --help
+        -p --profile
+        -r --region
+        -f --format
+    "
+
+    case "${prev}" in
+        -p|--profile)
+            __aws_gate_complete_opt_profile
+            ;;
+        -r|--region)
+            __aws_gate_complete_opt_region
+            ;;
+        -f|--format)
+            __aws_gate_complete_opt_format
+            ;;
+        *)
+            COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+            ;;
+    esac
+}
+
+__aws_gate_complete_opt_profile() {
+    local aws_profiles="
+      $(grep '\[' ~/.aws/credentials | grep -v '#' | tr -d '[' | tr -d ']')
+      $(grep '\[' ~/.aws/config | grep -v '#' | tr -d '[' | tr -d ']' | cut -d' ' -f 2)
+    "
+    COMPREPLY=( $(compgen -W "${aws_profiles}" -- "${cur}") )
+}
+
+__aws_gate_complete_opt_region() {
+    local aws_regions="
+        ap-northeast-1 ap-northeast-2 ap-south-1 ap-southeast-1 ap-southeast-2 ca-central-1 eu-central-1
+        eu-north-1 eu-west-1 eu-west-2 eu-west-3 sa-east-1 us-east-1 us-east-2 us-west-1 us-west-2
+    "
+    COMPREPLY=( $(compgen -W "${aws_regions}" -- "${cur}") )
+}
+
+__aws_gate_complete_opt_format() {
+    local formats="tsv csv human json"
+    COMPREPLY=( $(compgen -W "${formats}" -- "${cur}") )
+}
+
+__aws_gate_complete_ssh_user() {
+    local ssh_users="ec2-user ubuntu"
+    COMPREPLY=( $(compgen -W "${ssh_users}" -- "${cur}") )
+}
+
+__aws_gate_hosts() {
+    local aws_gate_config_files=(
+        $(test -f ~/.aws-gate/config && echo "$HOME/.aws-gate/config")
+        $(test -d ~/.aws-gate/config.d && find ~/.aws-gate/config.d -type f)
+    )
+
+    local alias_filter_awk=$(cat<<'EOD'
+BEGIN {
+  process_hosts = 0
+}
+
+/^hosts:/ { process_hosts=1; next }
+
+process_hosts && /^\S+:/ { exit }
+
+process_hosts && /\s+alias:\s*/ {
+  for (i=1; i<NF; i++) {
+    if ($i == "alias:") {
+      print $(i+1)
+    }
+  }
+}
+EOD
+)
+
+    for file in "${aws_gate_config_files[@]}"; do
+        awk "${alias_filter_awk}" "${file}"
+    done
+}
+
+__aws_gate_merge_hosts_to_args() {
+    local host
+    while [ "${counter}" -lt "$cword" ]; do
+        case "${words[$counter]}" in
+            -p|--profile|-r|--region|-l|--os-user|-P|--port)
+                (( counter++ ))
+                ;;
+            -*)
+                ;;
+            *)
+                if [[ -z "$host" ]]; then
+                    host=${words[$counter]}
+                    break
+                fi
+                ;;
+        esac
+        (( counter++ ))
+    done
+
+    if [[ -z "${host}" ]]; then
+      args="
+          ${args}
+          $(__aws_gate_hosts)
+      "
+    fi
+}
+
+__aws_gate_complete() {
+    local cur prev words cword subcommand subcommand_pos
+    _get_comp_words_by_ref -n : cur prev words cword
+
+    local counter=1
+    while [ "$counter" -lt "$cword" ]; do
+        case "${words[$counter]}" in
+            -*)
+                ;;
+            *)
+                if [ -z "$subcommand" ]; then
+                    subcommand=${words[$counter]}
+                    subcommand_pos=$counter
+                    (( counter++ ))
+                    break
+                fi
+                ;;
+        esac
+        (( counter++ ))
+    done
+
+    COMPREPLY=()
+    case "${cword}" in
+        1)
+            __aws_gate_complete_commands
+            ;;
+        *)
+            case "${subcommand}" in
+                bootstrap)
+                    __aws_gate_complete_bootstrap
+                    ;;
+                session)
+                    __aws_gate_complete_session
+                    ;;
+                ssh|ssh-config|ssh-proxy)
+                    __aws_gate_complete_ssh
+                    ;;
+                ls|list)
+                    __aws_gate_complete_list
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+complete -F __aws_gate_complete aws-gate
