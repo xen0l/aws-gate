@@ -1,5 +1,7 @@
-0.8.2 (unreleased)
+0.8.2 (2019-12-11)
 ------------------
+
+* aws-gate now ships with Bash completion
 
 0.8.1 (2019-12-10)
 ------------------

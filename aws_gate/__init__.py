@@ -1,4 +1,4 @@
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 __description__ = "aws-gate - AWS SSM Session Manager client CLI"
 __author__ = "Adam Stevko"
 __author_email__ = "adam.stevko@gmail.com"
