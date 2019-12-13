@@ -4,10 +4,12 @@ import logging
 import os
 import signal
 import subprocess
+from typing import Optional, List, Tuple, Dict
 
 import boto3
 import botocore
 
+from aws_gate.config import GateConfig
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_NAME
 from aws_gate.exceptions import AWSConnectionError
 
@@ -37,7 +39,9 @@ AWS_REGIONS = [
 ]
 
 
-def _create_aws_session(region_name=None, profile_name=None):
+def _create_aws_session(
+    region_name: Optional[str] = None, profile_name: Optional[str] = None
+) -> boto3.session.Session:
     logger.debug("Obtaining boto3 session object")
     kwargs = {}
     if region_name is not None:
@@ -58,21 +62,25 @@ def _create_aws_session(region_name=None, profile_name=None):
     return session
 
 
-def get_aws_client(service_name, region_name, profile_name=None):
+def get_aws_client(
+    service_name: str, region_name: str, profile_name: Optional[str] = None
+):
     session = _create_aws_session(region_name=region_name, profile_name=profile_name)
 
     logger.debug("Obtaining %s client", service_name)
     return session.client(service_name=service_name)
 
 
-def get_aws_resource(service_name, region_name, profile_name=None):
+def get_aws_resource(
+    service_name: str, region_name: str, profile_name: Optional[str] = None
+):
     session = _create_aws_session(region_name=region_name, profile_name=profile_name)
 
     logger.debug("Obtaining %s boto3 resource", service_name)
     return session.resource(service_name=service_name)
 
 
-def is_existing_profile(profile_name):
+def is_existing_profile(profile_name: str) -> bool:
     session = _create_aws_session()
 
     logger.debug(
@@ -81,18 +89,18 @@ def is_existing_profile(profile_name):
     return profile_name in session.available_profiles
 
 
-def is_existing_region(region_name):
+def is_existing_region(region_name: str) -> bool:
     return region_name in AWS_REGIONS
 
 
-def get_default_region():
+def get_default_region() -> str:
     session = _create_aws_session()
 
     return session.region_name
 
 
 @contextlib.contextmanager
-def deferred_signals(signal_list=None):
+def deferred_signals(signal_list: Optional[List[int]] = None) -> None:
     if signal_list is None:
         signal_list = [signal.SIGHUP, signal.SIGINT, signal.SIGTERM]
 
@@ -110,7 +118,7 @@ def deferred_signals(signal_list=None):
             signal.signal(deferred_signal, signal.SIG_DFL)
 
 
-def execute(cmd, args, **kwargs):
+def execute(cmd: str, args: List[str], **kwargs) -> Optional[str]:
     ret, result = None, None
 
     env = DEFAULT_GATE_BIN_PATH + os.pathsep + os.environ["PATH"]
@@ -133,14 +141,14 @@ def execute(cmd, args, **kwargs):
     return ret
 
 
-def execute_plugin(args, **kwargs):
+def execute_plugin(args: List[str], **kwargs) -> Optional[str]:
     with deferred_signals():
         return execute(PLUGIN_NAME, args, **kwargs)
 
 
 def fetch_instance_details_from_config(
-    config, instance_name, profile_name, region_name
-):
+    config: GateConfig, instance_name: str, profile_name: str, region_name: str
+) -> Tuple[str, ...]:
     config_data = config.get_host(instance_name)
     if (
         config_data
@@ -159,7 +167,7 @@ def fetch_instance_details_from_config(
     return instance, profile, region
 
 
-def get_instance_details(instance_id, ec2=None):
+def get_instance_details(instance_id: str, ec2=None) -> Dict[str, Optional[str]]:
     filters = [{"Name": "instance-id", "Values": [instance_id]}]
 
     try:

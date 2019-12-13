@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Dict, List, Optional
 
 import yaml
 from marshmallow import Schema, fields, post_load, ValidationError
@@ -16,17 +17,17 @@ class EmptyConfigurationError(Exception):
     pass
 
 
-def validate_profile(profile):
+def validate_profile(profile: str) -> None:
     if not is_existing_profile(profile):
         raise ValidationError("Invalid profile provided: {}".format(profile))
 
 
-def validate_region(region):
+def validate_region(region: str) -> None:
     if not is_existing_region(region):
         raise ValidationError("Invalid region name provided: {}".format(region))
 
 
-def validate_defaults(data):
+def validate_defaults(data: Dict[str, str]) -> None:
     schema = DefaultsSchema()
     schema.load(data)
 
@@ -43,6 +44,38 @@ class HostSchema(Schema):
     region = fields.String(required=True, validate=validate_region)
 
 
+class GateConfig:
+    def __init__(self, defaults: Dict[str, str], hosts: List[Dict[str, str]]):
+        self._defaults = defaults
+        self._hosts = hosts
+
+    @property
+    def hosts(self) -> List[Dict[str, str]]:
+        return self._hosts
+
+    @property
+    def defaults(self) -> Dict[str, str]:
+        return self._defaults
+
+    @property
+    def default_region(self) -> Optional[str]:
+        if "region" in self._defaults:
+            return self._defaults["region"]
+        return None
+
+    @property
+    def default_profile(self) -> Optional[str]:
+        if "profile" in self._defaults:
+            return self._defaults["profile"]
+        return None
+
+    def get_host(self, name: str) -> Dict[str, str]:
+        host = [host for host in self._hosts if host["alias"] == name]
+        if host:
+            return host[0]
+        return {}
+
+
 class GateConfigSchema(Schema):
     defaults = fields.Nested(
         DefaultsSchema, required=False, missing=dict(), validate=validate_defaults
@@ -51,43 +84,11 @@ class GateConfigSchema(Schema):
 
     # pylint: disable=no-self-use,unused-argument
     @post_load
-    def create_config(self, data, **kwargs):
+    def create_config(self, data, **kwargs) -> GateConfig:
         return GateConfig(**data)
 
 
-class GateConfig:
-    def __init__(self, defaults, hosts):
-        self._defaults = defaults
-        self._hosts = hosts
-
-    @property
-    def hosts(self):
-        return self._hosts
-
-    @property
-    def defaults(self):
-        return self._defaults
-
-    @property
-    def default_region(self):
-        if "region" in self._defaults:
-            return self._defaults["region"]
-        return None
-
-    @property
-    def default_profile(self):
-        if "profile" in self._defaults:
-            return self._defaults["profile"]
-        return None
-
-    def get_host(self, name):
-        host = [host for host in self._hosts if host["alias"] == name]
-        if host:
-            return host[0]
-        return {}
-
-
-def _locate_config_files():
+def _locate_config_files() -> List[str]:
     config_files = []
 
     if os.path.isdir(DEFAULT_GATE_CONFIGD_PATH):
@@ -131,7 +132,7 @@ def _merge_data(src, dst):
     return dst
 
 
-def load_config_from_files(config_files=None):
+def load_config_from_files(config_files: Optional[List[str]] = None) -> GateConfig:
     if config_files is None:
         config_files = _locate_config_files()
 

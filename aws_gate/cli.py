@@ -8,7 +8,7 @@ from yaml.scanner import ScannerError
 
 from aws_gate import __version__, __description__
 from aws_gate.bootstrap import bootstrap
-from aws_gate.config import load_config_from_files
+from aws_gate.config import load_config_from_files, GateConfig
 from aws_gate.constants import (
     SUPPORTED_KEY_TYPES,
     DEBUG,
@@ -32,21 +32,21 @@ from aws_gate.utils import get_default_region
 logger = logging.getLogger(__name__)
 
 
-def _get_profile(args, config, default):
+def _get_profile(args: argparse.Namespace, config: GateConfig, default: str) -> str:
     profile = None
     if hasattr(args, "profile"):
         profile = args.profile
     return profile or config.default_profile or default
 
 
-def _get_region(args, config, default):
+def _get_region(args: argparse.Namespace, config: GateConfig, default: str) -> str:
     region = None
     if hasattr(args, "region"):
         region = args.region
     return region or config.default_region or default
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__description__)
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
@@ -171,7 +171,7 @@ def parse_arguments():
     return args
 
 
-def main():
+def main() -> None:
     args = parse_arguments()
 
     if not DEBUG:
