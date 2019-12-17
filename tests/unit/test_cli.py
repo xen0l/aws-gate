@@ -6,6 +6,7 @@ import pytest
 from marshmallow import ValidationError
 
 from aws_gate.cli import main, _get_profile, _get_region, parse_arguments
+from aws_gate.constants import AWS_DEFAULT_REGION
 
 
 def test_cli_param_error():
@@ -140,3 +141,38 @@ def test_cli_subcommand(mocker, subcommand):
     main()
 
     assert m.called
+
+
+def test_cli_default_region(mocker):
+    mocker.patch("aws_gate.cli.get_default_region", return_value=None)
+    mocker.patch(
+        "aws_gate.cli.parse_arguments",
+        return_value=mocker.MagicMock(subcommand="unknown"),
+    )
+    mock = mocker.patch("aws_gate.cli._get_region", mocker.MagicMock())
+
+    main()
+
+    assert mock.call_args_list[0][1]["default"] == AWS_DEFAULT_REGION
+
+
+@pytest.mark.parametrize(
+    "test_input",
+    [
+        (False, "%(message)s"),
+        (True, "%(asctime)s - %(name)-28s - %(levelname)-5s - %(message)s"),
+    ],
+    ids=["DEBUG=False", "DEBUG=True"],
+)
+def test_cli_logging_format(mocker, test_input):
+    debug, log_format_ = test_input
+    mocker.patch("aws_gate.cli.DEBUG", debug)
+    mocker.patch(
+        "aws_gate.cli.parse_arguments",
+        return_value=mocker.MagicMock(subcommand="unknown"),
+    )
+    mock = mocker.patch("aws_gate.cli.logging.basicConfig", mocker.MagicMock())
+
+    main()
+
+    assert mock.call_args_list[0][1]["format"] == log_format_

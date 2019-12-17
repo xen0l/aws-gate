@@ -10,6 +10,7 @@ from aws_gate.config import (
     _locate_config_files,
     validate_profile,
     validate_region,
+    _merge_data,
 )
 from aws_gate.constants import DEFAULT_GATE_CONFIG_PATH, DEFAULT_GATE_CONFIGD_PATH
 
@@ -160,3 +161,29 @@ def test_validate_region(mocker):
     mocker.patch("aws_gate.config.is_existing_region", return_value=False)
     with pytest.raises(ValidationError):
         validate_region("test-region")
+
+
+@pytest.mark.parametrize(
+    "src, dst, expected",
+    [
+        ({"foo": "foo"}, {"bar": "bar"}, {"foo": "foo", "bar": "bar"}),
+        ([3, 4], [1, 2], [1, 2, 3, 4]),
+        (3, [1, 2], [1, 2, 3]),
+        ("test", [1, 2], [1, 2, "test"]),
+        ("src", "dst", "src"),
+    ],
+    ids=["dict-dict", "list-list", "int-list", "str-list", "str-str"],
+)
+def test_merge_config_data(src, dst, expected):
+    assert _merge_data(src, dst) == expected
+
+
+@pytest.mark.parametrize(
+    "args",
+    [(1, {}), ("test", {}), (list(), {}), (set(), {}), (frozenset(), {})],
+    ids=lambda x: type(x[0]).__name__,
+)
+def test_merge_config_data_exception(args):
+    src, dst = args
+    with pytest.raises(TypeError):
+        _merge_data(src, dst)
