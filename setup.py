@@ -11,14 +11,14 @@ __location__ = os.path.join(
 
 
 def get_install_requirements(path):
-    with open(os.path.join(__location__, path), 'r') as f:
+    with open(os.path.join(__location__, path), "r") as f:
         content = f.read()
-        requires = [req for req in content.split('\\n') if req != '']
+        requires = [req for req in content.split("\\n") if req != ""]
 
     return requires
 
 
-NAME = 'aws-gate'
+NAME = "aws-gate"
 PROJECT_URLS = {
     "Bug Tracker": "https://github.com/xen0l/aws-gate/issues",
     "Source Code": "https://github.com/xen0l/aws-gate",
@@ -29,19 +29,17 @@ CLASSIFIERS = [
     "Operating System :: OS Independent",
     "Topic :: System :: Systems Administration",
 ]
-INSTALL_REQUIRES = get_install_requirements('requirements/requirements.txt')
+INSTALL_REQUIRES = get_install_requirements("requirements/requirements.txt")
 EXTRA_REQUIRES = {
-    'tests': get_install_requirements('requirements/requirements_dev.txt')
+    "tests": get_install_requirements("requirements/requirements_dev.txt")
 }
-SCRIPTS = [
-    'bin/aws-gate'
-]
+SCRIPTS = ["bin/aws-gate"]
 
 setup(
     name=NAME,
     version=__version__,
     description=__description__,
-    long_description=open('README.md').read(),
+    long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url=__url__,
     project_urls=PROJECT_URLS,
@@ -52,5 +50,5 @@ setup(
     install_requires=INSTALL_REQUIRES,
     extra_requires=EXTRA_REQUIRES,
     include_package_data=True,
-    scripts=SCRIPTS
+    scripts=SCRIPTS,
 )
