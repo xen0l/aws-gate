@@ -68,6 +68,11 @@ def getinstanceidbyinstancename(name, ec2=None):
     return getinstanceidbytag("Name:{}".format(name), ec2=ec2)
 
 
+def getinstancebyautoscalinggroup(name, ec2=None):
+    _, asg_name = name.split(":")
+    return getinstanceidbytag("aws:autoscaling:groupName:{}".format(asg_name), ec2=ec2)
+
+
 def query_instance(name, ec2=None):
     if ec2 is None:
         raise ValueError("EC2 client is not initialized")
@@ -82,6 +87,7 @@ def query_instance(name, ec2=None):
         "private-ip-address": getinstanceidbyprivateipaddress,
         "tag": getinstanceidbytag,
         "name": getinstanceidbyinstancename,
+        "asg": getinstancebyautoscalinggroup,
     }
 
     # If we are provided with instance ID directly, we don't need to contact EC2
@@ -99,6 +105,8 @@ def query_instance(name, ec2=None):
             identifier_type = "dns-name"
         elif name.endswith("compute.internal"):
             identifier_type = "private-dns-name"
+        elif name.startswith("asg:"):
+            identifier_type = "asg"
         elif name.count(":") >= 1:
             identifier_type = "tag"
         else:
