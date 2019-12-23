@@ -1,3 +1,9 @@
+0.8.3 (2019-12-23)
+------------------
+
+* aws-gate now supports querying instances via **asg** identifier
+* Querying instances by autoscaling group tag is now fixed
+
 0.8.2 (2019-12-11)
 ------------------
 
