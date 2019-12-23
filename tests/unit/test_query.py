@@ -29,6 +29,7 @@ def test_query_aws_api_exception(mocker):
         "Name:dummy-instance",
         "aws:autoscaling:groupName:dummy-v001",
         "dummy-instance",
+        "asg:dummy-v001",
     ],
     ids=[
         "private_ip_address",
@@ -39,6 +40,7 @@ def test_query_aws_api_exception(mocker):
         "tag",
         "tag (multiple colons)",
         "name",
+        "asg",
     ],
 )
 def test_query_instance(name, instance_id, ec2):

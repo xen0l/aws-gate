@@ -111,6 +111,11 @@ aws-gate session Name:SSM-test
 aws-gate session SSM-test
 ```
 
+* autoscaling group name (uses tag identifier under the hood)
+```
+aws-gate session asg:dummy-v001
+```
+
 #### SSH ProxyCommand support
 
 AWS SSM Session Manager supports tunneling SSH sessions over it. Moreover, _aws-gate_ supports generating ephemeral SSH
