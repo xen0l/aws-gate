@@ -27,6 +27,7 @@ def test_query_aws_api_exception(mocker):
         "18.202.215.108",
         "i-0c32153096cd68a6d",
         "Name:dummy-instance",
+        "aws:autoscaling:groupName:dummy-v001",
         "dummy-instance",
     ],
     ids=[
@@ -36,6 +37,7 @@ def test_query_aws_api_exception(mocker):
         "ip_address",
         "id",
         "tag",
+        "tag (multiple colons)",
         "name",
     ],
 )

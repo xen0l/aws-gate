@@ -57,7 +57,7 @@ def getinstanceidbyipaddress(name, ec2=None):
 
 
 def getinstanceidbytag(name, ec2=None):
-    key, value = name.split(":")
+    key, value = name.split(":", 1)
 
     filters = [{"Name": "tag:{}".format(key), "Values": [value]}]
 
@@ -99,7 +99,7 @@ def query_instance(name, ec2=None):
             identifier_type = "dns-name"
         elif name.endswith("compute.internal"):
             identifier_type = "private-dns-name"
-        elif name.count(":") == 1:
+        elif name.count(":") >= 1:
             identifier_type = "tag"
         else:
             identifier_type = "name"
