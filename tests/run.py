@@ -40,6 +40,7 @@ cmd = ["pytest", "--verbose"]
 if args.lint:
     lint_args = [
         "--flake8",
+        "--black",
         "--pylint",
         "--pylint-jobs={}".format(multiprocessing.cpu_count()),
         "--pylint-rcfile={}".format(os.path.join(root_dir, ".pylintrc")),
