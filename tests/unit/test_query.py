@@ -47,6 +47,25 @@ def test_query_instance(name, instance_id, ec2):
     assert query_instance(name, ec2=ec2) == instance_id
 
 
+@pytest.mark.parametrize(
+    "name, expected",
+    [
+        ("dummy-instance", "tag:Name"),
+        ("Name:dummy:instance", "tag:Name"),
+        ("asg:dummy-v001", "tag:aws:autoscaling:groupName"),
+        ("aws:autoscaling:groupName:dummy-v001", "tag:aws:autoscaling:groupName"),
+    ],
+    ids=["name", "name (colon with identifier)", "asg", "aws:autoscaling:groupName"],
+)
+def test_query_instance_by_tag_parsing(mocker, name, expected, ec2):
+    mock = mocker.patch("aws_gate.query._query_aws_api")
+
+    query_instance(name, ec2=ec2)
+
+    assert mock.called
+    assert mock.call_args[1]["filters"][0]["Name"] == expected
+
+
 def test_query_instance_ec2_unitialized():
     with pytest.raises(ValueError):
         query_instance("18.205.215.108")
