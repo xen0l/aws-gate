@@ -1,3 +1,8 @@
+0.8.4 (2019-12-24)
+------------------
+
+* Version 0.8.3 introduced a bug into querying instance by autoscaling group, where the name would not be properly parsed. This is now fixed.
+
 0.8.3 (2019-12-23)
 ------------------
 
