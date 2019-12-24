@@ -57,10 +57,17 @@ def getinstanceidbyipaddress(name, ec2=None):
 
 
 def getinstanceidbytag(name, ec2=None):
-    key, value = name.split(":", 1)
+    # One of the allowed characters in tags is ":", which might break tag
+    # parsing. For this reason,we have to differentiate 2 cases for
+    # provided name:
+    # - aws: special prefixed tags in the form of aws:<service>:<tag_name>:<tag_value>
+    # - regular cases in the form <tag_name>:<tag_value>
+    if name.startswith("aws:"):
+        key, value = ":".join(name.split(":", 3)[:3]), name.split(":", 3)[-1]
+    else:
+        key, value = name.split(":", 1)
 
     filters = [{"Name": "tag:{}".format(key), "Values": [value]}]
-
     return _query_aws_api(filters=filters, ec2=ec2)
 
 
@@ -68,7 +75,7 @@ def getinstanceidbyinstancename(name, ec2=None):
     return getinstanceidbytag("Name:{}".format(name), ec2=ec2)
 
 
-def getinstancebyautoscalinggroup(name, ec2=None):
+def getinstanceidbyautoscalinggroup(name, ec2=None):
     _, asg_name = name.split(":")
     return getinstanceidbytag("aws:autoscaling:groupName:{}".format(asg_name), ec2=ec2)
 
@@ -87,7 +94,7 @@ def query_instance(name, ec2=None):
         "private-ip-address": getinstanceidbyprivateipaddress,
         "tag": getinstanceidbytag,
         "name": getinstanceidbyinstancename,
-        "asg": getinstancebyautoscalinggroup,
+        "asg": getinstanceidbyautoscalinggroup,
     }
 
     # If we are provided with instance ID directly, we don't need to contact EC2
@@ -112,4 +119,5 @@ def query_instance(name, ec2=None):
         else:
             identifier_type = "name"
 
+    logger.debug("Identifier type chosen: %s", identifier_type)
     return func_dispatcher[identifier_type](name=name, ec2=ec2)
