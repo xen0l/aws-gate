@@ -57,9 +57,10 @@ def getinstanceidbyipaddress(name, ec2=None):
 
 
 def getinstanceidbytag(name, ec2=None):
-    # One of the allowed characters in tags is ":", which might break tag parsing. For this reason,
-    # we have to differentiate 2 cases for provided name:
-    # - aws: special prefixed tags in the form of  aws:<service>:<tag_name>:<tag_value>
+    # One of the allowed characters in tags is ":", which might break tag
+    # parsing. For this reason,we have to differentiate 2 cases for
+    # provided name:
+    # - aws: special prefixed tags in the form of aws:<service>:<tag_name>:<tag_value>
     # - regular cases in the form <tag_name>:<tag_value>
     if name.startswith("aws:"):
         key, value = ":".join(name.split(":", 3)[:3]), name.split(":", 3)[-1]
