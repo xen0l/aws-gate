@@ -76,7 +76,7 @@ def test_create_aws_profile_credentials_from_env_vars(mocker):
     _create_aws_session()
 
     assert session_mock.Session.called
-    assert session_mock.Session.call_args == mocker.call(
+    assert session_mock.Session.call_args == mocker.call(  # noqa: S106
         aws_access_key_id="a", aws_secret_access_key="b", aws_session_token="c"
     )
 
