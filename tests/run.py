@@ -3,6 +3,7 @@
 import argparse
 import multiprocessing
 import os
+import subprocess
 import sys
 
 parser = argparse.ArgumentParser()
@@ -61,4 +62,4 @@ else:
 
 cmd.extend(rest)
 
-os.execvp(cmd[0], cmd)
+subprocess.run(cmd, check=False)
