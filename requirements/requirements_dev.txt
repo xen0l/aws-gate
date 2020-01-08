@@ -1,8 +1,10 @@
 # https://github.com/HypothesisWorks/hypothesis/issues/2113 
 attrs>=19.2.0
+bandit==1.6.2
 black==19.10b0
 dlint==0.9.2
 flake8==3.7.9
+flake8-bandit==2.1.2
 flake8-bugbear==19.8.0
 hypothesis==4.53.1
 placebo==0.9.0
