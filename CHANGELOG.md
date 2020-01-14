@@ -1,3 +1,8 @@
+0.8.5 (2020-01-14)
+------------------
+
+* Provide more debug output when fetching host information from config files. 
+
 0.8.4 (2019-12-24)
 ------------------
 
