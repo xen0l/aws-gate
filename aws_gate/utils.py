@@ -148,10 +148,22 @@ def fetch_instance_details_from_config(
         and config_data["profile"]
         and config_data["region"]
     ):
+        logger.debug(
+            "Entry found in configuration file for host alias: %s", instance_name
+        )
+        logger.debug(
+            'Host alias data: host "%s" with AWS profile "%s" in region "%s"',
+            config_data["name"],
+            config_data["profile"],
+            config_data["region"],
+        )
+
         region = config_data["region"]
         profile = config_data["profile"]
         instance = config_data["name"]
     else:
+        logger.debug("No entry found in configuration file for host: %s", instance_name)
+
         region = region_name
         profile = profile_name
         instance = instance_name
