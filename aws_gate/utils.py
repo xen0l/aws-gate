@@ -57,7 +57,8 @@ def _create_aws_session(region_name=None, profile_name=None):
     session = boto3.session.Session(**kwargs)
 
     # Add aws-gate version to the client user-agent
-    session._session.user_agent_extra += " aws-gate/{}".format(__version__)
+    # pylint: disable=protected-access
+    session._session.user_agent_extra += " " + "aws-gate/{}".format(__version__)
 
     return session
 

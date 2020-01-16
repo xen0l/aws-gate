@@ -54,6 +54,7 @@ def test_create_aws_session(mocker):
 def test_create_aws_session_user_agent():
     session = _create_aws_session(region_name="eu-west-1")
 
+    # pylint: disable=protected-access
     assert "aws-gate/{}".format(__version__) in session._session.user_agent()
 
 
