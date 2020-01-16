@@ -7,6 +7,7 @@ from botocore.exceptions import ClientError
 from hypothesis import given
 from hypothesis.strategies import lists, text
 
+from aws_gate import __version__
 from aws_gate.exceptions import AWSConnectionError
 from aws_gate.utils import (
     is_existing_profile,
@@ -48,6 +49,12 @@ def test_create_aws_session(mocker):
 
     assert session_mock.Session.called
     assert session_mock.Session.call_args == mocker.call(region_name="eu-west-1")
+
+
+def test_create_aws_session_user_agent():
+    session = _create_aws_session(region_name="eu-west-1")
+
+    assert "aws-gate/{}".format(__version__) in session._session.user_agent()
 
 
 def test_create_aws_session_with_profile(mocker):
