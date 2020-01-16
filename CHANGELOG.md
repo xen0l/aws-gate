@@ -1,3 +1,8 @@
+0.8.6 (2020-01-17)
+------------------
+
+* Extend user agent with aws-gate version information, so it can be easier tracked in CloudTrail
+
 0.8.5 (2020-01-14)
 ------------------
 
