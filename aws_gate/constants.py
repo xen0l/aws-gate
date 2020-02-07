@@ -20,7 +20,7 @@ DEFAULT_LIST_OUTPUT_FIELDS = (
     "availability_zone",
     "vpc_id",
     "private_ip_address",
-    "public_ip_addess",
+    "public_ip_address",
     "private_dns_name",
     "public_dns_name",
 )

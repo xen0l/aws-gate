@@ -203,7 +203,7 @@ def test_get_instance_details(instance_id, ec2):
         "private_dns_name": "ip-10-69-104-49.eu-west-1.compute.internal",
         "private_ip_address": "10.69.104.49",
         "public_dns_name": "ec2-18-201-115-108.eu-west-1.compute.amazonaws.com",
-        "public_ip_addess": "18.201.115.108",
+        "public_ip_address": "18.201.115.108",
         "availability_zone": "eu-west-1a",
         "instance_name": "dummy-instance",
     }
