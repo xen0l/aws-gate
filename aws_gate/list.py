@@ -11,7 +11,11 @@ from aws_gate.constants import (
     DEFAULT_LIST_OUTPUT,
 )
 from aws_gate.decorators import valid_aws_region, valid_aws_profile
-from aws_gate.utils import get_aws_client, get_aws_resource, get_instance_details
+from aws_gate.utils import (
+    get_aws_client,
+    get_aws_resource,
+    get_multiple_instance_details,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -85,10 +89,7 @@ def list_instances(
         for instance in response["InstanceInformationList"]:
             instance_ids.append(instance["InstanceId"])
 
-    instance_details = []
-    for instance_id in instance_ids:
-        instance_details.append(get_instance_details(instance_id=instance_id, ec2=ec2))
-
+    instance_details = get_multiple_instance_details(instance_ids=instance_ids, ec2=ec2)
     print(
         serialize(instance_details, output_format=output_format, fields=fields).rstrip()
     )

@@ -177,25 +177,33 @@ def fetch_instance_details_from_config(
 
 
 def get_instance_details(instance_id, ec2=None):
-    filters = [{"Name": "instance-id", "Values": [instance_id]}]
+    return get_multiple_instance_details(instance_ids=[instance_id], ec2=ec2)[0]
 
+
+def get_multiple_instance_details(instance_ids, ec2=None):
     try:
-        ec2_instance = list(ec2.instances.filter(Filters=filters))[0]
+        ec2_instances = list(ec2.instances.filter(InstanceIds=instance_ids))
     except botocore.exceptions.ClientError:
         raise AWSConnectionError
 
     instance_name = None
-    for tag in ec2_instance.tags:
-        if tag["Key"] == "Name":
-            instance_name = tag["Value"]
+    instance_details = []
+    for ec2_instance in ec2_instances:
+        for tag in ec2_instance.tags:
+            if tag["Key"] == "Name":
+                instance_name = tag["Value"]
 
-    return {
-        "instance_id": instance_id,
-        "instance_name": instance_name,
-        "availability_zone": ec2_instance.placement["AvailabilityZone"],
-        "vpc_id": ec2_instance.vpc_id,
-        "private_ip_address": ec2_instance.private_ip_address or None,
-        "public_ip_addess": ec2_instance.public_ip_address or None,
-        "private_dns_name": ec2_instance.private_dns_name or None,
-        "public_dns_name": ec2_instance.public_dns_name or None,
-    }
+                instance_details.append(
+                    {
+                        "instance_id": ec2_instance.id,
+                        "instance_name": instance_name,
+                        "availability_zone": ec2_instance.placement["AvailabilityZone"],
+                        "vpc_id": ec2_instance.vpc_id,
+                        "private_ip_address": ec2_instance.private_ip_address or None,
+                        "public_ip_addess": ec2_instance.public_ip_address or None,
+                        "private_dns_name": ec2_instance.private_dns_name or None,
+                        "public_dns_name": ec2_instance.public_dns_name or None,
+                    }
+                )
+
+    return instance_details
