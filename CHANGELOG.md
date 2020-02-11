@@ -1,4 +1,4 @@
-0.8.7 (unreleased)
+0.8.7 (2020-02-12)
 ------------------
 
 * Improve instance listing performance in cases when there are many instances connecged to AWS Systems Manager 
