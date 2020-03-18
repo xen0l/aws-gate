@@ -133,7 +133,7 @@ def _merge_data(src, dst):
 
 def _merge_defaults(config_data):
     for host in config_data.get("hosts", []):
-        for key, value in config_data.get("defaults").items():
+        for key, value in config_data.get("defaults", {}).items():
             if key not in host:
                 host[key] = value
 
@@ -154,7 +154,7 @@ def load_config_from_files(config_files=None):
 
         if not config_data:
             raise EmptyConfigurationError("Empty configuration data")
-    
+
     _merge_defaults(config_data)
     config = GateConfigSchema().load(config_data)
     return config
