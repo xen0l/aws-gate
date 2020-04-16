@@ -94,6 +94,33 @@ def test_valid_config_without_defaults_mocked(shared_datadir, mocker):
     assert config.default_region is None
 
 
+def test_valid_config_with_defaults_in_hosts(shared_datadir, mocker):
+    mocker.patch("aws_gate.config.is_existing_profile", return_value=True)
+
+    expected_config = {
+        "defaults": {"profile": "default-profile", "region": "eu-west-1"},
+        "hosts": [
+            {
+                "alias": "foobar",
+                "name": "foobar",
+                "profile": "default-profile",
+                "region": "eu-west-1",
+            }
+        ],
+    }
+
+    config = _load_config_files(
+        config_files=[shared_datadir / "config_valid_defaults_in_hosts.yaml"]
+    )
+
+    assert config.defaults == expected_config["defaults"]
+    assert config.hosts == expected_config["hosts"]
+    assert config.default_profile == expected_config["defaults"]["profile"]
+    assert config.default_region == expected_config["defaults"]["region"]
+    assert config.hosts[0]["profile"] == expected_config["defaults"]["profile"]
+    assert config.hosts[0]["region"] == expected_config["defaults"]["region"]
+
+
 def test_configd(shared_datadir, mocker):
     mocker.patch("aws_gate.config.is_existing_profile", return_value=True)
 

@@ -1,0 +1,6 @@
+hosts:
+  - alias: foobar
+    name: foobar
+defaults:
+    profile: default-profile
+    region: eu-west-1
