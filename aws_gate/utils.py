@@ -7,6 +7,7 @@ import subprocess
 
 import boto3
 import botocore
+from botocore import credentials
 
 from aws_gate import __version__
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH, PLUGIN_NAME
@@ -54,11 +55,17 @@ def _create_aws_session(region_name=None, profile_name=None):
     if "AWS_SESSION_TOKEN" in os.environ:
         kwargs["aws_session_token"] = os.environ["AWS_SESSION_TOKEN"]
 
+    # By default the cache path is ~/.aws/boto/cache
+    cli_cache = os.path.join(os.path.expanduser("~"), ".aws/cli/cache")
+
     session = boto3.session.Session(**kwargs)
 
     # Add aws-gate version to the client user-agent
     # pylint: disable=protected-access
     session._session.user_agent_extra += " " + "aws-gate/{}".format(__version__)
+    session._session.get_component("credential_provider").get_provider(
+        "assume-role"
+    ).cache = credentials.JSONFileCache(cli_cache)
 
     return session
 

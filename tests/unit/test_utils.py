@@ -4,6 +4,7 @@ import subprocess
 
 import pytest
 from botocore.exceptions import ClientError
+from botocore import credentials
 from hypothesis import given
 from hypothesis.strategies import lists, text
 
@@ -211,3 +212,13 @@ def test_get_instance_details(instance_id, ec2):
     details = get_instance_details(instance_id, ec2=ec2)
 
     assert details == expected_details
+
+
+def test_aws_session_file_cache_is_set():
+    session = _create_aws_session(region_name="eu-west-1")
+    assert isinstance(session._session.get_component("credential_provider").get_provider(
+        "assume-role"
+    ).cache, credentials.JSONFileCache)
+    assert session._session.get_component("credential_provider").get_provider(
+        "assume-role"
+    ).cache._working_dir == os.path.join(os.path.expanduser("~"), ".aws/cli/cache")
