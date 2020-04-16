@@ -1,7 +1,8 @@
 0.8.8 (unreleased)
 ------------------
 
-* Default profile and region are now used if hosts profile and region are not defined. This allows to have much leaner config files, especially in situations when multiple hosts are sharing the same profile and region. Contributed by ([@svalentino](https://github.com/svalentino)) 
+* Default profile and region are now used if hosts profile and region are not defined. This allows to have much leaner config files, especially in situations when multiple hosts are sharing the same profile and region. Contributed by [@svalentino](https://github.com/svalentino)
+* AWS sessions will look for cached credentials in ~/.aws/cli/cache. Contributed by [@becrsh](https://github.com/becrsh)
 
 0.8.7 (2020-02-12)
 ------------------
