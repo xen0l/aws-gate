@@ -170,7 +170,9 @@ def test_execute_plugin_args(mocker):
     execute_plugin(["--version"], stdout=PIPE, stderr=PIPE)
 
     assert m.called
-    assert "['--version'], stdout=-1, stderr=-1" in str(m.call_args)
+    assert "['--version']" in str(m.call_args[0])
+    assert m.call_args[1]["stdout"] == PIPE
+    assert m.call_args[1]["stderr"] == PIPE
 
 
 def test_fetch_instance_details_from_config(config):
