@@ -1,3 +1,5 @@
+from subprocess import PIPE
+
 import pytest
 import requests
 
@@ -38,7 +40,7 @@ def test_check_plugin_version(mocker):
 
     assert m.called
     assert m.call_args == mocker.call(
-        PLUGIN_INSTALL_PATH, ["--version"], capture_output=True
+        PLUGIN_INSTALL_PATH, ["--version"], stdout=PIPE, stderr=PIPE
     )
 
 

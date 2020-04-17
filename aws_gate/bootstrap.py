@@ -5,6 +5,7 @@ import shutil
 import tarfile
 import tempfile
 import zipfile
+from subprocess import PIPE
 
 import requests
 import unix_ar
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _check_plugin_version(path=PLUGIN_INSTALL_PATH):
-    return execute(path, ["--version"], capture_output=True)
+    return execute(path, ["--version"], stdout=PIPE, stderr=PIPE)
 
 
 class Plugin:
