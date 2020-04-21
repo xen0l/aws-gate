@@ -1,5 +1,6 @@
 import logging
 import os
+from subprocess import PIPE
 
 from wrapt import decorator
 
@@ -35,7 +36,7 @@ def plugin_version(required_version):
     def wrapper(
         wrapped_function, instance, args, kwargs
     ):  # pylint: disable=unused-argument
-        version = execute_plugin(["--version"], capture_output=True)
+        version = execute_plugin(["--version"], stdout=PIPE, stderr=PIPE)
         logger.debug(
             "session-manager-plugin version: %s (required version: %s)",
             version,

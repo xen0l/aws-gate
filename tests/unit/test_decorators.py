@@ -1,3 +1,5 @@
+from subprocess import PIPE
+
 import pytest
 
 from aws_gate.decorators import (
@@ -47,7 +49,7 @@ def test_plugin_version(mocker):
         return "executed"
 
     assert test_function() == "executed"
-    assert m.call_args == mocker.call(["--version"], capture_output=True)
+    assert m.call_args == mocker.call(["--version"], stdout=PIPE, stderr=PIPE)
 
 
 def test_plugin_version_bad_version(mocker):

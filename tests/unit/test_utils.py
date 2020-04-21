@@ -1,10 +1,11 @@
 import errno
 import os
 import subprocess
+from subprocess import PIPE
 
 import pytest
-from botocore.exceptions import ClientError
 from botocore import credentials
+from botocore.exceptions import ClientError
 from hypothesis import given
 from hypothesis.strategies import lists, text
 
@@ -158,7 +159,7 @@ def test_execute_command_not_found(mocker):
 
 def test_execute_plugin(mocker):
     mocker.patch("aws_gate.utils.execute", return_value="output")
-    output = execute_plugin(["--version"], capture_output=True)
+    output = execute_plugin(["--version"], stdout=PIPE, stderrr=PIPE)
 
     assert output == "output"
 
@@ -166,10 +167,12 @@ def test_execute_plugin(mocker):
 def test_execute_plugin_args(mocker):
     m = mocker.patch("aws_gate.utils.execute", return_value="output")
 
-    execute_plugin(["--version"], capture_output=True)
+    execute_plugin(["--version"], stdout=PIPE, stderr=PIPE)
 
     assert m.called
-    assert "['--version'], capture_output=True" in str(m.call_args)
+    assert "['--version']" in str(m.call_args[0])
+    assert m.call_args[1]["stdout"] == PIPE
+    assert m.call_args[1]["stderr"] == PIPE
 
 
 def test_fetch_instance_details_from_config(config):

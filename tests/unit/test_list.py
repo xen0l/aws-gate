@@ -1,4 +1,5 @@
 import json
+
 import pytest
 
 from aws_gate.list import list_instances, serialize
