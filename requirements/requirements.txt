@@ -2,6 +2,6 @@ boto3~=1.12.42
 marshmallow==3.5.1
 PyYAML>=5.1,<5.4
 requests==2.23.0
-cryptography==2.9.1
+cryptography==2.9.2
 wrapt==1.12.1
 unix-ar==0.2.1
