@@ -22,6 +22,7 @@ from aws_gate.constants import (
     DEFAULT_LIST_OUTPUT_FORMATS,
     DEFAULT_LIST_OUTPUT,
 )
+from aws_gate.exec import exec
 from aws_gate.list import list_instances
 from aws_gate.session import session
 from aws_gate.ssh import ssh
@@ -64,6 +65,19 @@ def parse_arguments():
     )
     bootstrap_parser.add_argument(
         "-f", "--force", action="store_true", help="Forces bootstrap operation"
+    )
+
+    # 'exec' subcommand
+    exec_parser = subparsers.add_parser(
+        "exec", help="Execute interactive command on instance"
+    )
+    exec_parser.add_argument("-p", "--profile", help="AWS profile to use")
+    exec_parser.add_argument("-r", "--region", help="AWS region to use")
+    exec_parser.add_argument(
+        "instance_name", help="Instance we wish to execute command on"
+    )
+    exec_parser.add_argument(
+        "command", help="command to execute on the instance", nargs=argparse.REMAINDER
     )
 
     # 'session' subcommand
@@ -227,6 +241,14 @@ def main():
 
     if args.subcommand == "bootstrap":
         bootstrap(force=args.force)
+    if args.subcommand == "exec":
+        exec(
+            config=config,
+            instance_name=args.instance_name,
+            command=args.command,
+            region_name=region,
+            profile_name=profile,
+        )
     if args.subcommand == "session":
         session(
             config=config,
