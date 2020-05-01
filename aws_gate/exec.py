@@ -1,5 +1,4 @@
 import logging
-import os
 
 from aws_gate.constants import AWS_DEFAULT_PROFILE, AWS_DEFAULT_REGION
 from aws_gate.decorators import (
