@@ -1,3 +1,8 @@
+0.9.0 (2020-05-03)
+------------------
+
+* Add **exec** command to be able to execute interactive commands over SSM. Idea by [@nc-furstenauw](https://github.com/nc-furstenauw)  
+
 0.8.8 (2020-04-21)
 ------------------
 
