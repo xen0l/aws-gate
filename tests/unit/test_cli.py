@@ -128,6 +128,7 @@ def test_cli_get_region(args, config, default, expected):
         ("ssh", "ssh"),
         ("ssh-config", "ssh_config"),
         ("ssh-proxy", "ssh_proxy"),
+        ("exec", "exec"),
     ],
     ids=lambda x: x[0],
 )
