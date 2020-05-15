@@ -125,11 +125,11 @@ def deferred_signals(signal_list=None):
 def execute(cmd, args, **kwargs):
     ret, result = None, None
 
-    env = DEFAULT_GATE_BIN_PATH + os.pathsep + os.environ["PATH"]
-
+    env_path = DEFAULT_GATE_BIN_PATH + os.pathsep + os.environ["PATH"]
+    env = os.environ.copy().update({"PATH": env_path})
     try:
         logger.debug('Executing "%s"', " ".join([cmd] + args))
-        result = subprocess.run([cmd] + args, env={"PATH": env}, check=True, **kwargs)
+        result = subprocess.run([cmd] + args, env=env, check=True, **kwargs)
     except subprocess.CalledProcessError as e:
         logger.error(
             'Command "%s" exited with %s', " ".join([cmd] + args), e.returncode
