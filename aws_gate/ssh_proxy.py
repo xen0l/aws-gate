@@ -3,6 +3,7 @@ import logging
 from aws_gate.constants import (
     AWS_DEFAULT_PROFILE,
     AWS_DEFAULT_REGION,
+    DEFAULT_GATE_DIR,
     DEFAULT_OS_USER,
     DEFAULT_SSH_PORT,
     DEFAULT_KEY_ALGORITHM,
@@ -64,6 +65,7 @@ def ssh_proxy(
     key_size=DEFAULT_KEY_SIZE,
     profile_name=AWS_DEFAULT_PROFILE,
     region_name=AWS_DEFAULT_REGION,
+    agent_mode=False
 ):
     instance, profile, region = fetch_instance_details_from_config(
         config, instance_name, profile_name, region_name
@@ -87,7 +89,14 @@ def ssh_proxy(
         region,
         profile,
     )
-    with SshKey(key_type=key_type, key_size=key_size) as ssh_key:
+
+    key_path = "{}/{}.{}.{}".format(
+        DEFAULT_GATE_DIR,
+        instance_id,
+        region_name,
+        profile_name
+    )
+    with SshKey(key_type=key_type, key_size=key_size, key_path=key_path, agent_mode=agent_mode) as ssh_key:
         with SshKeyUploader(
             instance_id=instance_id, az=az, user=user, ssh_key=ssh_key, ec2_ic=ec2_ic
         ):

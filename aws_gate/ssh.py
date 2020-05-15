@@ -11,7 +11,7 @@ from aws_gate.constants import (
     DEFAULT_KEY_SIZE,
     PLUGIN_INSTALL_PATH,
     DEBUG,
-    DEFAULT_GATE_KEY_PATH,
+    DEFAULT_GATE_DIR,
 )
 from aws_gate.decorators import (
     plugin_version,
@@ -37,12 +37,14 @@ class SshSession(BaseSession):
     def __init__(
         self,
         instance_id,
+        key_path,
         ssm=None,
         region_name=AWS_DEFAULT_REGION,
         profile_name=AWS_DEFAULT_PROFILE,
         port=DEFAULT_SSH_PORT,
         user=DEFAULT_OS_USER,
         command=None,
+        agent_mode=False
     ):
         self._instance_id = instance_id
         self._region_name = region_name
@@ -51,6 +53,8 @@ class SshSession(BaseSession):
         self._port = port
         self._user = user
         self._command = command
+        self._key_path = key_path
+        self._agent_mode = agent_mode
 
         self._ssh_cmd = None
 
@@ -69,8 +73,6 @@ class SshSession(BaseSession):
             str(self._port),
             "-F",
             "/dev/null",
-            "-i",
-            DEFAULT_GATE_KEY_PATH,
         ]
 
         if DEBUG:
@@ -90,7 +92,8 @@ class SshSession(BaseSession):
         proxy_command = " ".join(shlex.quote(i) for i in proxy_command_args)
 
         ssh_options = [
-            "IdentitiesOnly=yes",
+            "IdentitiesOnly={}".format("no" if self._agent_mode else "yes"),
+            "IdentityFile={}".format(self._key_path),
             "UserKnownHostsFile=/dev/null",
             "StrictHostKeyChecking=no",
             "ProxyCommand={}".format(proxy_command),
@@ -128,6 +131,7 @@ def ssh(
     profile_name=AWS_DEFAULT_PROFILE,
     region_name=AWS_DEFAULT_REGION,
     command=None,
+    agent_mode=False
 ):
     instance, profile, region = fetch_instance_details_from_config(
         config, instance_name, profile_name, region_name
@@ -151,7 +155,13 @@ def ssh(
         region,
         profile,
     )
-    with SshKey(key_type=key_type, key_size=key_size) as ssh_key:
+    key_path = "{}/{}.{}.{}".format(
+        DEFAULT_GATE_DIR,
+        instance_id,
+        region_name,
+        profile_name
+    )
+    with SshKey(key_type=key_type, key_size=key_size, key_path=key_path, agent_mode=agent_mode) as ssh_key:
         with SshKeyUploader(
             instance_id=instance_id, az=az, user=user, ssh_key=ssh_key, ec2_ic=ec2_ic
         ):
@@ -163,5 +173,7 @@ def ssh(
                 port=port,
                 user=user,
                 command=command,
+                key_path=key_path,
+                agent_mode=agent_mode
             ) as ssh_session:
                 ssh_session.open()

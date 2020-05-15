@@ -1,6 +1,7 @@
 import os
 
 DEBUG = "GATE_DEBUG" in os.environ
+AGENT_KEY_LIFETIME = os.environ.get('GATE_KEY_LIFETIME') if os.environ.get('GATE_KEY_LIFETIME') is not None else '15'
 
 AWS_DEFAULT_REGION = "eu-west-1"
 AWS_DEFAULT_PROFILE = "default"
@@ -39,8 +40,6 @@ DEFAULT_GATE_CONFIGD_PATH = os.path.join(DEFAULT_GATE_DIR, "config.d")
 PLUGIN_NAME = "session-manager-plugin"
 DEFAULT_GATE_BIN_PATH = os.path.join(DEFAULT_GATE_DIR, "bin")
 PLUGIN_INSTALL_PATH = os.path.join(DEFAULT_GATE_BIN_PATH, PLUGIN_NAME)
-
-DEFAULT_GATE_KEY_PATH = os.path.join(DEFAULT_GATE_DIR, "key")
 
 SSM_PLUGIN_BASE_URL = "https://s3.amazonaws.com/session-manager-downloads/plugin/latest"
 SSM_PLUGIN_PATH = {
