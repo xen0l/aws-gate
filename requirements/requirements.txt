@@ -1,5 +1,5 @@
 boto3~=1.12.49
-marshmallow==3.6.0
+marshmallow==3.6.1
 PyYAML>=5.1,<5.4
 requests==2.23.0
 cryptography==2.9.2
