@@ -112,11 +112,6 @@ def parse_arguments():
     ssh_parser.add_argument(
         "--key-size", type=int, default=DEFAULT_KEY_SIZE, help=argparse.SUPPRESS
     )
-
-    ssh_parser.add_argument(
-        "-a", "--agent-mode", help="Add private key to ssh agent instead of writing to file", action="store_true"
-    )
-
     ssh_parser.add_argument("instance_name", help="Instance we wish to open session to")
     ssh_parser.add_argument(
         "command", help="command to execute on the instance", nargs=argparse.REMAINDER
@@ -134,9 +129,6 @@ def parse_arguments():
     ssh_config_parser.add_argument(
         "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
     )
-    ssh_config_parser.add_argument(
-        "-a", "--agent-mode", help="Expect private key in ssh agent", action="store_true"
-    )
 
     # 'ssh-proxy' subcommand
     ssh_proxy_parser = subparsers.add_parser(
@@ -150,10 +142,6 @@ def parse_arguments():
     ssh_proxy_parser.add_argument(
         "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
     )
-    ssh_proxy_parser.add_argument(
-        "-a", "--agent-mode", help="Add private key to ssh agent instead of writing to file", action="store_true"
-    )
-
     ssh_proxy_parser.add_argument(
         "--key-type",
         type=str,
@@ -279,16 +267,9 @@ def main():
             key_type=args.key_type,
             key_size=args.key_size,
             command=args.command,
-            agent_mode=args.agent_mode
         )
     if args.subcommand == "ssh-config":
-        ssh_config(
-            region_name=region,
-            profile_name=profile,
-            user=args.os_user,
-            port=args.port,
-            agent_mode=args.agent_mode
-        )
+        ssh_config(region_name=region, profile_name=profile, user=args.os_user, port=args.port)
     if args.subcommand == "ssh-proxy":
         ssh_proxy(
             config=config,
@@ -299,7 +280,6 @@ def main():
             port=args.port,
             key_type=args.key_type,
             key_size=args.key_size,
-            agent_mode=args.agent_mode
         )
     if args.subcommand in ["ls", "list"]:
         fields = args.output.split(",")

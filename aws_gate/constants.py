@@ -1,7 +1,6 @@
 import os
 
 DEBUG = "GATE_DEBUG" in os.environ
-AGENT_KEY_LIFETIME = os.environ.get('GATE_KEY_LIFETIME') if os.environ.get('GATE_KEY_LIFETIME') is not None else '15'
 
 AWS_DEFAULT_REGION = "eu-west-1"
 AWS_DEFAULT_PROFILE = "default"

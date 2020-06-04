@@ -19,10 +19,9 @@ def ssh_config(
     region_name=AWS_DEFAULT_REGION,
     user=DEFAULT_OS_USER,
     port=DEFAULT_SSH_PORT,
-    agent_mode=False
 ):
     PROXY_COMMAND = [
-        r"""sh -c "aws-gate ssh-proxy {}-l {} -p `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\3/g'`""".format("-a " if agent_mode else "", user),
+        r"""sh -c "aws-gate ssh-proxy -l {} -p `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\3/g'`""".format(user),
         r"""-r `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\2/g'`""",
         r'''`echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\1/g'`"''',
     ]
@@ -30,7 +29,7 @@ def ssh_config(
         {
             "Host": "*.{}.{}".format(region_name, profile_name),
             "IdentityFile": "{}/%h".format(DEFAULT_GATE_DIR),
-            "IdentitiesOnly": "no" if agent_mode else "yes",
+            "IdentitiesOnly": "yes",
             "User": user,
             "Port": port,
             "ProxyCommand": " ".join(PROXY_COMMAND),

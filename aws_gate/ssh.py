@@ -44,7 +44,6 @@ class SshSession(BaseSession):
         port=DEFAULT_SSH_PORT,
         user=DEFAULT_OS_USER,
         command=None,
-        agent_mode=False
     ):
         self._instance_id = instance_id
         self._region_name = region_name
@@ -54,7 +53,6 @@ class SshSession(BaseSession):
         self._user = user
         self._command = command
         self._key_path = key_path
-        self._agent_mode = agent_mode
 
         self._ssh_cmd = None
 
@@ -92,7 +90,7 @@ class SshSession(BaseSession):
         proxy_command = " ".join(shlex.quote(i) for i in proxy_command_args)
 
         ssh_options = [
-            "IdentitiesOnly={}".format("no" if self._agent_mode else "yes"),
+            "IdentitiesOnly=yes",
             "IdentityFile={}".format(self._key_path),
             "UserKnownHostsFile=/dev/null",
             "StrictHostKeyChecking=no",
@@ -131,7 +129,6 @@ def ssh(
     profile_name=AWS_DEFAULT_PROFILE,
     region_name=AWS_DEFAULT_REGION,
     command=None,
-    agent_mode=False
 ):
     instance, profile, region = fetch_instance_details_from_config(
         config, instance_name, profile_name, region_name
@@ -161,7 +158,7 @@ def ssh(
         region_name,
         profile_name
     )
-    with SshKey(key_type=key_type, key_size=key_size, key_path=key_path, agent_mode=agent_mode) as ssh_key:
+    with SshKey(key_type=key_type, key_size=key_size, key_path=key_path) as ssh_key:
         with SshKeyUploader(
             instance_id=instance_id, az=az, user=user, ssh_key=ssh_key, ec2_ic=ec2_ic
         ):
@@ -173,7 +170,6 @@ def ssh(
                 port=port,
                 user=user,
                 command=command,
-                key_path=key_path,
-                agent_mode=agent_mode
+                key_path=key_path
             ) as ssh_session:
                 ssh_session.open()

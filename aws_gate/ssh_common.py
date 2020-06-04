@@ -1,6 +1,5 @@
 import logging
 import os
-import subprocess
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
@@ -10,12 +9,6 @@ from aws_gate.constants import (
     DEFAULT_KEY_SIZE,
     SUPPORTED_KEY_TYPES,
     DEFAULT_OS_USER,
-    DEBUG,
-    AGENT_KEY_LIFETIME,
-)
-
-from aws_gate.utils import (
-    execute,
 )
 
 logger = logging.getLogger(__name__)
@@ -25,19 +18,17 @@ KEY_MIN_SIZE = DEFAULT_KEY_SIZE
 
 class SshKey:
     def __init__(
-        self, key_path, key_type="rsa", key_size=KEY_MIN_SIZE, agent_mode=False
+        self, key_path, key_type="rsa", key_size=KEY_MIN_SIZE
     ):
         self._key_path = None
         self._key_type = None
         self._key_size = None
         self._private_key = None
         self._public_key = None
-        self._add_to_agent = None
 
         self.key_path = key_path
         self.key_type = key_type
         self.key_size = key_size
-        self.agent_mode = agent_mode
 
     def __enter__(self):
         self.generate()
@@ -65,24 +56,10 @@ class SshKey:
         self._generate_key()
 
     def write_to_file(self):
-        if (self.agent_mode):
-            # When using a public key as IdentityFile ssh will (apparently) load the
-            # corresponding private key file from the ssh agent. This reduces the
-            # number of authentication attempts in case of concurrent use of the proxy.
-            data = self.public_key
-        else:
-            data = self.private_key
-
         with open(self._key_path, "wb") as f:
-            f.write(data)
+            f.write(self.private_key)
         # 'ssh' refuses to use the key with broad access permissions
         os.chmod(self._key_path, 0o600)
-
-        if (self.agent_mode):
-            output = subprocess.DEVNULL
-            if DEBUG:
-                output = None
-            execute('ssh-add', ['-t', AGENT_KEY_LIFETIME, '-'], input=self.private_key, stdout=output, stderr=subprocess.STDOUT)
 
     def delete(self):
         os.remove(self._key_path)
