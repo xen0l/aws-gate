@@ -56,6 +56,10 @@ class SshKey:
         self._generate_key()
 
     def write_to_file(self):
+        key_path = os.path.dirname(self._key_path)
+        if not os.path.isdir(key_path):
+            os.mkdir(key_path)
+
         with open(self._key_path, "wb") as f:
             f.write(self.private_key)
         # 'ssh' refuses to use the key with broad access permissions

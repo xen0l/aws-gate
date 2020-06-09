@@ -6,7 +6,8 @@ from aws_gate.constants import (
     AWS_DEFAULT_REGION,
     DEFAULT_SSH_PORT,
     DEFAULT_OS_USER,
-    DEFAULT_GATE_DIR,
+    DEFAULT_GATE_KEY_DIR,
+    DEFAULT_KEY_NAME,
 )
 from aws_gate.decorators import valid_aws_region, valid_aws_profile
 
@@ -19,16 +20,17 @@ def ssh_config(
     region_name=AWS_DEFAULT_REGION,
     user=DEFAULT_OS_USER,
     port=DEFAULT_SSH_PORT,
+    key_name=DEFAULT_KEY_NAME,
 ):
     PROXY_COMMAND = [
-        r"""sh -c "aws-gate ssh-proxy -l {} -p `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\3/g'`""".format(user),
+        r"""sh -c "aws-gate ssh-proxy -l {} -f {} -p `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\3/g'`""".format(user, key_name),
         r"""-r `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\2/g'`""",
         r'''`echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\1/g'`"''',
     ]
     config = OrderedDict(
         {
             "Host": "*.{}.{}".format(region_name, profile_name),
-            "IdentityFile": "{}/%h".format(DEFAULT_GATE_DIR),
+            "IdentityFile": "{}/{}".format(DEFAULT_GATE_KEY_DIR, key_name),
             "IdentitiesOnly": "yes",
             "User": user,
             "Port": port,

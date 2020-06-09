@@ -21,6 +21,7 @@ from aws_gate.constants import (
     DEFAULT_LIST_HUMAN_FIELDS,
     DEFAULT_LIST_OUTPUT_FORMATS,
     DEFAULT_LIST_OUTPUT,
+    DEFAULT_KEY_NAME,
 )
 from aws_gate.exec import exec
 from aws_gate.list import list_instances
@@ -129,6 +130,9 @@ def parse_arguments():
     ssh_config_parser.add_argument(
         "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
     )
+    ssh_config_parser.add_argument(
+        "-f", "--filename", help="Filename for the generated private key", type=str, default=DEFAULT_KEY_NAME
+    )
 
     # 'ssh-proxy' subcommand
     ssh_proxy_parser = subparsers.add_parser(
@@ -141,6 +145,9 @@ def parse_arguments():
     )
     ssh_proxy_parser.add_argument(
         "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
+    )
+    ssh_proxy_parser.add_argument(
+        "-f", "--filename", help="Filename for the generated private key", type=str, default=DEFAULT_KEY_NAME
     )
     ssh_proxy_parser.add_argument(
         "--key-type",
@@ -269,7 +276,13 @@ def main():
             command=args.command,
         )
     if args.subcommand == "ssh-config":
-        ssh_config(region_name=region, profile_name=profile, user=args.os_user, port=args.port)
+        ssh_config(
+            region_name=region,
+            profile_name=profile,
+            user=args.os_user,
+            port=args.port,
+            key_name=args.filename,
+        )
     if args.subcommand == "ssh-proxy":
         ssh_proxy(
             config=config,
@@ -280,6 +293,7 @@ def main():
             port=args.port,
             key_type=args.key_type,
             key_size=args.key_size,
+            key_name=args.filename,
         )
     if args.subcommand in ["ls", "list"]:
         fields = args.output.split(",")

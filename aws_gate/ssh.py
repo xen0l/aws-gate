@@ -12,6 +12,8 @@ from aws_gate.constants import (
     PLUGIN_INSTALL_PATH,
     DEBUG,
     DEFAULT_GATE_DIR,
+    DEFAULT_GATE_KEY_DIR,
+    DEFAULT_KEY_NAME,
 )
 from aws_gate.decorators import (
     plugin_version,
@@ -152,11 +154,9 @@ def ssh(
         region,
         profile,
     )
-    key_path = "{}/{}.{}.{}".format(
-        DEFAULT_GATE_DIR,
-        instance_id,
-        region_name,
-        profile_name
+    key_path = "{}/{}".format(
+        DEFAULT_GATE_KEY_DIR,
+        DEFAULT_KEY_NAME,
     )
     with SshKey(key_type=key_type, key_size=key_size, key_path=key_path) as ssh_key:
         with SshKeyUploader(

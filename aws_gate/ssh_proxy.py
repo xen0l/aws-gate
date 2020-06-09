@@ -8,6 +8,7 @@ from aws_gate.constants import (
     DEFAULT_SSH_PORT,
     DEFAULT_KEY_ALGORITHM,
     DEFAULT_KEY_SIZE,
+    DEFAULT_GATE_KEY_DIR,
 )
 from aws_gate.decorators import (
     plugin_version,
@@ -59,6 +60,7 @@ class SshProxySession(BaseSession):
 def ssh_proxy(
     config,
     instance_name,
+    key_name,
     user=DEFAULT_OS_USER,
     port=DEFAULT_SSH_PORT,
     key_type=DEFAULT_KEY_ALGORITHM,
@@ -89,11 +91,9 @@ def ssh_proxy(
         profile,
     )
 
-    key_path = "{}/{}.{}.{}".format(
-        DEFAULT_GATE_DIR,
-        instance_id,
-        region_name,
-        profile_name
+    key_path = "{}/{}".format(
+        DEFAULT_GATE_KEY_DIR,
+        key_name
     )
     with SshKey(key_type=key_type, key_size=key_size, key_path=key_path) as ssh_key:
         with SshKeyUploader(
