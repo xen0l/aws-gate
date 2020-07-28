@@ -213,3 +213,8 @@ Debug mode also enables printing of Python stack traces if there is a crash or s
 ## License
 
 This project is licensed under the BSD License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/xen0l/aws-gate.svg)](https://starchart.cc/xen0l/aws-gate)
+
