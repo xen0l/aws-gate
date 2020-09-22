@@ -1,7 +1,7 @@
 # Configuration file
 
-If you are oftne connecting to the same instances, it might be handy to store the configuration inside the configuration file,
-so you don't have to retype the same command all over again._aws-gate_ supports storing instance connection information in a dedicated config file located at _~/.aws-gate/config_. THe format of the configuraiton file is as follows:
+If you are often connecting to the same instances, it might be handy to store the configuration inside the configuration file,
+so you don't have to retype the same command all over again. _aws-gate_ supports storing instance connection information in a dedicated config file located at _~/.aws-gate/config_. The format of the configuraiton file is as follows:
 
 
 ```
