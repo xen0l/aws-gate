@@ -22,6 +22,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 * Python 3.5+ (earlier Python 3 versions should work too)
 * [session-plugin-manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) from AWS
+
+    ```bash
+    brew cask install session-plugin-manager
+    ```
+
 * SSM Agent version 2.3.68.0 or later must be installed on EC2 instances we want to connect to
 * Proper IAM permissions for instance profile
 
