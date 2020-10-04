@@ -3,6 +3,7 @@
 __aws_gate_complete_commands() {
     local commands="
         bootstrap
+        exec
         list ls
         session
         ssh
@@ -91,6 +92,28 @@ __aws_gate_complete_list() {
             __aws_gate_complete_opt_format
             ;;
         *)
+            COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
+            ;;
+    esac
+}
+
+__aws_gate_complete_exec() {
+    case "${prev}" in
+        -p|--profile)
+            __aws_gate_complete_opt_profile
+            ;;
+        -r|--region)
+            __aws_gate_complete_opt_region
+            ;;
+        *)
+            local args="
+                -h --help
+                -p --profile
+                -r --region
+            "
+
+            __aws_gate_merge_hosts_to_args
+
             COMPREPLY=( $(compgen -W "${args}" -- "${cur}") )
             ;;
     esac
@@ -209,6 +232,9 @@ __aws_gate_complete() {
             case "${subcommand}" in
                 bootstrap)
                     __aws_gate_complete_bootstrap
+                    ;;
+                exec)
+                    __aws_gate_complete_exec
                     ;;
                 session)
                     __aws_gate_complete_session
