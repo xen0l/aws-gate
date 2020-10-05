@@ -1,3 +1,10 @@
+0.9.1 (2020-10-06)
+------------------
+
+* Add bash completion for **exec**(contribution by [@kit494way](https://github.com/kit494way))
+* Fix ls to show instances without Name tag (contribution by [@kit494way](https://github.com/kit494way))
+* Pass environment on to subprocess and support running behind a proxy (contribution by [@DanSipola](https://github.com/DanSipola))
+
 0.9.0 (2020-05-03)
 ------------------
 
