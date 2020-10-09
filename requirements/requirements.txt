@@ -1,4 +1,4 @@
-boto3~=1.15.12
+boto3~=1.15.15
 marshmallow==3.8.0
 PyYAML>=5.1,<5.4
 requests==2.24.0
