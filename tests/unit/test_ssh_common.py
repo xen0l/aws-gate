@@ -23,8 +23,7 @@ def test_initialize_key(key_type, key_size):
     assert key.key_size == key_size
 
 
-@settings(deadline=timedelta(milliseconds=400))
-@given(sampled_from(SUPPORTED_KEY_TYPES))
+@pytest.mark.parametrize("key_type", SUPPORTED_KEY_TYPES)
 def test_initialize_key_as_context_manager(mocker, key_type):
     mocker.patch("aws_gate.ssh_common.os")
     open_mock = mocker.patch("builtins.open", new_callable=mocker.mock_open())
@@ -34,8 +33,7 @@ def test_initialize_key_as_context_manager(mocker, key_type):
         open_mock.assert_called_with(DEFAULT_GATE_KEY_PATH, "wb")
 
 
-@settings(deadline=timedelta(milliseconds=400))
-@given(sampled_from(SUPPORTED_KEY_TYPES))
+@pytest.mark.parametrize("key_type", SUPPORTED_KEY_TYPES)
 def test_ssh_public_key(key_type):
     key = SshKey(key_type=key_type)
     key.generate()
