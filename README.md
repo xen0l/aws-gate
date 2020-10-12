@@ -22,15 +22,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 * Python 3.5+ (earlier Python 3 versions should work too)
 * [session-plugin-manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) from AWS
-
-    ```bash
-    brew cask install session-plugin-manager
-    ```
-
 * SSM Agent version 2.3.68.0 or later must be installed on EC2 instances we want to connect to
 * Proper IAM permissions for instance profile
 
 ### Installing
+
+Via pip
 
 ```
 pip install aws-gate
@@ -41,7 +38,11 @@ or via Homebrew
 ```
 brew tap xen0l/homebrew-taps
 brew install aws-gate
+
+# For installing session-manager-plugin via Homebrew (optional)
+brew cask install session-plugin-manager
 ```
+
 
 or via Docker
 
