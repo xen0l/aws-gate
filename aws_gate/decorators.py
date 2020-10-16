@@ -2,6 +2,7 @@ import logging
 import os
 from subprocess import PIPE
 
+from packaging.version import parse as parse_version
 from wrapt import decorator
 
 from aws_gate.constants import PLUGIN_INSTALL_PATH, PLUGIN_NAME
@@ -43,9 +44,7 @@ def plugin_version(required_version):
             required_version,
         )
 
-        if version and int(version.replace(".", "")) < int(
-            required_version.replace(".", "")
-        ):
+        if version and parse_version(version) < parse_version(required_version):
             raise ValueError("Invalid plugin version: {}".format(version))
 
         return wrapped_function(*args, **kwargs)
