@@ -42,7 +42,7 @@ def test_plugin_required_plugin_not_installed(mocker):
 
 
 def test_plugin_version(mocker):
-    m = mocker.patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0")
+    m = mocker.patch("aws_gate.decorators.execute_plugin", return_value="1.2.7.0")
 
     @plugin_version("1.1.23.0")
     def test_function():
@@ -52,10 +52,14 @@ def test_plugin_version(mocker):
     assert m.call_args == mocker.call(["--version"], stdout=PIPE, stderr=PIPE)
 
 
-def test_plugin_version_bad_version(mocker):
-    mocker.patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0")
+@pytest.mark.parametrize(
+    "plugin_version,required_version",
+    [("1.2.7.0", "1.1.25.0"), ("1.1.23.0", "1.1.25.0")],
+)
+def test_plugin_version_bad_version(mocker, plugin_version, required_version):
+    mocker.patch("aws_gate.decorators.execute_plugin", return_value=plugin_version)
 
-    @plugin_version("1.1.25.0")
+    @plugin_version(required_version)
     def test_function():
         return "executed"
 
