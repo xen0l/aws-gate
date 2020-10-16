@@ -52,14 +52,10 @@ def test_plugin_version(mocker):
     assert m.call_args == mocker.call(["--version"], stdout=PIPE, stderr=PIPE)
 
 
-@pytest.mark.parametrize(
-    "plugin_version,required_version",
-    [("1.2.7.0", "1.1.25.0"), ("1.1.23.0", "1.1.25.0")],
-)
-def test_plugin_version_bad_version(mocker, plugin_version, required_version):
-    mocker.patch("aws_gate.decorators.execute_plugin", return_value=plugin_version)
+def test_plugin_version_bad_version(mocker):
+    mocker.patch("aws_gate.decorators.execute_plugin", return_value="1.1.23.0")
 
-    @plugin_version(required_version)
+    @plugin_version("1.1.25.0")
     def test_function():
         return "executed"
 
