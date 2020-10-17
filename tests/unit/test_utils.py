@@ -1,15 +1,9 @@
 import errno
 import os
-import subprocess
-from subprocess import PIPE
-
 import pytest
-from botocore import credentials
-from botocore.exceptions import ClientError
-from hypothesis import given
-from hypothesis.strategies import lists, text
-
+import subprocess
 from aws_gate import __version__
+from aws_gate.constants import DEFAULT_GATE_BIN_PATH
 from aws_gate.exceptions import AWSConnectionError
 from aws_gate.utils import (
     is_existing_profile,
@@ -23,6 +17,11 @@ from aws_gate.utils import (
     fetch_instance_details_from_config,
     get_instance_details,
 )
+from botocore import credentials
+from botocore.exceptions import ClientError
+from hypothesis import given
+from hypothesis.strategies import lists, text
+from subprocess import PIPE
 
 
 # pylint: disable=too-few-public-methods
@@ -136,6 +135,16 @@ def test_execute(mocker, cmd, args):
     mocker.patch("aws_gate.utils.subprocess.run", return_value=mock_output)
 
     assert execute(cmd, args) == "output"
+
+
+def test_execute_environment(mocker):
+    mock_output = mocker.MagicMock(stdout=b"output")
+    m = mocker.patch("aws_gate.utils.subprocess.run", return_value=mock_output)
+
+    execute("ls", ["-l"])
+
+    assert m.call_args_list[0][1]["env"] is not None
+    assert DEFAULT_GATE_BIN_PATH in m.call_args_list[0][1]["env"]["PATH"]
 
 
 def test_execute_command_exited_with_nonzero_rc(mocker):

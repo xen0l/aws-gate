@@ -126,8 +126,10 @@ def execute(cmd, args, **kwargs):
     ret, result = None, None
 
     env_path = DEFAULT_GATE_BIN_PATH + os.pathsep + os.environ["PATH"]
-    env = os.environ.copy().update({"PATH": env_path})
+    env = os.environ.copy()
+    env.update({"PATH": env_path})
     try:
+        logger.debug('PATH in environment: "%s"', os.environ["PATH"])
         logger.debug('Executing "%s"', " ".join([cmd] + args))
         result = subprocess.run([cmd] + args, env=env, check=True, **kwargs)
     except subprocess.CalledProcessError as e:
