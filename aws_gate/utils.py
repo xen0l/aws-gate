@@ -192,8 +192,8 @@ def get_instance_details(instance_id, ec2=None):
 def get_multiple_instance_details(instance_ids, ec2=None):
     try:
         ec2_instances = list(ec2.instances.filter(InstanceIds=instance_ids))
-    except botocore.exceptions.ClientError:
-        raise AWSConnectionError
+    except botocore.exceptions.ClientError as e:
+        raise AWSConnectionError(e)
 
     instance_details = []
     for ec2_instance in ec2_instances:
