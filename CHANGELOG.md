@@ -1,3 +1,9 @@
+0.9.2 (2020-10-10)
+------------------
+
+* Fix regression introduced in #572, which resulted in not being to find bootstrapped plugin
+* Plugin version comparison is using more robust mechanism to determine newer plugin version
+
 0.9.1 (2020-10-06)
 ------------------
 
