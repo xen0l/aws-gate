@@ -1,4 +1,9 @@
-0.9.2 (2020-10-10)
+0.9.3 (2020-12-23)
+------------------
+
+* Add new AWS regions
+
+0.9.2 (2020-10-17)
 ------------------
 
 * Fix regression introduced in #572, which resulted in not being to find bootstrapped plugin
