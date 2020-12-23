@@ -1,4 +1,4 @@
-# Debug mode
+## Debug mode
 
 _aws-gate_ is written with easy debugging in mind. To activate a debug output, just set **GATE_DEBUG** environment variable
 and on the next invocation _aws-gate_ will start producing debug output:
@@ -23,6 +23,6 @@ and on the next invocation _aws-gate_ will start producing debug output:
 ...
 ```
 
-# Reporting problems
+## Reporting problems
 
 When you run into a problem with _aws-gate_ or something is not working as described, please do not hesitate and open an issue in the project's [issue tracker](https://github.com/xen0l/aws-gate/issues).

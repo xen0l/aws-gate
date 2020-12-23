@@ -1,4 +1,4 @@
-# Configuration file
+## Configuration file
 
 If you are often connecting to the same instances, it might be handy to store the configuration inside the configuration file,
 so you don't have to retype the same command all over again. _aws-gate_ supports storing instance connection information in a dedicated config file located at _~/.aws-gate/config_. The format of the configuration file is as follows:
@@ -30,6 +30,6 @@ aws-gate session webapp-pre
 ```
 **defaults** dictionary holds default configuration for profile and region, when these are not provided.
 
-# config.d support
+## config.d support
 
 _aws-gate_ will automatically load configuration from _~/.aws-gate/config.d_. This is especially useful is you need to share you configuration within your team or you are working on multiple projects.

@@ -1,4 +1,6 @@
-# bootstrap
+# Command line arguments
+
+## bootstrap
 
 Download and install session-manager-plugin
 
@@ -10,7 +12,7 @@ optional arguments:
   -f, --force  Forces bootstrap operation
 ```
 
-# exec
+## exec
 
 Execute interactive command on instance
 
@@ -29,7 +31,7 @@ optional arguments:
                         AWS region to use
 ```
 
-# session
+## session
 
 Open new session on instance and connect to it
 
@@ -47,7 +49,7 @@ optional arguments:
                         AWS region to use
 ```
 
-# ssh
+## ssh
 
 Open new SSH session on instance and connect to it
 
@@ -70,7 +72,7 @@ optional arguments:
   -P PORT, --port PORT  SSH port to use
 ```
 
-# ssh-config
+## ssh-config
 
 Generate SSH configuration file
 
@@ -89,7 +91,7 @@ optional arguments:
   -P PORT, --port PORT  SSH port to use
 ```
 
-# ssh-proxy
+## ssh-proxy
 
 Open new SSH proxy session to instance
 
@@ -111,7 +113,7 @@ optional arguments:
   -P PORT, --port PORT  SSH port to use
 ```
 
-# list (ls)
+## list (ls)
 
 List available instances
 
