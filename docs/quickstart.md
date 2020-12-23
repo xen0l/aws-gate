@@ -1,11 +1,12 @@
-# Prerequisites
+## Prerequisites
 
 * Python 3.5+ (earlier Python 3 versions should work too)
 * session-plugin-manager from AWS
 * Up to date version of SSM Agent must be installed on EC2 instances we want to connect to
 * Proper IAM permissions for instance profile
 
-# Installation via pip
+## Installation
+### via pip
 
 _aws-gate_ is available on PyPI:
 
@@ -13,7 +14,7 @@ _aws-gate_ is available on PyPI:
 pip install aws-gate
 ```
 
-## Installation via Homebrew
+### via Homebrew
 
 _aws-gate_ package is available for macOS via Homebrew:
 
@@ -22,7 +23,7 @@ brew tap xen0l/homebrew-taps
 brew install aws-gate
 ```
 
-## Installation via Docker
+### via Docker
 
 _aws-gate_ is also available as a Docker container via []Github Package Registry](https://github.com/xen0l/aws-gate/packages/):
 
@@ -43,7 +44,7 @@ docker login docker.pkg.github.com -u $YOUR_GH_USERNAME -p $GH_TOKEN
 
 **NOTE: be careful that executing this command in your shell might store your token in your shell history!**
 
-### Executing aws-gate as Docker container
+#### Executing aws-gate as Docker container
 
 When executing _aws-gate_ as Docker container, we have to pass some additional arguments, so it can find _aws-gate_ configuration as well AWS credentials/config file (~/.aws):
 
