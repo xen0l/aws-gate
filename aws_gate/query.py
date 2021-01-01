@@ -99,7 +99,7 @@ def query_instance(name, ec2=None):
 
     # If we are provided with instance ID directly, we don't need to contact EC2
     # API and can return the value directly.
-    if name.startswith("id-") or name.startswith("i-"):
+    if name.startswith("id-") or name.startswith("i-") or name.startswith("mi-"):
         return name
 
     if _is_valid_ip(name):
