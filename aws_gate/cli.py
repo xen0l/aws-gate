@@ -47,8 +47,8 @@ def _get_region(args, config, default):
     return region or config.default_region or default
 
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description=__description__)
+def get_argument_parser(*args, **kwargs):
+    parser = argparse.ArgumentParser(*args, **kwargs)
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
@@ -176,6 +176,12 @@ def parse_arguments():
         default=",".join(DEFAULT_LIST_HUMAN_FIELDS),
     )
 
+    return parser, subparsers
+
+def parse_arguments(parser=None):
+    if not parser:
+        parser, *_ = get_argument_parser(description=__description__)
+
     args = parser.parse_args()
 
     if not args.subcommand:
@@ -185,8 +191,9 @@ def parse_arguments():
     return args
 
 
-def main():
-    args = parse_arguments()
+def main(args=None, argument_parser=None):
+    if not args:
+        args = parse_arguments(argument_parser)
 
     if not DEBUG:
         sys.excepthook = lambda exc_type, exc_value, traceback: logger.error(exc_value)
