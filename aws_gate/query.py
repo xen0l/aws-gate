@@ -30,8 +30,8 @@ def _query_aws_api(filters, ec2=None):
             if i.instance_id:
                 logger.debug("Matching instance: %s", i.instance_id)
                 ret = i.instance_id
-    except botocore.exceptions.ClientError:
-        raise AWSConnectionError
+    except botocore.exceptions.ClientError as e:
+        raise AWSConnectionError(e)
 
     return ret
 
