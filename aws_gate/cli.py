@@ -241,7 +241,7 @@ def main():
 
     if args.subcommand == "bootstrap":
         bootstrap(force=args.force)
-    if args.subcommand == "exec":
+    elif args.subcommand == "exec":
         exec(
             config=config,
             instance_name=args.instance_name,
@@ -249,14 +249,14 @@ def main():
             region_name=region,
             profile_name=profile,
         )
-    if args.subcommand == "session":
+    elif args.subcommand == "session":
         session(
             config=config,
             instance_name=args.instance_name,
             region_name=region,
             profile_name=profile,
         )
-    if args.subcommand == "ssh":
+    elif args.subcommand == "ssh":
         ssh(
             config=config,
             instance_name=args.instance_name,
@@ -268,11 +268,11 @@ def main():
             key_size=args.key_size,
             command=args.command,
         )
-    if args.subcommand == "ssh-config":
+    elif args.subcommand == "ssh-config":
         ssh_config(
             region_name=region, profile_name=profile, user=args.os_user, port=args.port
         )
-    if args.subcommand == "ssh-proxy":
+    elif args.subcommand == "ssh-proxy":
         ssh_proxy(
             config=config,
             instance_name=args.instance_name,
@@ -283,7 +283,7 @@ def main():
             key_type=args.key_type,
             key_size=args.key_size,
         )
-    if args.subcommand in ["ls", "list"]:
+    elif args.subcommand in ["ls", "list"]:
         fields = args.output.split(",")
         list_instances(
             region_name=region,
