@@ -114,7 +114,7 @@ def query_instance(name, ec2=None):
             identifier_type = "private-dns-name"
         elif name.startswith("asg:"):
             identifier_type = "asg"
-        elif name.count(":") >= 1:
+        elif ":" in name:
             identifier_type = "tag"
         else:
             identifier_type = "name"
