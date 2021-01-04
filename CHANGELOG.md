@@ -1,3 +1,10 @@
+0.10.0 (2021-01-04)
+-------------------
+
+* Add support for SSM managed instances. These instances are prefixed by `mi-` (contribution by [@awiddersheim](https://github.com/awiddersheim))
+* Error messages that are raised when AWS API querying fails are now visible (contribution by [@awiddersheim](https://github.com/awiddersheim))
+* Minor performance improvements ([#691](https://github.com/xen0l/aws-gate/pull/691), [#693](https://github.com/xen0l/aws-gate/pull/693)) (contribution by [@awiddersheim](https://github.com/awiddersheim))
+
 0.9.3 (2020-12-23)
 ------------------
 
