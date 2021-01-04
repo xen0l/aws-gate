@@ -99,6 +99,10 @@ def query_instance(name, ec2=None):
 
     # If we are provided with instance ID directly, we don't need to contact EC2
     # API and can return the value directly.
+    # Identifier prefixes:
+    # id - human friendly, present in some systems
+    # i - regular EC2 instance ID as present in AWS console/logs
+    # mi - regular SSM-managed instance ID as present in AWS console/logs
     if name.startswith("id-") or name.startswith("i-") or name.startswith("mi-"):
         return name
 
