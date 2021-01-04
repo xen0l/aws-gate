@@ -14,7 +14,10 @@ def test_query_aws_api_exception(mocker):
     )
 
     filters = [{"Name": "ip-address", "Values": ["10.1.1.1"]}]
-    with pytest.raises(AWSConnectionError):
+    with pytest.raises(
+        AWSConnectionError,
+        match=r"^An error occurred \(ResourceInUseException\) when calling the random_ec2_op",
+    ):
         _query_aws_api(filters=filters, ec2=ec2_mock)
 
 
