@@ -48,7 +48,7 @@ setup(
     packages=find_packages(),
     classifiers=CLASSIFIERS,
     install_requires=INSTALL_REQUIRES,
-    extra_requires=EXTRA_REQUIRES,
+    extras_require=EXTRA_REQUIRES,
     include_package_data=True,
     scripts=SCRIPTS,
 )
