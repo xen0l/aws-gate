@@ -145,7 +145,9 @@ disable=print-statement,
         no-member,
         arguments-differ,
         ungrouped-imports,
-        bad-continuation
+        bad-continuation,
+        redefined-builtin,
+        raise-missing-from
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -536,7 +538,7 @@ max-attributes=10
 max-bool-expr=5
 
 # Maximum number of branch for function / method body.
-max-branches=12
+max-branches=15
 
 # Maximum number of locals for function / method body.
 max-locals=20

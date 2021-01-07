@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import multiprocessing
 import os
 import sys
 
@@ -42,7 +41,6 @@ if args.lint:
         "--flake8",
         "--black",
         "--pylint",
-        "--pylint-jobs={}".format(multiprocessing.cpu_count()),
         "--pylint-rcfile={}".format(os.path.join(root_dir, ".pylintrc")),
     ]
     cmd.extend(lint_args)
@@ -50,6 +48,7 @@ if args.lint:
 if args.coverage:
     coverage_args = [
         "--cov=aws_gate",
+        "--cov-fail-under=100",
         "--cov-report=term-missing",
         "--cov-report=xml:reports/coverage.xml",
         "--cov-report=html:reports/coverage/aws-gate",

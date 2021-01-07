@@ -1,7 +1,14 @@
 import errno
 import os
-import pytest
 import subprocess
+from subprocess import PIPE
+
+import pytest
+from botocore import credentials
+from botocore.exceptions import ClientError
+from hypothesis import given
+from hypothesis.strategies import lists, text
+
 from aws_gate import __version__
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH
 from aws_gate.exceptions import AWSConnectionError
@@ -17,11 +24,6 @@ from aws_gate.utils import (
     fetch_instance_details_from_config,
     get_instance_details,
 )
-from botocore import credentials
-from botocore.exceptions import ClientError
-from hypothesis import given
-from hypothesis.strategies import lists, text
-from subprocess import PIPE
 
 
 # pylint: disable=too-few-public-methods
