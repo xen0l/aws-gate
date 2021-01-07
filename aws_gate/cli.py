@@ -178,6 +178,7 @@ def get_argument_parser(*args, **kwargs):
 
     return parser, subparsers
 
+
 def parse_arguments(parser=None):
     if not parser:
         parser, *_ = get_argument_parser(description=__description__)
