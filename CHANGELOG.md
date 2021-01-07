@@ -1,3 +1,8 @@
+0.10.1 (2021-01-07)
+-------------------
+
+* Refactor `cli.py` argument parsing, so it is easier to integrate with (contribution by [@awiddersheim](https://github.com/awiddersheim))
+
 0.10.0 (2021-01-04)
 -------------------
 
