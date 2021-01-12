@@ -45,6 +45,20 @@ def test_open_ssh_session_with_command(mocker, instance_id, ssm_mock):
     assert ["ls", "-l"] == m.call_args[0][1][-2:]
 
 
+def test_open_ssh_session_with_forwarding(mocker, instance_id, ssm_mock):
+    m = mocker.patch("aws_gate.ssh.execute", return_value="output")
+
+    rds_fwd = "3306:privatedb.abcdef123456.eu-west-1.rds.amazonaws.com:3306"
+
+    sess = SshSession(instance_id=instance_id, ssm=ssm_mock, forwarding=rds_fwd)
+    sess.open()
+
+    assert m.called
+    assert "-N" in m.call_args[0][1]
+    assert "-L" in m.call_args[0][1]
+    assert rds_fwd == m.call_args[0][1][1 + m.call_args[0][1].index("-L")]
+
+
 def test_open_ssh_session_host_key_verification(mocker, instance_id, ssm_mock):
     m = mocker.patch("aws_gate.ssh.execute", return_value="output")
 

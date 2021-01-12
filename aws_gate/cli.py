@@ -103,6 +103,9 @@ def get_argument_parser(*args, **kwargs):
         "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
     )
     ssh_parser.add_argument(
+        "-L", "--forwarding", help="forward a local port to a remote host and port"
+    )
+    ssh_parser.add_argument(
         "--key-type",
         type=str,
         default=DEFAULT_KEY_ALGORITHM,
@@ -275,6 +278,7 @@ def main(args=None, argument_parser=None):
             key_type=args.key_type,
             key_size=args.key_size,
             command=args.command,
+            forwarding=args.forwarding,
         )
     elif args.subcommand == "ssh-config":
         ssh_config(
