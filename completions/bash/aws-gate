@@ -64,6 +64,9 @@ __aws_gate_complete_ssh() {
                 -r --region
                 -l --os-user
                 -P --port
+                -L --local-forward
+                -R --remote-forward
+                -D --dynamic-forward
             "
 
             __aws_gate_merge_hosts_to_args

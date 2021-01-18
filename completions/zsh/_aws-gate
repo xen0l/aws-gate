@@ -51,6 +51,13 @@ __aws_gate_ssh() {
         '--os-user[SSH user to use]:login name:__list_ssh_users' \
         '-P[SSH port to use]' \
         '--port[SSH port to use]' \
+        '-L[Specify port configuration for local port forwarding]' \
+        '--local-forward[Specify port configuration for local port forwarding]' \
+        '--forwarding[Specify port configuration for local port forwarding]' \
+        '-R[Specify port configuration for remote port forwarding]' \
+        '--remote-forward[Specify port configuration for remote port forwarding]' \
+        '-D[Specify port configuration for dynamic port forwarding]' \
+        '--dynamic-forward[Specify port configuration for remote port forwarding]' \
         '*:: :__list_hosts'
 }
 
