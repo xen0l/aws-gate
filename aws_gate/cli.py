@@ -103,7 +103,26 @@ def get_argument_parser(*args, **kwargs):
         "-P", "--port", help="SSH port to use", type=int, default=DEFAULT_SSH_PORT
     )
     ssh_parser.add_argument(
-        "-L", "--forwarding", help="forward a local port to a remote host and port"
+        "-L",
+        "--local_forwarding",
+        "--forwarding",
+        help="Specifies a port on the local host that is to be forwarded to the given host and port",  # noqa: B950
+        default=None,
+        dest="local_forward",
+    )
+    ssh_parser.add_argument(
+        "-R",
+        "--remote-forwarding",
+        help="Specifies a port on the remote host that is to be forwarded to the local side",  # noqa: B950
+        default=None,
+        dest="remote_forward",
+    )
+    ssh_parser.add_argument(
+        "-D",
+        "--dynamic-forwarding",
+        help="Specifies a dynamic application-level port forwarding",
+        default=None,
+        dest="dynamic_forward",
     )
     ssh_parser.add_argument(
         "--key-type",
@@ -278,7 +297,9 @@ def main(args=None, argument_parser=None):
             key_type=args.key_type,
             key_size=args.key_size,
             command=args.command,
-            forwarding=args.forwarding,
+            local_forward=args.local_forward,
+            remote_forward=args.remote_forward,
+            dynamic_forward=args.dynamic_forward,
         )
     elif args.subcommand == "ssh-config":
         ssh_config(
@@ -305,5 +326,5 @@ def main(args=None, argument_parser=None):
         )
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

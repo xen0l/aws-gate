@@ -43,7 +43,9 @@ class SshSession(BaseSession):
         port=DEFAULT_SSH_PORT,
         user=DEFAULT_OS_USER,
         command=None,
-        forwarding=None,
+        local_forward=None,
+        remote_forward=None,
+        dynamic_forward=None,
     ):
         self._instance_id = instance_id
         self._region_name = region_name
@@ -52,7 +54,9 @@ class SshSession(BaseSession):
         self._port = port
         self._user = user
         self._command = command
-        self._forwarding = forwarding
+        self._local_forward = local_forward
+        self._remote_forward = remote_forward
+        self._dynamic_forward = dynamic_forward
 
         self._ssh_cmd = None
 
@@ -75,8 +79,17 @@ class SshSession(BaseSession):
             DEFAULT_GATE_KEY_PATH,
         ]
 
-        if self._forwarding:
-            cmd.extend(["-N", "-L", self._forwarding])
+        if self._local_forward or self._remote_forward or self._dynamic_forward:
+            cmd.append("-N")
+
+        if self._local_forward:
+            cmd.extend(["-L", self._local_forward])
+
+        if self._remote_forward:
+            cmd.extend(["-R", self._remote_forward])
+
+        if self._dynamic_forward:
+            cmd.extend(["-D", self._dynamic_forward])
 
         if DEBUG:
             cmd.append("-vv")
@@ -133,7 +146,9 @@ def ssh(
     profile_name=AWS_DEFAULT_PROFILE,
     region_name=AWS_DEFAULT_REGION,
     command=None,
-    forwarding=None,
+    local_forward=None,
+    remote_forward=None,
+    dynamic_forward=None,
 ):
     instance, profile, region = fetch_instance_details_from_config(
         config, instance_name, profile_name, region_name
@@ -157,6 +172,14 @@ def ssh(
         region,
         profile,
     )
+    if local_forward:  # pragma: no cover
+        logger.info("SSH session will do a local port forwarding: %s", local_forward)
+    if remote_forward:  # pragma: no cover
+        logger.info("SSH session will do a remote port forwarding: %s", remote_forward)
+    if dynamic_forward:  # pragma: no cover
+        logger.info(
+            "SSH session will do a dynamic port forwarding: %s", dynamic_forward
+        )
     with SshKey(key_type=key_type, key_size=key_size) as ssh_key:
         with SshKeyUploader(
             instance_id=instance_id, az=az, user=user, ssh_key=ssh_key, ec2_ic=ec2_ic
@@ -169,6 +192,8 @@ def ssh(
                 port=port,
                 user=user,
                 command=command,
-                forwarding=forwarding,
+                local_forward=local_forward,
+                remote_forward=remote_forward,
+                dynamic_forward=dynamic_forward,
             ) as ssh_session:
                 ssh_session.open()
