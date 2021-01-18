@@ -1,3 +1,8 @@
+0.11.0 (unreleased)
+-------------------
+
+* **aws-gate ssh** now supports local port forwarding (contribution by [@iainelder](https://github.com/iainelder))
+
 0.10.1 (2021-01-07)
 -------------------
 
