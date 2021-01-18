@@ -43,6 +43,7 @@ class SshSession(BaseSession):
         port=DEFAULT_SSH_PORT,
         user=DEFAULT_OS_USER,
         command=None,
+        forwarding=None,
     ):
         self._instance_id = instance_id
         self._region_name = region_name
@@ -51,6 +52,7 @@ class SshSession(BaseSession):
         self._port = port
         self._user = user
         self._command = command
+        self._forwarding = forwarding
 
         self._ssh_cmd = None
 
@@ -72,6 +74,9 @@ class SshSession(BaseSession):
             "-i",
             DEFAULT_GATE_KEY_PATH,
         ]
+
+        if self._forwarding:
+            cmd.extend(["-N", "-L", self._forwarding])
 
         if DEBUG:
             cmd.append("-vv")
@@ -128,6 +133,7 @@ def ssh(
     profile_name=AWS_DEFAULT_PROFILE,
     region_name=AWS_DEFAULT_REGION,
     command=None,
+    forwarding=None,
 ):
     instance, profile, region = fetch_instance_details_from_config(
         config, instance_name, profile_name, region_name
@@ -163,5 +169,6 @@ def ssh(
                 port=port,
                 user=user,
                 command=command,
+                forwarding=forwarding,
             ) as ssh_session:
                 ssh_session.open()

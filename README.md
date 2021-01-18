@@ -187,6 +187,45 @@ If you wish to execute a specific command (or plug it into your shell pipelines)
 Linux ip-172-31-35-173.eu-west-1.compute.internal 4.14.123-111.109.amzn2.x86_64 #1 SMP Mon Jun 10 19:37:57 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
 ```
 
+Local ports can be forwarded to another host and port relative to the target instance. This works as if by using ssh's `-L` option. Instead of executing a command, *aws-gate* establishes a forwarding session that can be used by other local applications.
+
+For example, you can use this to connect to a private web server by forwarding the instance's local port.
+
+```
+# Terminal 1
+% aws-gate ssh -L 8888:localhost:80 ssh-test
+
+# Terminal 2
+% curl localhost:8888
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>Test Page for the Nginx HTTP Server on Amazon Linux</title>
+...
+```
+
+Or you can use it to connect to a private RDS instance by forwarding the remote address and remote port.
+
+```
+# Terminal 1
+% aws-gate ssh -L 3306:privatedb.abcdef123456.eu-west-1.rds.amazonaws.com:3306 ssm-test
+
+# Terminal 2
+% mysql -h 127.0.0.1 -u root -P 3306 -p -e "SELECT User from mysql.user;"
+Enter password: 
++------------------+
+| User             |
++------------------+
+| root             |
+| mysql.infoschema |
+| mysql.session    |
+| mysql.sys        |
+| rdsadmin         |
++------------------+
+
+```
+
 ## Debugging mode
 
 If you run into issues, you can get detailed debug log by setting **GATE_DEBUG** environment variable:
