@@ -1,6 +1,7 @@
 0.11.0 (unreleased)
 -------------------
 
+* aws-gate now has basic support for running on Windows platforms. However, **aws-gate bootstrap** is not yet working and session-manager-plugin has to be installed by the user separately (contribution by [@mbp](https://github.com/mbp))
 * **aws-gate ssh** now supports local port forwarding (contribution by [@iainelder](https://github.com/iainelder))
 * **aws-gate ssh** now supports remote port forwarding
 * **aws-gate ssh** now supports dynamic (SOCKS5) port forwarding
