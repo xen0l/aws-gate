@@ -1,4 +1,4 @@
-0.11.0 (unreleased)
+0.11.0 (2021-01-18)
 -------------------
 
 * aws-gate now has basic support for running on Windows platforms. However, **aws-gate bootstrap** is not yet working and session-manager-plugin has to be installed by the user separately (contribution by [@mbp](https://github.com/mbp))
