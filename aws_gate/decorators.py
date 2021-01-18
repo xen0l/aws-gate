@@ -27,7 +27,11 @@ def _plugin_exists_in_path():
 def plugin_required(
     wrapped_function, instance, args, kwargs
 ):  # pylint: disable=unused-argument
-    if not _plugin_exists(PLUGIN_INSTALL_PATH) and not _plugin_exists_in_path() and not platform.system() == "Windows":
+    if (
+        not _plugin_exists(PLUGIN_INSTALL_PATH)
+        and not _plugin_exists_in_path()
+        and not platform.system() == "Windows"
+    ):
         raise OSError("{} not found".format(PLUGIN_NAME))
 
     return wrapped_function(*args, **kwargs)

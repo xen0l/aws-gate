@@ -113,9 +113,9 @@ def get_default_region():
 @contextlib.contextmanager
 def deferred_signals(signal_list=None):
     if signal_list is None:
-        if hasattr(signal, 'SIGHUP'):
+        if hasattr(signal, "SIGHUP"):
             signal_list = [signal.SIGHUP, signal.SIGINT, signal.SIGTERM]
-        else:
+        else:  # pragma: no cover
             signal_list = [signal.SIGINT, signal.SIGTERM]
 
     for deferred_signal in signal_list:
