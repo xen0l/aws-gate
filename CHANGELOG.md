@@ -2,6 +2,8 @@
 -------------------
 
 * **aws-gate ssh** now supports local port forwarding (contribution by [@iainelder](https://github.com/iainelder))
+* **aws-gate ssh** now supports remote port forwarding
+* **aws-gate ssh** now supports dynamic (SOCKS5) port forwarding
 
 0.10.1 (2021-01-07)
 -------------------
