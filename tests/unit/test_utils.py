@@ -6,8 +6,6 @@ from subprocess import PIPE
 import pytest
 from botocore import credentials
 from botocore.exceptions import ClientError
-from hypothesis import given
-from hypothesis.strategies import lists, text
 
 from aws_gate import __version__
 from aws_gate.constants import DEFAULT_GATE_BIN_PATH
@@ -131,12 +129,11 @@ def test_region_validation():
     assert not is_existing_region(region_name="unknown-region-1")
 
 
-@given(text(), lists(text()))
-def test_execute(mocker, cmd, args):
+def test_execute(mocker):
     mock_output = mocker.MagicMock(stdout=b"output")
     mocker.patch("aws_gate.utils.subprocess.run", return_value=mock_output)
 
-    assert execute(cmd, args) == "output"
+    assert execute("ls", ["-l"]) == "output"
 
 
 def test_execute_environment(mocker):
