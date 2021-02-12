@@ -1,3 +1,8 @@
+0.11.1 (2021-02-13)
+-------------------
+
+* Release for testing publishing of self-contained binaries built via pyinstaller
+
 0.11.0 (2021-01-18)
 -------------------
 

@@ -12,17 +12,20 @@ def build_binary(ctx):
 
 @task
 def test_binary(ctx):
-    ctx.run("./dist/aws-gate --version")
-    ctx.run("./dist/aws-gate --help")
+    ctx.run(f"{os.path.join('dist', 'aws-gate')} --version")
+    ctx.run(f"{os.path.join('dist', 'aws-gate')} --help")
 
 
 @task
 def prepare_binary(ctx):  # pylint: disable=unused-argument
-    binary_name = "aws-gate"
-    binary_path = f"./dist/{binary_name}"
-    platform_suffix = f"{platform.system()}_{platform.machine()}"
-    platform_binary_name = f"{binary_name}-{platform_suffix}"
-    platform_binary_path = f"{binary_path}-{platform_suffix}"
+    if platform.system() == "Windows":
+        binary_name = "aws-gate.exe"
+    else:
+        binary_name = "aws-gate"
+    binary_path = f"{os.path.join('dist', binary_name)}"
+    platform_suffix = f"{platform.system()}_{platform.machine().lower()}"
+    platform_binary_name = f"{binary_name}_{platform_suffix}"
+    platform_binary_path = f"{binary_path}_{platform_suffix}"
 
     os.rename(binary_path, platform_binary_path)
 

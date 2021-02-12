@@ -2,6 +2,9 @@ name: Build binary
 
 on:
   workflow_dispatch:
+  push:
+    tags: 
+      - '*'
 
 jobs:
   deploy:
@@ -20,6 +23,7 @@ jobs:
         python-version: '3.x'
 
     - name: Install dependencies
+      shell: bash
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements/requirements.txt
@@ -27,14 +31,24 @@ jobs:
         pip install pyinstaller
 
     - name: Build binary
+      shell: bash
       run: |
         invoke build-binary
 
     - name: Test the binary
-      run:
+      shell: bash
+      run: |
         invoke test-binary
 
     - name: Prepare binary for upload
-      run:
+      shell: bash
+      run: |
         invoke prepare-binary
+    
+    - name: Upload release binaries
+      uses: alexellis/upload-assets@0.2.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        asset_paths: '["./dist/*"]'
 
