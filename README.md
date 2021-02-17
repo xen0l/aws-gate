@@ -139,7 +139,7 @@ Port 22
 ProxyCommand sh -c "aws-gate ssh-proxy -p `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\3/g'` -r `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\2/g'` `echo %h | sed -Ee 's/^(.*)\.(.*)\.(.*)$/\\1/g'`"
 ```
 
-Store the snippet inside __~/.ssh/config_:
+Store the snippet inside _~/.ssh/config_:
 ```
 % aws-gate ssh-config >> ~/.ssh/config
 ```
@@ -160,6 +160,19 @@ Run "sudo yum update" to apply all updates.
 ```
 
 SSH session to instance _ssm-test_ in eu-west-1 AWS region via _default_ AWS profile is opened.
+
+*scp* works the same way (both ways):
+```
+% # local to remote
+% scp test_file ssm-test.eu-west-1.glovoapp:test_file    
+test_file                                                                                                                                                                 100%    0     0.0KB/s   00:00    
+%
+% # remote to local
+% scp ssm-test.eu-west-1.glovoapp:test_file test_file
+test_file                                                                                                                                                                 100%    0     0.0KB/s   00:00    
+```
+
+Please, also note that while **scp over SSM** works, it can be [extremely slow](https://globaldatanet.com/blog/scp-performance-with-ssm-agent). This is because of the underlying SSM limitations and not caused by **aws-gate itself**.
 
 #### SSH support
 
