@@ -85,11 +85,23 @@ def list_instances(
     instances_ssm_response_iterator = instances_ssm_paginator.paginate()
 
     instance_ids = []
+    instance_details = []
+
     for response in instances_ssm_response_iterator:
         for instance in response["InstanceInformationList"]:
-            instance_ids.append(instance["InstanceId"])
+            if instance['InstanceId'].startswith("mi-"):
+                instance_details.append(
+                    {
+                        "instance_id": instance['InstanceId'],
+                        "instance_name": instance['Name'],
+                        "public_ip_address": instance['IPAddress'] or None
+                    }
+                )
+            else:
+                instance_ids.append(instance["InstanceId"])
 
-    instance_details = get_multiple_instance_details(instance_ids=instance_ids, ec2=ec2)
+    instance_details = instance_details + get_multiple_instance_details(instance_ids=instance_ids, ec2=ec2)
+
     print(
         serialize(instance_details, output_format=output_format, fields=fields).rstrip()
     )
