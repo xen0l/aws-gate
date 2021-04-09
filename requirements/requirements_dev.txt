@@ -5,7 +5,7 @@ black==20.8b1
 dlint==0.11.0
 flake8==3.8.4
 flake8-bandit==2.1.2
-flake8-bugbear==20.11.1
+flake8-bugbear==21.4.3
 hypothesis==6.8.9
 invoke==1.5.0
 placebo==0.9.0
