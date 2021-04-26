@@ -10,7 +10,7 @@ hypothesis==6.8.9
 invoke==1.5.0
 placebo==0.9.0
 pre-commit==2.12.0
-pylint==2.7.4
+pylint==2.8.1
 pytest==6.2.3
 pytest-black==0.3.12
 pytest-cov==2.11.1
