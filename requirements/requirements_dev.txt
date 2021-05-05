@@ -1,7 +1,7 @@
 # https://github.com/HypothesisWorks/hypothesis/issues/2113 
 attrs>=19.2.0
 bandit==1.7.0
-black==20.8b1
+black==21.5b0
 dlint==0.11.0
 flake8==3.9.0
 flake8-bandit==2.1.2
