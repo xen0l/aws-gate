@@ -6,7 +6,7 @@ dlint==0.11.0
 flake8==3.9.0
 flake8-bandit==2.1.2
 flake8-bugbear==21.4.3
-hypothesis==6.8.9
+hypothesis==6.13.1
 invoke==1.5.0
 placebo==0.9.0
 pre-commit==2.12.0
