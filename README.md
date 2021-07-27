@@ -40,7 +40,7 @@ brew tap xen0l/homebrew-taps
 brew install aws-gate
 
 # For installing session-manager-plugin via Homebrew (optional)
-brew cask install session-plugin-manager
+brew install --cask session-manager-plugin
 ```
 
 
