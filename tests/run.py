@@ -41,7 +41,7 @@ if args.lint:
         "--flake8",
         "--black",
         "--pylint",
-        "--pylint-rcfile={}".format(os.path.join(root_dir, ".pylintrc")),
+        f"--pylint-rcfile={os.path.join(root_dir, '.pylintrc')}",
     ]
     cmd.extend(lint_args)
 

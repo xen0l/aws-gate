@@ -67,17 +67,17 @@ def getinstanceidbytag(name, ec2=None):
     else:
         key, value = name.split(":", 1)
 
-    filters = [{"Name": "tag:{}".format(key), "Values": [value]}]
+    filters = [{"Name": f"tag:{key}", "Values": [value]}]
     return _query_aws_api(filters=filters, ec2=ec2)
 
 
 def getinstanceidbyinstancename(name, ec2=None):
-    return getinstanceidbytag("Name:{}".format(name), ec2=ec2)
+    return getinstanceidbytag(f"Name:{name}", ec2=ec2)
 
 
 def getinstanceidbyautoscalinggroup(name, ec2=None):
     _, asg_name = name.split(":")
-    return getinstanceidbytag("aws:autoscaling:groupName:{}".format(asg_name), ec2=ec2)
+    return getinstanceidbytag(f"aws:autoscaling:groupName:{asg_name}", ec2=ec2)
 
 
 def query_instance(name, ec2=None):

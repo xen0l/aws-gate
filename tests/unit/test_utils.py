@@ -27,7 +27,7 @@ from aws_gate.utils import (
 # pylint: disable=too-few-public-methods
 class MockSession:
     def __init__(self):
-        self._available_profiles = ["profile{}".format(i) for i in range(5)]
+        self._available_profiles = [f"profile{i}" for i in range(5)]
 
     @property
     def available_profiles(self):
@@ -56,7 +56,7 @@ def test_create_aws_session_user_agent():
     session = _create_aws_session(region_name="eu-west-1")
 
     # pylint: disable=protected-access
-    assert "aws-gate/{}".format(__version__) in session._session.user_agent()
+    assert f"aws-gate/{__version__}" in session._session.user_agent()
 
 
 def test_aws_session_file_cache_is_set():

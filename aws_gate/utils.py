@@ -69,7 +69,7 @@ def _create_aws_session(region_name=None, profile_name=None):
 
     # Add aws-gate version to the client user-agent
     # pylint: disable=protected-access
-    session._session.user_agent_extra += " " + "aws-gate/{}".format(__version__)
+    session._session.user_agent_extra += " " + f"aws-gate/{__version__}"
     session._session.get_component("credential_provider").get_provider(
         "assume-role"
     ).cache = credentials.JSONFileCache(cli_cache)
@@ -148,7 +148,7 @@ def execute(cmd, args, **kwargs):
         )
     except OSError as e:
         if e.errno == errno.ENOENT:
-            raise ValueError("{} cannot be found".format(cmd))
+            raise ValueError(f"{cmd} cannot be found")
 
     if result and result.stdout:
         ret = result.stdout.decode()

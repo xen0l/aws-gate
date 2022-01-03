@@ -71,7 +71,7 @@ def test_list_invalid_field(mocker):
         ("csv", ["foo", "bar"], [{"foo": "bar", "bar": "foo"}], "bar,foo\r\n"),
     ],
     ids=[
-        "{}-{}".format(type_, number)
+        f"{type_}-{number}"
         for type_ in ["json", "human", "tsv", "csv"]
         for number in ["single", "many"]
     ],

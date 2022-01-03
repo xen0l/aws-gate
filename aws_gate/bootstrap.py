@@ -69,7 +69,7 @@ class Plugin:
         os.chmod(plugin_dst_path, 0o755)
 
         version = _check_plugin_version(PLUGIN_INSTALL_PATH)
-        print("{} (version {}) installed successfully!".format(PLUGIN_NAME, version))
+        print(f"{PLUGIN_NAME} (version {version}) installed successfully!")
 
     def extract(self):
         raise NotImplementedError
@@ -81,9 +81,7 @@ class MacPlugin(Plugin):
     def extract(self):
         if not zipfile.is_zipfile(self.download_path):
             raise ValueError(
-                "Invalid macOS session-manager-plugin ZIP file found {}".format(
-                    self.download_path
-                )
+                f"Invalid macOS session-manager-plugin ZIP file found {self.download_path}"
             )
 
         with zipfile.ZipFile(self.download_path, "r") as zip_file:
@@ -114,7 +112,7 @@ def bootstrap(force=False):
         plugin = LinuxPlugin()
     else:
         raise UnsupportedPlatormError(
-            "Unable to bootstrap session-manager-plugin on {}".format(system)
+            f"Unable to bootstrap session-manager-plugin on {system}"
         )
 
     if plugin.is_installed or force:

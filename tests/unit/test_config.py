@@ -207,7 +207,7 @@ def test_merge_config_data(src, dst, expected):
 
 @pytest.mark.parametrize(
     "args",
-    [(1, {}), ("test", {}), (list(), {}), (set(), {}), (frozenset(), {})],
+    [(1, {}), ("test", {}), ([], {}), (set(), {}), (frozenset(), {})],
     ids=lambda x: type(x[0]).__name__,
 )
 def test_merge_config_data_exception(args):

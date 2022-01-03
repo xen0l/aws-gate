@@ -19,7 +19,7 @@ from aws_gate.exceptions import UnsupportedPlatormError
 )
 def test_bootstrap(mocker, platform):
     mocker.patch("aws_gate.bootstrap.platform.system", return_value=platform[0])
-    m = mocker.patch("aws_gate.bootstrap.{}".format(platform[1]))
+    m = mocker.patch(f"aws_gate.bootstrap.{platform[1]}")
 
     bootstrap()
 

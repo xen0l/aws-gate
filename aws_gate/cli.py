@@ -53,9 +53,7 @@ def get_argument_parser(*args, **kwargs):
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
     parser.add_argument(
-        "--version",
-        action="version",
-        version="%(prog)s {version}".format(version=__version__),
+        "--version", action="version", version=f"%(prog)s {__version__}"
     )
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
@@ -241,7 +239,7 @@ def main(args=None, argument_parser=None):
     try:
         config = load_config_from_files()
     except (ValidationError, ScannerError) as e:
-        raise ValueError("Invalid configuration provided: {}".format(e))
+        raise ValueError(f"Invalid configuration provided: {e}")
 
     # We want to provide default values in cases they are not configured
     # in ~/.aws/config or availabe a environment variables

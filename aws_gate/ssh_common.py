@@ -87,7 +87,7 @@ class SshKey:
     @key_type.setter
     def key_type(self, value):
         if not value or value not in SUPPORTED_KEY_TYPES:
-            raise ValueError("Unsupported or invalid key type: {}".format(value))
+            raise ValueError(f"Unsupported or invalid key type: {value}")
 
         self._key_type = value
 
@@ -98,7 +98,7 @@ class SshKey:
     @key_path.setter
     def key_path(self, value):
         if not value:
-            raise ValueError("Invalid key path: {}".format(value))
+            raise ValueError(f"Invalid key path: {value}")
         self._key_path = value
 
     @property
@@ -108,7 +108,7 @@ class SshKey:
     @key_size.setter
     def key_size(self, value):
         if value < KEY_MIN_SIZE:
-            raise ValueError("Invalid key size: {}".format(value))
+            raise ValueError(f"Invalid key size: {value}")
 
         self._key_size = value
 
@@ -141,5 +141,5 @@ class SshKeyUploader:
         logger.debug("Received response: %s", response)
         if not response["Success"]:
             raise ValueError(
-                "Failed to upload SSH key to instance {}".format(self._instance_id)
+                f"Failed to upload SSH key to instance {self._instance_id}"
             )
