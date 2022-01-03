@@ -72,10 +72,11 @@ def list_instances(
 ):
     invalid_fields = list(set(fields) - set(DEFAULT_LIST_OUTPUT_FIELDS))
     if invalid_fields:
+        invalid_fields_str = " ".join(invalid_fields)
+        default_fields_str = " ".join(DEFAULT_LIST_OUTPUT_FIELDS)
+
         raise ValueError(
-            'Invalid fields provided: "{}". Valid fields: "{}"'.format(
-                " ".join(invalid_fields), " ".join(DEFAULT_LIST_OUTPUT_FIELDS)
-            )
+            f'Invalid fields provided: "{invalid_fields_str}". Valid fields: "{default_fields_str}"'  # noqa: B950
         )
 
     ssm = get_aws_client("ssm", region_name=region_name, profile_name=profile_name)

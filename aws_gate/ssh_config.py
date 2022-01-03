@@ -29,7 +29,7 @@ def ssh_config(
 ):
     config = OrderedDict(
         {
-            "Host": "*.{}.{}".format(region_name, profile_name),
+            "Host": f"*.{region_name}.{profile_name}",
             "IdentityFile": DEFAULT_GATE_KEY_PATH,
             "IdentitiesOnly": "yes",
             "User": user,
@@ -38,5 +38,5 @@ def ssh_config(
         }
     )
     for k, v in config.items():
-        print("{} {}".format(k, v))
+        print(f"{k} {v}")
     print()

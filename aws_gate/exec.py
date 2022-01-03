@@ -62,7 +62,7 @@ def exec(
 
     instance_id = query_instance(name=instance, ec2=ec2)
     if instance_id is None:
-        raise ValueError("No instance could be found for name: {}".format(instance))
+        raise ValueError(f"No instance could be found for name: {instance}")
 
     logger.info(
         'Executing command "%s"  on instance %s (%s) via profile %s',

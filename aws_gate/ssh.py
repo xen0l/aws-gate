@@ -111,7 +111,7 @@ class SshSession(BaseSession):
             "IdentitiesOnly=yes",
             "UserKnownHostsFile=/dev/null",
             "StrictHostKeyChecking=no",
-            "ProxyCommand={}".format(proxy_command),
+            f"ProxyCommand={proxy_command}",
         ]
 
         for ssh_option in ssh_options:
@@ -162,7 +162,7 @@ def ssh(
 
     instance_id = query_instance(name=instance, ec2=ec2)
     if instance_id is None:
-        raise ValueError("No instance could be found for name: {}".format(instance))
+        raise ValueError(f"No instance could be found for name: {instance}")
 
     az = get_instance_details(instance_id=instance_id, ec2=ec2)["availability_zone"]
 

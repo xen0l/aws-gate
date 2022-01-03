@@ -77,7 +77,7 @@ def ssh_proxy(
 
     instance_id = query_instance(name=instance, ec2=ec2)
     if instance_id is None:
-        raise ValueError("No instance could be found for name: {}".format(instance))
+        raise ValueError(f"No instance could be found for name: {instance}")
 
     az = get_instance_details(instance_id=instance_id, ec2=ec2)["availability_zone"]
 

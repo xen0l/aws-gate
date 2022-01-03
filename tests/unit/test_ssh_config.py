@@ -7,11 +7,11 @@ from aws_gate.ssh_config import ssh_config, PROXY_COMMAND
 def test_ssh_config(mocker, capsys):
     expected_output_lines = [
         """Host *.eu-west-1.default""",
-        """IdentityFile {}""".format(DEFAULT_GATE_KEY_PATH),
+        f"""IdentityFile {DEFAULT_GATE_KEY_PATH}""",
         """IdentitiesOnly yes""",
         """User ec2-user""",
         """Port 22""",
-        """ProxyCommand {}""".format(" ".join(PROXY_COMMAND)),
+        f"ProxyCommand {' '.join(PROXY_COMMAND)}",
         "\n",
     ]
     expected_output = "\n".join(expected_output_lines)

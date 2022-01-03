@@ -137,7 +137,7 @@ def test_cli_subcommand(mocker, subcommand):
         "aws_gate.cli.parse_arguments",
         return_value=mocker.MagicMock(subcommand=subcommand[0]),
     )
-    m = mocker.patch("aws_gate.cli.{}".format(subcommand[1]))
+    m = mocker.patch(f"aws_gate.cli.{subcommand[1]}")
 
     main()
 

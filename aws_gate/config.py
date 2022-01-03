@@ -18,12 +18,12 @@ class EmptyConfigurationError(Exception):
 
 def validate_profile(profile):
     if not is_existing_profile(profile):
-        raise ValidationError("Invalid profile provided: {}".format(profile))
+        raise ValidationError(f"Invalid profile provided: {profile}")
 
 
 def validate_region(region):
     if not is_existing_region(region):
-        raise ValidationError("Invalid region name provided: {}".format(region))
+        raise ValidationError(f"Invalid region name provided: {region}")
 
 
 def validate_defaults(data):
@@ -45,9 +45,9 @@ class HostSchema(Schema):
 
 class GateConfigSchema(Schema):
     defaults = fields.Nested(
-        DefaultsSchema, required=False, missing=dict(), validate=validate_defaults
+        DefaultsSchema, required=False, missing={}, validate=validate_defaults
     )
-    hosts = fields.List(fields.Nested(HostSchema), required=False, missing=list())
+    hosts = fields.List(fields.Nested(HostSchema), required=False, missing=[])
 
     # pylint: disable=no-self-use,unused-argument
     @post_load
@@ -115,9 +115,7 @@ def _merge_data(src, dst):
                     dst[key] = src[key]
         else:
             raise TypeError(
-                "Cannot merge {} with dict, src={} dst={}".format(
-                    type(src).__name__, src, dst
-                )
+                f"Cannot merge {type(src).__name__} with dict, src={src} dst={dst}"
             )
 
     elif isinstance(dst, list):
