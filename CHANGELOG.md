@@ -1,3 +1,9 @@
+0.11.2 (2022-01-03)
+-------------------
+
+* Maintenance release updating all dependency versions
+* Python 3.7 is now the required minimal Python version
+
 0.11.1 (2021-02-13)
 -------------------
 
