@@ -23,7 +23,7 @@ class SSMSession(BaseSession):
         self,
         instance_id,
         region_name=AWS_DEFAULT_REGION,
-        profile_name=AWS_DEFAULT_REGION,
+        profile_name=AWS_DEFAULT_PROFILE,
         ssm=None,
     ):
         self._instance_id = instance_id
@@ -61,5 +61,5 @@ def session(
         region,
         profile,
     )
-    with SSMSession(instance_id, region_name=region, ssm=ssm) as sess:
+    with SSMSession(instance_id, region_name=region, profile_name=profile, ssm=ssm) as sess:
         sess.open()
