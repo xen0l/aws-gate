@@ -88,6 +88,8 @@ def list_instances(
     instance_ids = []
     for response in instances_ssm_response_iterator:
         for instance in response["InstanceInformationList"]:
+            if instance['PingStatus'] != 'Online':
+                continue
             instance_ids.append(instance["InstanceId"])
 
     instance_details = get_multiple_instance_details(instance_ids=instance_ids, ec2=ec2)
