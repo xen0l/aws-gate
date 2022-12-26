@@ -1,5 +1,5 @@
 boto3~=1.26.36
-cryptography==36.0.1
+cryptography==38.0.4
 marshmallow==3.14.1
 packaging==21.3
 PyYAML>=5.1,<6.1
