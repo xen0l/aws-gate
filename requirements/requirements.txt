@@ -5,4 +5,4 @@ packaging==21.3
 PyYAML>=5.1,<6.1
 requests==2.26.0
 unix-ar==0.2.1
-wrapt==1.13.3
+wrapt==1.14.1
