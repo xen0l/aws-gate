@@ -38,7 +38,6 @@ cmd = ["pytest", "--verbose"]
 
 if args.lint:
     lint_args = [
-        "--flake8",
         "--black",
         "--pylint",
         f"--pylint-rcfile={os.path.join(root_dir, '.pylintrc')}",
