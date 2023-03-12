@@ -49,7 +49,7 @@ class GateConfigSchema(Schema):
     )
     hosts = fields.List(fields.Nested(HostSchema), required=False, missing=[])
 
-    # pylint: disable=no-self-use,unused-argument
+    # pylint: disable=unused-argument
     @post_load
     def create_config(self, data, **kwargs):
         return GateConfig(**data)
