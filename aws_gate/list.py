@@ -88,7 +88,7 @@ def list_instances(
     instance_ids = []
     for response in instances_ssm_response_iterator:
         for instance in response["InstanceInformationList"]:
-            if instance['PingStatus'] != 'Online':
+            if instance["PingStatus"] != "Online":
                 continue
             instance_ids.append(instance["InstanceId"])
 
