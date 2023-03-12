@@ -1,5 +1,4 @@
-# https://github.com/HypothesisWorks/hypothesis/issues/2113 
-attrs>=19.2.0
+attrs==22.2.0
 bandit==1.7.5
 black==22.6.0
 dlint==0.12.0
