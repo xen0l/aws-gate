@@ -61,5 +61,7 @@ def session(
         region,
         profile,
     )
-    with SSMSession(instance_id, region_name=region, profile_name=profile, ssm=ssm) as sess:
+    with SSMSession(
+        instance_id, region_name=region, profile_name=profile, ssm=ssm
+    ) as sess:
         sess.open()
