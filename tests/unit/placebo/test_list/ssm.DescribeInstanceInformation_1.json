@@ -14,6 +14,19 @@
         "PlatformName": "Amazon Linux",
         "PlatformType": "Linux",
         "LastPingDateTime": 1546687374.788
+      },
+      {
+        "IsLatestVersion": false,
+        "ComputerName": "ip-10-69-104-50.eu-west-1.compute.internal",
+        "PingStatus": "Inactive",
+        "InstanceId": "i-0c123153096cd68a6d",
+        "IPAddress": "10.69.104.50",
+        "ResourceType": "EC2Instance",
+        "AgentVersion": "2.3.117.0",
+        "PlatformVersion": "2",
+        "PlatformName": "Amazon Linux",
+        "PlatformType": "Linux",
+        "LastPingDateTime": 1546687374.788
       }
     ]
   }
