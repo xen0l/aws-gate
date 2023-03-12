@@ -42,7 +42,7 @@ class Plugin:
         self.download_path = os.path.join(tmp_dir, file_name)
         try:
             logger.debug("Downloading session-manager-plugin archive from %s", self.url)
-            with requests.get(self.url, stream=True) as req:
+            with requests.get(self.url, stream=True, timeout=10) as req:
                 req.raise_for_status()
                 with open(self.download_path, "wb") as f:
                     shutil.copyfileobj(req.raw, f)
