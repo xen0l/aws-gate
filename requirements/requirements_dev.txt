@@ -15,4 +15,4 @@ pytest-black==0.3.12
 pytest-cov==4.0.0
 pytest-datadir==1.4.1
 pytest-mock==3.10.0
-pytest-pylint==0.18.0
+pytest-pylint==0.19.0
