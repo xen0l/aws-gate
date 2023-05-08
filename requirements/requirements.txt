@@ -1,4 +1,4 @@
-boto3~=1.26.89
+boto3~=1.26.129
 cryptography==39.0.2
 marshmallow==3.19.0
 packaging==23.0
