@@ -3,6 +3,6 @@ cryptography==39.0.2
 marshmallow==3.19.0
 packaging==23.0
 PyYAML>=5.1,<6.1
-requests==2.28.2
+requests==2.31.0
 unix-ar==0.2.1
 wrapt==1.15.0
