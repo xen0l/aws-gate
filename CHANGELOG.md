@@ -1,3 +1,11 @@
+0.11.3 (2022-08-04)
+-------------------
+
+* Maintenance release updating all dependency versions
+* Fix a default profile usage in session (contribution by [@adamdodev](https://github.com/adamdodev)
+* Fix issue with faulty import of `formatspec` from `inspect` (contribution by [@jvdrean](https://github.com/jvdrean)
+* Improved CI tests to include tests against Python 3.11
+
 0.11.2 (2022-01-03)
 -------------------
 
