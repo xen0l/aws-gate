@@ -1,6 +1,6 @@
 attrs==22.2.0
 bandit==1.7.5
-black==23.1.0
+black==23.9.1
 dlint==0.12.0
 flake8==4.0.1
 flake8-bandit==2.1.2
