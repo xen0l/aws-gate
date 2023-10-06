@@ -61,12 +61,14 @@ def getinstanceidbytag(name, ec2=None):
     # parsing. For this reason,we have to differentiate 2 cases for
     # provided name:
     # - aws: special prefixed tags in the form of aws:<service>:<tag_name>:<tag_value>
+    # - aws: special prefixed tags in the form of aws=<service>=<tag_name>=<tag_value>
     # - regular cases in the form <tag_name>:<tag_value>
+    # - regular cases in the form <tag_name>=<tag_value>
     if '=' in name:
         delimiter = '='
     else:
         delimiter = ':'
-    if name.startswith(f"aws{delimiter}:"):
+    if name.startswith(f"aws{delimiter}"):
         key, value = delimiter.join(name.split(delimiter, 3)[:3]), name.split(delimiter, 3)[-1]
     else:
         key, value = name.split(delimiter, 1)
