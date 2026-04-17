@@ -45,9 +45,9 @@ class HostSchema(Schema):
 
 class GateConfigSchema(Schema):
     defaults = fields.Nested(
-        DefaultsSchema, required=False, missing={}, validate=validate_defaults
+        DefaultsSchema, required=False, load_default={}, validate=validate_defaults
     )
-    hosts = fields.List(fields.Nested(HostSchema), required=False, missing=[])
+    hosts = fields.List(fields.Nested(HostSchema), required=False, load_default=[])
 
     # pylint: disable=unused-argument
     @post_load
