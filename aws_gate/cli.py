@@ -28,6 +28,7 @@ from aws_gate.session import session
 from aws_gate.ssh import ssh
 from aws_gate.ssh_config import ssh_config
 from aws_gate.ssh_proxy import ssh_proxy
+from aws_gate.port_forward import port_forward
 from aws_gate.utils import get_default_region
 
 logger = logging.getLogger(__name__)
@@ -86,6 +87,25 @@ def get_argument_parser(*args, **kwargs):
     session_parser.add_argument("-r", "--region", help="AWS region to use")
     session_parser.add_argument(
         "instance_name", help="Instance we wish to open session to"
+    )
+
+    # 'port-forward' subcommand
+    port_forward_parser = subparsers.add_parser(
+        "port-forward", help="Open new session on instance and forward to a port locally or remotely"
+    )
+    port_forward_parser.add_argument("-p", "--profile", help="AWS profile to use")
+    port_forward_parser.add_argument("-r", "--region", help="AWS region to use")
+    port_forward_parser.add_argument(
+        "instance_name", help="Instance we wish to open session to"
+    )
+    port_forward_parser.add_argument(
+        "target_port", help="Port to forward to", type=int
+    )
+    port_forward_parser.add_argument(
+        "--target_host", help="Host to forward into", default=None
+    )
+    port_forward_parser.add_argument(
+        "--local_port", help="Local port to forward to", type=int, default=7000
     )
 
     # 'ssh' subcommand
@@ -283,6 +303,16 @@ def main(args=None, argument_parser=None):
             instance_name=args.instance_name,
             region_name=region,
             profile_name=profile,
+        )
+    elif args.subcommand == "port-forward":
+        port_forward(
+            config=config,
+            instance_name=args.instance_name,
+            target_host=args.target_host,
+            region_name=region,
+            profile_name=profile,
+            target_port=args.target_port,
+            local_port=args.local_port,
         )
     elif args.subcommand == "ssh":
         ssh(
