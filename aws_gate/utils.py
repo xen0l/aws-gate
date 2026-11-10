@@ -208,7 +208,8 @@ def get_multiple_instance_details(instance_ids, ec2=None):
     instance_details = []
     for ec2_instance in ec2_instances:
         instance_name = None
-        for tag in ec2_instance.tags:
+        # Instances launched without any tags report tags as None.
+        for tag in ec2_instance.tags or []:
             if tag["Key"] == "Name":
                 instance_name = tag["Value"]
                 break

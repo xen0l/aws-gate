@@ -222,6 +222,26 @@ def test_get_instance_details_aws_api_exception(ec2_mock, instance_id):
         get_instance_details(instance_id, ec2=ec2_mock)
 
 
+def test_get_instance_details_instance_without_tags(mocker, ec2_mock, instance_id):
+    instance = mocker.MagicMock()
+    instance.id = instance_id
+    # Instances launched without any tags report tags as None.
+    instance.tags = None
+    instance.placement = {"AvailabilityZone": "eu-west-1a"}
+    instance.vpc_id = "vpc-1981f29759da4a354"
+    instance.private_ip_address = "10.69.104.49"
+    instance.public_ip_address = "18.201.115.108"
+    instance.private_dns_name = "ip-10-69-104-49.eu-west-1.compute.internal"
+    instance.public_dns_name = "ec2-18-201-115-108.eu-west-1.compute.amazonaws.com"
+    ec2_mock.instances.filter.return_value = [instance]
+
+    details = get_instance_details(instance_id, ec2=ec2_mock)
+
+    assert details["instance_id"] == instance_id
+    assert details["instance_name"] is None
+    assert details["availability_zone"] == "eu-west-1a"
+
+
 def test_get_instance_details(instance_id, ec2):
     expected_details = {
         "instance_id": "i-0c32153096cd68a6d",
